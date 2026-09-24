@@ -8,9 +8,9 @@ description: Dados necessários para validar e desenvolver o monitoramento das a
 
 **Responsável:** Carlos Ícaro. **Etapa:** Sprint 1. **Versão:** inicial, sujeita à visita e à inspeção das imagens.
 
-Este documento especifica os dados necessários para a [proposta de solução](./proposta-de-solucao.md): medir a distribuição das aves visíveis nos níveis do Jump Start em um recorte da recria. O primeiro pedido à Raiar deve reunir **imagens originais, identificação de lote e câmera, horários, idade das aves e uma referência dos níveis observáveis**. Telemetria e contexto de manejo complementam a interpretação quando estiverem disponíveis.
+Este documento lista os dados necessários para a [proposta de solução](./proposta-de-solucao.md): contar as aves que aparecem em cada nível do Jump Start. Para uma explicação do sistema e dos termos técnicos, consulte o [glossário em linguagem simples](./glossario.md). O primeiro pedido à Raiar deve reunir **imagens originais, identificação do lote e da câmera, horários, idade das aves e uma imagem que ajude a identificar os níveis**. Leituras de sensores e informações sobre o manejo podem acrescentar contexto, se estiverem disponíveis.
 
-As estruturas abaixo são um contrato conceitual de dados, não um banco já implementado. Nomes, formatos e volumes são propostas da Sprint 1. A coleta, os prazos e a retenção dependem de acordo com o parceiro. O status do redirecionamento e as fontes internas estão registrados na proposta.
+As tabelas abaixo descrevem quais informações o projeto quer registrar; ainda não são um banco de dados construído. Nomes, formatos e quantidades são sugestões para esta Sprint, a confirmar com a equipe e com a Raiar. O envio, os prazos e o tempo de armazenamento das imagens também precisam ser combinados.
 
 ## Dados iniciais a solicitar
 
