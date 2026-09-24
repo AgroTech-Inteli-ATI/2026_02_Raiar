@@ -276,4 +276,4 @@ A documentação da Sprint 1 estará pronta para orientar a coleta quando cada d
 | Conferir cálculos com exemplo conhecido | Caso 12/8 gera 60%/40%; vazio e inválido mantêm semânticas distintas | Corrigir cálculo antes da avaliação do modelo |
 | Conferir autorização e armazenamento | Destino restrito, responsáveis e política de retenção registrados | Resolver condições antes de transferir ou utilizar arquivos reais |
 
-O registro de cada remessa deverá incluir quantidades recebidas, aceitas e rejeitadas, motivos, responsáveis e próximo pedido. Esse roteiro verifica a preparação dos dados; não comprova desempenho do modelo, do hardware ou utilidade operacional. As fontes de contexto e a relação com os RF/RNF estão na [proposta de solução](./proposta-de-solucao.md#fontes-e-estado-de-validação).
+O registro de cada remessa deverá incluir quantidades recebidas, aceitas e rejeitadas, motivos, responsáveis e próximo pedido. Esse roteiro verifica a preparação dos dados; não comprova desempenho do modelo, do hardware ou utilidade operacional. As referências e a relação com os RF/RNF estão na [proposta de solução](./proposta-de-solucao.md#referências).
