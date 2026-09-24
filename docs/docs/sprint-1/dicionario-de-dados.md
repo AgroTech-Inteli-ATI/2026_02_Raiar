@@ -8,7 +8,7 @@ description: Dados necessários para validar e desenvolver o monitoramento das a
 
 Este documento lista os dados necessários para a [proposta de solução](./proposta-de-solucao.md): contar as aves que aparecem em cada nível do Jump Start. Para uma explicação do sistema e dos termos técnicos, consulte o [glossário em linguagem simples](./glossario.md). O primeiro pedido à Raiar deve reunir **imagens originais, identificação do lote e da câmera, horários, idade das aves e uma imagem que ajude a identificar os níveis**. Leituras de sensores e informações sobre o manejo podem acrescentar contexto, se estiverem disponíveis.
 
-As tabelas abaixo descrevem quais informações o projeto quer registrar; ainda não são um banco de dados construído. Nomes, formatos e quantidades são sugestões para esta Sprint, a confirmar com a equipe e com a Raiar. O envio, os prazos e o tempo de armazenamento das imagens também precisam ser combinados.
+As tabelas abaixo descrevem as informações previstas para o projeto; ainda não representam um banco de dados construído. Nomes, formatos e quantidades são propostas a confirmar com a equipe e com a Raiar. O envio, os prazos e o tempo de armazenamento das imagens também dependem de acordo.
 
 ## Dados iniciais a solicitar
 
@@ -31,11 +31,11 @@ Os itens D01 a D05 são o pacote de entrada. D08 será produzido pela equipe ap�
 
 ### Inspeção antes da coleta maior
 
-Solicitar primeiro **30 quadros de uma câmera candidata**, distribuídos entre horários e condições de iluminação disponíveis, junto a D02 a D05. Esse número é uma proposta de triagem de esforço reduzido, sem garantia estatística. Dois integrantes devem verificar se reconhecem as aves e os níveis, registrar ambiguidades e decidir se o enquadramento permite continuar. Esses quadros podem integrar a remessa posterior, sem contagem duplicada.
+O primeiro pacote proposto contém **30 quadros de uma câmera candidata**, distribuídos entre horários e condições de iluminação disponíveis, junto a D02 a D05. Esse número é uma proposta de triagem de esforço reduzido, sem garantia estatística. A análise por dois integrantes deverá verificar se as aves e os níveis são reconhecíveis, registrar ambiguidades e indicar se o enquadramento permite continuar. Esses quadros podem integrar a remessa posterior, sem contagem duplicada.
 
 ### Pacote piloto para exploração e anotação
 
-Após a triagem, propor **270 quadros de rotina por câmera**, obtidos em três dias distintos, três janelas horárias por dia e 30 quadros por janela. Uma forma inicial de obter cada grupo é amostrar a cada 20 segundos em um trecho de dez minutos, nos instantes de 0 a 580 segundos. Os dias devem pertencer à janela de idade acordada. Os horários devem ser escolhidos com o parceiro, incluindo diferenças reais de iluminação e ocupação.
+Após a triagem, o pacote piloto proposto contém **270 quadros de rotina por câmera**, obtidos em três dias distintos, três janelas horárias por dia e 30 quadros por janela. Uma forma inicial de obter cada grupo é amostrar a cada 20 segundos em um trecho de dez minutos, nos instantes de 0 a 580 segundos. Os dias devem pertencer à janela de idade acordada. Os horários devem ser escolhidos com o parceiro, incluindo diferenças reais de iluminação e ocupação.
 
 Complementar com **30 quadros de casos difíceis**, quando existirem, para totalizar 300: desfoque, oclusão, reflexos, pouca luz, nível aparentemente vazio e aves na fronteira entre zonas. Identificar a seleção dirigida para não usá-la como estimativa da frequência real desses eventos. Se algum cenário não existir ou não estiver acessível, registrar a lacuna em vez de produzir uma imagem artificial como evidência real.
 
@@ -55,11 +55,11 @@ Esse volume é um **mínimo operacional proposto para o piloto**, não uma amost
 | --- | --- | --- | --- |
 | Confirmar recorte, câmera, acesso e permissão | Grupo e Raiar | Na visita ou reunião de alinhamento | A agendar |
 | Enviar pacote de triagem com metadados | Raiar, contato a indicar | Até dois dias úteis após o acordo de acesso | Não acordado |
-| Inspecionar triagem e devolver lacunas | Carlos Ícaro e equipe técnica | Até dois dias úteis após recebimento | Proposto |
+| Inspecionar triagem e devolver lacunas | Equipe técnica do projeto | Até dois dias úteis após recebimento | Proposto |
 | Enviar pacote piloto | Raiar, com seleção apoiada pela equipe | Antes da exploração de dados da Sprint 2; data a pactuar | Não acordado |
 | Fechar protocolo, revisar anotações e lacunas | Equipe AgroTech e referência técnica da Raiar | Na Sprint 2, antes do treinamento | Proposto |
 
-Carlos Ícaro deverá substituir os prazos relativos pelas datas acordadas e registrar responsável, quantidade recebida, quantidade utilizável e pendências por remessa. Nenhum envio foi confirmado nesta versão.
+Após o acordo com a Raiar, os prazos relativos deverão ser substituídos por datas, com registro de responsável, quantidade recebida, quantidade utilizável e pendências por remessa. Nenhum envio foi confirmado até esta versão.
 
 ## Convenções do dicionário
 
@@ -132,7 +132,7 @@ A chave de uma zona é `(instalacao_id, zonas_versao, nivel_id)`. Mudanças de p
 | `qualidade` | Enumeração | S | `pendente`, `avaliavel` ou `nao_avaliavel`, conforme protocolo |
 | `motivo_qualidade` | Texto | C | Obrigatório em `nao_avaliavel`; ex.: níveis não distinguíveis, desfoque ou oclusão impeditiva |
 
-JPEG e PNG são formatos propostos para quadros; vídeos devem preservar o arquivo e formato originais, cuja leitura será testada na triagem. Conferir timestamps sobrepostos na imagem com o relógio informado. Horário desconhecido impede inclusão na série temporal, embora o arquivo possa ser útil para explorar qualidade visual.
+JPEG e PNG são formatos propostos para quadros; vídeos devem preservar o arquivo e formato originais, cuja leitura será testada na triagem. Os horários eventualmente gravados sobre a imagem deverão ser comparados com o relógio informado. Horário desconhecido impede inclusão na série temporal, embora o arquivo possa ser útil para explorar qualidade visual.
 
 ### Anotação de referência
 
@@ -153,9 +153,9 @@ JPEG e PNG são formatos propostos para quadros; vídeos devem preservar o arqui
 
 Como regra inicial a validar, usar o ponto central da borda inferior da caixa da ave para atribuir uma zona. Ponto exatamente na fronteira, fora das zonas ou sem correspondência inequívoca com o nível físico resulta em nível indeterminado. A caixa não substitui a avaliação da cena: se a perspectiva inviabilizar a regra, rever enquadramento, zonas e protocolo antes de rotular o restante.
 
-Revisar inicialmente os 30 quadros de triagem com dois anotadores independentes. Registrar divergências por nível e resolver o protocolo antes de expandir. A qualidade de uma imagem é avaliável somente se todos os níveis incluídos na distribuição puderem ser anotados segundo o protocolo; ocultação parcial deve ter regra explícita, sem inferir aves invisíveis.
+A revisão inicial dos 30 quadros de triagem deverá envolver dois anotadores independentes. As divergências por nível deverão ser registradas e o protocolo ajustado antes da ampliação da base. Uma imagem é avaliável somente se todos os níveis incluídos na distribuição puderem ser anotados segundo o protocolo; a ocultação parcial exige regra explícita, sem inferir aves invisíveis.
 
-Dividir os dados por sessões completas, agrupando também trechos próximos do mesmo dia e câmera. Não sortear quadros vizinhos entre treino e teste. Definir e congelar a divisão antes de ajustar o modelo; reservar grupos completos para validação e teste. Se não houver grupos suficientes ou cobertura dos níveis em cada conjunto, solicitar mais dados e limitar a análise à exploração. Um teste de um único lote não comprova generalização para outros lotes.
+A divisão dos dados deverá considerar sessões completas e agrupar trechos próximos do mesmo dia e câmera. Quadros vizinhos não devem ser distribuídos entre treino e teste. A divisão deverá ser fixada antes do ajuste do modelo, com grupos completos reservados para validação e teste. Na ausência de grupos suficientes ou de cobertura dos níveis em cada conjunto, serão necessários mais dados; até lá, a análise ficará limitada à exploração. Um teste de um único lote não comprova generalização para outros lotes.
 
 ## Resultados produzidos pelo sistema
 
@@ -211,7 +211,7 @@ erro_distribuicao_k_pp = média(abs(percentual_previsto_k - percentual_manual_k)
 
 MAE é expresso em aves; o erro agregado, em porcentagem; a diferença de distribuição, em pontos percentuais. Se `soma(ref) = 0`, o erro percentual é indefinido: reportar MAE e falsos positivos. O erro de distribuição usa apenas quadros em que os totais previsto e manual sejam positivos; reportar também quantos quadros foram excluídos por total zero. Em particular, uma previsão vazia para um quadro manualmente positivo continua penalizada no erro de contagem.
 
-Reportar cobertura, rejeições e falhas de processamento junto aos erros para não apresentar apenas os melhores quadros. As metas preliminares do RNF08 devem ser pactuadas com essa definição antes do teste final; não escolher a fórmula depois de observar o desempenho.
+O relatório de avaliação deverá apresentar cobertura, rejeições e falhas de processamento junto aos erros, para evitar a análise exclusiva dos melhores quadros. As metas preliminares do RNF08 devem ser pactuadas com essa definição antes do teste final, mantendo a fórmula definida previamente.
 
 ## Dados complementares e operação
 
@@ -232,13 +232,13 @@ Reportar cobertura, rejeições e falhas de processamento junto aos erros para n
 | `evento.ocorrido_em`, `evento.tipo` | Instante / texto | S | Momento e categoria, ex.: mudança de iluminação ou posição de câmera |
 | `evento.descricao`, `evento.fonte_ref` | Texto, cada | S | Relato factual e origem do registro; sem inferir efeito comportamental |
 
-Não há lista de sensores confirmada para o recorte da recria. O TAP original cita variáveis ambientais, mas sua presença nos arquivos ou no novo protótipo precisa ser verificada. A ausência de leitura não equivale a zero. Ao aproximar imagem e telemetria no tempo, guardar a diferença entre horários e aplicar uma tolerância acordada após medir os intervalos reais; sem correspondência aceitável, deixar a associação vazia.
+Não há lista de sensores confirmada para o recorte da recria. O TAP original cita variáveis ambientais, mas sua presença nos arquivos ou no novo protótipo precisa ser verificada. A ausência de leitura não equivale a zero. A associação temporal entre imagem e telemetria deverá registrar a diferença entre os horários e usar uma tolerância definida após a verificação dos intervalos reais. Sem correspondência aceitável, a associação ficará vazia.
 
 ### Falhas, acesso e retenção
 
 Registrar falhas com `evento_id` (texto único), `dispositivo_id` (texto), `ocorrido_em` (instante), `etapa` (`captura`, `processamento` ou `sincronizacao`) e `codigo_erro` (texto). Todos são obrigatórios. `quadro_id` é opcional quando a falha impedir a criação da imagem. A fila deve preservar os IDs originais e registrar confirmação de recebimento para testar reenvio sem duplicação.
 
-O dicionário de domínio não inclui credenciais ou tokens. A política inicial propõe acesso às imagens apenas para a equipe autorizada; métricas, revisões e exportações seguem os perfis a validar nos requisitos. Não publicar imagens reais em Git, exemplos da documentação ou links públicos.
+O dicionário de domínio não inclui credenciais ou tokens. A política inicial prevê acesso às imagens apenas pela equipe autorizada; métricas, revisões e exportações seguem os perfis a validar nos requisitos. Imagens reais não deverão ser publicadas em Git, exemplos da documentação ou links públicos.
 
 | Categoria | Uso | Retenção e condição pendente |
 | --- | --- | --- |
@@ -276,4 +276,4 @@ A documentação da Sprint 1 estará pronta para orientar a coleta quando cada d
 | Conferir cálculos com exemplo conhecido | Caso 12/8 gera 60%/40%; vazio e inválido mantêm semânticas distintas | Corrigir cálculo antes da avaliação do modelo |
 | Conferir autorização e armazenamento | Destino restrito, responsáveis e política de retenção registrados | Resolver condições antes de transferir ou utilizar arquivos reais |
 
-Registrar contagens de recebidos, aceitos e rejeitados, motivos, responsáveis e próximo pedido. Esse roteiro verifica a preparação dos dados; não comprova desempenho de modelo, hardware ou utilidade operacional. As fontes de contexto e a relação com os RF/RNF estão na [proposta de solução](./proposta-de-solucao.md#fontes-e-estado-de-validação).
+O registro de cada remessa deverá incluir quantidades recebidas, aceitas e rejeitadas, motivos, responsáveis e próximo pedido. Esse roteiro verifica a preparação dos dados; não comprova desempenho do modelo, do hardware ou utilidade operacional. As fontes de contexto e a relação com os RF/RNF estão na [proposta de solução](./proposta-de-solucao.md#fontes-e-estado-de-validação).

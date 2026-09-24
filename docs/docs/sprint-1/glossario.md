@@ -11,9 +11,9 @@ Este glossário explica os termos usados na [proposta de solução](./proposta-d
 
 ## Aviário e criação
 
-**Aviário:** o galpão onde as aves vivem. Neste projeto, usamos “aviário” para falar do edifício e de sua localização. O equipamento Jump Start fica dentro do aviário.
+**Aviário:** o galpão onde as aves vivem. O termo identifica o edifício e sua localização. O equipamento Jump Start fica dentro do aviário.
 
-**Jump Start:** nome de um sistema de recria de aves da Vencomatic. O sistema tem linhas de alimentação e água e plataformas reguláveis. Essas plataformas ajudam as aves jovens a aprender a subir e se movimentar entre os níveis e poleiros. Para nós, “Jump Start” significa a estrutura específica onde se pretende acompanhar as aves, não um nome genérico para qualquer galpão. Consulte a [descrição do fabricante](https://www.vencomaticgroup.com/layers/jump-start).
+**Jump Start:** nome de um sistema de recria de aves da Vencomatic. O sistema tem linhas de alimentação e água e plataformas reguláveis. Essas plataformas ajudam as aves jovens a aprender a subir e se movimentar entre os níveis e poleiros. Na documentação, “Jump Start” designa essa estrutura específica. Consulte a [descrição do fabricante](https://www.vencomaticgroup.com/layers/jump-start).
 
 **Recria:** período em que as aves jovens crescem e aprendem a se movimentar na estrutura antes de serem transferidas para o local de produção de ovos. A idade exata a observar no projeto ainda precisa ser combinada com a Raiar.
 
