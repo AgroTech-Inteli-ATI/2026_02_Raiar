@@ -137,3 +137,48 @@
   background-color: rgba(255, 208, 67, 0.45);
   color: var(--raiar-text);
 }
+
+/*
+ * Formatação ABNT para o corpo do texto (NBR 14724):
+ * parágrafos justificados, com recuo de primeira linha (1,25 cm)
+ * e espaçamento entre linhas de 1,5.
+ */
+.markdown p {
+  text-align: justify;
+  text-indent: 1.25cm;
+  line-height: 1.5;
+}
+
+/* Legenda de figura (NBR 14724): centralizada, sem recuo,
+   com o título imediatamente abaixo da ilustração e a
+   indicação obrigatória da fonte. */
+.markdown p:has(> img) {
+  text-align: center;
+  text-indent: 0;
+}
+
+.markdown p:has(> img) + p {
+  text-align: center;
+  text-indent: 0;
+  line-height: 1.2;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.markdown p:has(> img) + p + p {
+  text-align: center;
+  text-indent: 0;
+  line-height: 1.2;
+  font-size: 0.9em;
+  color: var(--raiar-text-secondary);
+  margin-top: 0;
+}
+
+/* Referências (NBR 6023): alinhadas à esquerda, sem recuo de
+   primeira linha e com espaçamento simples entre entradas. */
+#referencias ~ p {
+  text-align: left;
+  text-indent: 0;
+  line-height: 1;
+  margin-bottom: 1em;
+}
