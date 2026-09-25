@@ -1,6 +1,6 @@
 ---
 title: Dicionário de dados e coleta inicial
-sidebar_position: 2
+sidebar_position: 5
 description: Dados necessários para validar e desenvolver o monitoramento das aves visíveis nos níveis do Jump Start.
 ---
 
@@ -242,7 +242,7 @@ Não há lista de sensores confirmada para o recorte da recria. O TAP original c
 
 Registrar falhas com `evento_id` (texto único), `dispositivo_id` (texto), `ocorrido_em` (instante), `etapa` (`captura`, `processamento` ou `sincronizacao`) e `codigo_erro` (texto). Todos são obrigatórios. `quadro_id` é opcional quando a falha impedir a criação da imagem. A fila deve preservar os IDs originais e registrar confirmação de recebimento para testar reenvio sem duplicação.
 
-O dicionário de domínio não inclui credenciais ou tokens. A política inicial prevê acesso às imagens apenas pela equipe autorizada; métricas, revisões e exportações seguem os perfis a validar nos requisitos. Imagens reais não deverão ser publicadas em Git, exemplos da documentação ou links públicos.
+O dicionário de domínio não inclui credenciais ou tokens. A política inicial prevê acesso às imagens apenas pela equipe autorizada; métricas, revisões e exportações seguem os perfis a validar nos [requisitos](./requisitos.md). Imagens reais não deverão ser publicadas em Git, exemplos da documentação ou links públicos.
 
 | Categoria | Uso | Retenção e condição pendente |
 | --- | --- | --- |
@@ -270,7 +270,7 @@ Arquivar um lote não significa excluir seus dados. Exclusões definitivas e a c
 
 ## Critérios de aceite desta definição
 
-A documentação da Sprint 1 estará pronta para orientar a coleta quando cada dado P0 tiver finalidade, origem e regra de validação; a proposta e os requisitos usarem a mesma unidade de medição; e as pendências de acesso, qualidade, idade e cronograma estiverem identificadas. O **aceite do pacote real** exigirá executar o seguinte roteiro, ainda pendente de recebimento:
+A documentação da Sprint 1 estará pronta para orientar a coleta quando cada dado P0 tiver finalidade, origem e regra de validação; a [proposta](./proposta-de-solucao.md) e os [requisitos](./requisitos.md) usarem a mesma unidade de medição; e as pendências de acesso, qualidade, idade e cronograma estiverem identificadas. O **aceite do pacote real** exigirá executar o seguinte roteiro, ainda pendente de recebimento:
 
 | Verificação | Sinal observável | Decisão em caso de falha |
 | --- | --- | --- |
@@ -281,4 +281,4 @@ A documentação da Sprint 1 estará pronta para orientar a coleta quando cada d
 | Conferir cálculos com exemplo conhecido | Caso 12/8 gera 60%/40%; vazio e inválido mantêm semânticas distintas | Corrigir cálculo antes da avaliação do modelo |
 | Conferir autorização e armazenamento | Destino restrito, responsáveis e política de retenção registrados | Resolver condições antes de transferir ou utilizar arquivos reais |
 
-O registro de cada remessa deverá incluir quantidades recebidas, aceitas e rejeitadas, motivos, responsáveis e próximo pedido. Esse roteiro verifica a preparação dos dados; não comprova desempenho do modelo, do hardware ou utilidade operacional. As referências e a relação com os RF/RNF estão na [proposta de solução](./proposta-de-solucao.md#referências).
+O registro de cada remessa deverá incluir quantidades recebidas, aceitas e rejeitadas, motivos, responsáveis e próximo pedido. Esse roteiro verifica a preparação dos dados; não comprova desempenho do modelo, do hardware ou utilidade operacional. As referências e a relação com os RF/RNF estão na [proposta de solução](./proposta-de-solucao.md#referencias).

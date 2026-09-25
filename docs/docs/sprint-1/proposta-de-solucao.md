@@ -22,7 +22,7 @@ A ocupação dos níveis pode continuar a ser observada diretamente ou registrad
 
 ## Escopo do MVP
 
-O recorte inicial proposto é **um lote, um aviário e um campo de visão fixo**, com os níveis observáveis e a janela de idade definidos com a Raiar. A quantidade de dispositivos prevista nos requisitos é uma meta de capacidade a testar separadamente, não evidência de cobertura de três aviários.
+O recorte inicial proposto é **um lote, um aviário e um campo de visão fixo**, com os níveis observáveis e a janela de idade definidos com a Raiar. A quantidade de dispositivos prevista nos [requisitos](./requisitos.md) é uma meta de capacidade a testar separadamente, não evidência de cobertura de três aviários.
 
 ### Funcionalidades incluídas
 
@@ -59,7 +59,7 @@ O [dicionário de dados](./dicionario-de-dados.md) define o significado de cada 
 
 ## Hipóteses, critérios e métricas
 
-Os IDs abaixo conectam problema, oportunidade, decisão, dados e validação. As referências RF/RNF apontam para a [versão inicial dos requisitos](https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/blob/0aa9a7107628c61197a883bf3c6f236193f99c7e/DOCUMENTACAO_REQUISITOS.md) e precisarão ser revistas caso essa documentação mude.
+Os IDs abaixo conectam problema, oportunidade, decisão, dados e validação. As referências RF/RNF apontam para os [requisitos](./requisitos.md), cuja versão inicial foi consultada no commit `0aa9a71` [2], e precisarão ser revistas caso essa documentação mude.
 
 | Hipótese e oportunidade | Decisão e requisito relacionado | Dados necessários | Critério de aceite proposto e métrica |
 | --- | --- | --- | --- |
@@ -89,7 +89,7 @@ Não há orçamento aprovado nem inventário confirmado nesta versão. O dimensi
 | Frente | Próximo resultado a verificar |
 | --- | --- |
 | Proposta e pedido de dados | Escopo e pacote inicial revisados |
-| Canvas de Proposta de Valor | Vínculo entre necessidades confirmadas e proposta |
+| [Canvas de Proposta de Valor](./canvas-proposta-de-valor.md) | Vínculo entre necessidades confirmadas e proposta |
 | Personas e jornada | Evidência de quem configura, consulta e decide |
 | Requisitos e metas de qualidade | Critérios coerentes com os dados disponíveis |
 | Pesquisa sobre aviários europeus | Fontes e limites de transferência para a Raiar |
@@ -98,11 +98,14 @@ Não há orçamento aprovado nem inventário confirmado nesta versão. O dimensi
 
 A proposta deverá ser revista após a visita e a inspeção do primeiro pacote de imagens, antes do treinamento do modelo. Caso o Canvas ou a jornada indiquem outra necessidade prioritária, o recorte do MVP e o pedido de dados deverão ser reavaliados.
 
-## Referências
+## Referências {#referencias}
 
-Documentos consultados em **24/09/2026**, preservados no repositório privado:
+[1] RAIAR ORGÂNICOS. **Proposta para avaliação de possível redirecionamento do projeto**. 2026. Documento interno, seções 3 a 10. Disponível em: https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/blob/4136a4ee882fc6b6619af90a4ee4cc7294403b6f/Arquivos/Proposta%20para%20avalia%C3%A7%C3%A3o%20de%20poss%C3%ADvel%20redirecionamento%20do%20projeto%20%282%29.docx. Acesso em: 24 set. 2026.
 
-- [Proposta da Raiar](https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/blob/4136a4ee882fc6b6619af90a4ee4cc7294403b6f/Arquivos/Proposta%20para%20avalia%C3%A7%C3%A3o%20de%20poss%C3%ADvel%20redirecionamento%20do%20projeto%20%282%29.docx), seções 3 a 10.
-- [Requisitos iniciais](https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/blob/0aa9a7107628c61197a883bf3c6f236193f99c7e/DOCUMENTACAO_REQUISITOS.md), versão consultada no commit `0aa9a71`.
-- [TAP AgroTech Raiar Orgânicos](https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/blob/4136a4ee882fc6b6619af90a4ee4cc7294403b6f/Arquivos/TAP_AgroTech_Raiar_Organicos.pdf).
-- [Roteiro de artefatos](https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/blob/4136a4ee882fc6b6619af90a4ee4cc7294403b6f/Arquivos/artefatos%20raiar1.pdf).
+[2] AGROTECH INTELI. **Requisitos iniciais**. 2026. Versão do commit `0aa9a71`. Disponível em: https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/blob/0aa9a7107628c61197a883bf3c6f236193f99c7e/DOCUMENTACAO_REQUISITOS.md. Acesso em: 24 set. 2026.
+
+[3] TAP AgroTech Raiar Orgânicos. 2026. Documento interno. Disponível em: https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/blob/4136a4ee882fc6b6619af90a4ee4cc7294403b6f/Arquivos/TAP_AgroTech_Raiar_Organicos.pdf. Acesso em: 24 set. 2026.
+
+[4] ROTEIRO de artefatos: Raiar. 2026. Documento interno. Disponível em: https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/blob/4136a4ee882fc6b6619af90a4ee4cc7294403b6f/Arquivos/artefatos%20raiar1.pdf. Acesso em: 24 set. 2026.
+
+Os documentos internos estão preservados no repositório privado do projeto.

@@ -1,43 +1,21 @@
-# Website
+# Site de documentação
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+Site da documentação do projeto Raiar Orgânicos, construído com [Docusaurus](https://docusaurus.io/). Requer Node.js 20 ou superior.
 
-## Installation
+## Comandos
 
-```bash
-npm install
-```
+| Comando | Descrição |
+| --- | --- |
+| `npm install` | Instala as dependências. |
+| `npm run start` | Inicia o servidor local com recarga automática. |
+| `npm run build` | Gera o site estático em `build/`. Falha se houver link ou imagem quebrada. |
+| `npm run serve` | Serve localmente o conteúdo de `build/`. |
+| `npm run typecheck` | Verifica os tipos dos arquivos TypeScript. |
 
-**Note**: feel free to use the package manager of your choice.
+## Organização
 
-## Local Development
+- `docs/`: páginas da documentação. A barra lateral é gerada a partir das pastas.
+- `src/css/custom.css`: paleta da Raiar e formatação ABNT do corpo do texto, das figuras e das referências.
+- `static/img/`: imagens, referenciadas nas páginas como `/img/...`.
 
-```bash
-npm run start
-```
-
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-## Build
-
-```bash
-npm run build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-## Deployment
-
-Using SSH:
-
-```bash
-USE_SSH=true npm run deploy
-```
-
-Not using SSH:
-
-```bash
-GIT_USER=<Your GitHub username> npm run deploy
-```
-
-If you are using GitHub Pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+Os padrões de nomes, frontmatter, títulos, figuras e referências estão no [guia de contribuição](../CONTRIBUTING.md).

@@ -1,8 +1,7 @@
 ---
 title: Glossário em linguagem simples
-sidebar_position: 3
-sidebar_label: Glossário em linguagem simples
-description: Explicação dos termos usados na proposta de solução e no dicionário de dados da Sprint 1.
+sidebar_position: 7
+description: Explicação dos termos usados nas páginas da Sprint 1.
 ---
 
 # Glossário em linguagem simples
@@ -112,4 +111,3 @@ Este glossário explica os termos usados na [proposta de solução](./proposta-d
 **Bbox ou caixa delimitadora:** retângulo desenhado ao redor de uma ave na imagem para registrar a posição do animal. As letras `px` significam pixels, os pequenos pontos que compõem a imagem digital.
 
 **RF e RNF:** abreviações de requisito funcional e requisito não funcional. RF descreve uma tarefa que o sistema deve realizar. RNF descreve uma condição de qualidade, por exemplo o tempo de resposta ou o que acontece quando a conexão cai. Os requisitos associados a esta proposta ainda são uma versão inicial.
-

@@ -17,23 +17,26 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'AgroTech-Inteli-ATI',
+  projectName: '2026_02_Raiar',
 
   onBrokenLinks: 'throw',
 
   // Habilita diagramas Mermaid (UML) nos .mdx via ```mermaid
   markdown: {
     mermaid: true,
+    // Links e imagens quebrados entre páginas interrompem o build.
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+      onBrokenMarkdownImages: 'throw',
+    },
   },
   themes: ['@docusaurus/theme-mermaid'],
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
+  // Define o idioma do HTML e traduz os textos da interface do tema.
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: 'pt-BR',
+    locales: ['pt-BR'],
   },
 
   presets: [
@@ -43,6 +46,8 @@ const config: Config = {
         docs: {
           routeBasePath: '/',
           sidebarPath: './sidebars.ts',
+          editUrl:
+            'https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/edit/develop/docs/',
         },
         blog: false,
         theme: {
@@ -53,8 +58,6 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
     // Tema único nas cores da Raiar: sem alternância claro/escuro.
     colorMode: {
       defaultMode: 'light',
