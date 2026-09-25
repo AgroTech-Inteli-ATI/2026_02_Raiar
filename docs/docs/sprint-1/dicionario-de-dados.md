@@ -6,7 +6,11 @@ description: Dados necessários para validar e desenvolver o monitoramento das a
 
 # Dicionário de dados e coleta inicial
 
-Este documento lista os dados necessários para a [proposta de solução](./proposta-de-solucao.md): contar as aves que aparecem em cada nível do Jump Start. Para uma explicação do sistema e dos termos técnicos, consulte o [glossário em linguagem simples](./glossario.md). O primeiro pedido à Raiar deve reunir **imagens originais, identificação do lote e da câmera, horários, idade das aves e uma imagem que ajude a identificar os níveis**. Leituras de sensores e informações sobre o manejo podem acrescentar contexto, se estiverem disponíveis.
+## Resumo executivo
+
+A primeira etapa é verificar se as imagens disponíveis permitem contar as aves visíveis em cada nível do Jump Start. Para isso, o pedido inicial à Raiar reúne uma pequena amostra de imagens, identificação do lote e da câmera, data e horário, idade das aves e uma foto ou desenho que mostre os níveis. Também é preciso combinar o uso dos arquivos e entender quanto histórico de gravações existe e se a posição das câmeras muda entre lotes. Após examinar a amostra, será possível ajustar a coleta piloto. Dados de sensores e registros de manejo são complementares.
+
+O detalhamento abaixo apoia a [proposta de solução](./proposta-de-solucao.md). Para uma explicação dos termos técnicos, consulte o [glossário em linguagem simples](./glossario.md).
 
 As tabelas abaixo descrevem as informações previstas para o projeto; ainda não representam um banco de dados construído. Nomes, formatos e quantidades são propostas a confirmar com a equipe e com a Raiar. O envio, os prazos e o tempo de armazenamento das imagens também dependem de acordo.
 
@@ -253,15 +257,16 @@ Arquivar um lote não significa excluir seus dados. Exclusões definitivas e a c
 ## Perguntas para a visita
 
 1. Qual lote, faixa de idade e parte do Jump Start devem ser acompanhados primeiro? Quais são os nomes físicos dos níveis?
-2. Quais níveis podem ser distinguidos nas câmeras existentes? Há obstáculos, movimento de câmera ou áreas fora da imagem?
+2. Quais níveis podem ser distinguidos nas câmeras existentes? Há obstáculos ou áreas fora da imagem? A posição ou o ângulo da câmera muda entre lotes? Essas mudanças são registradas?
 3. Qual é o modelo da câmera, resolução original, ângulo, formato, conexão e forma de exportação? Há câmeras de 180° ou 360° e conexão USB-A, conforme os itens ainda abertos da seção 17 do TAP?
-4. O horário das gravações está correto? Qual fuso usa? Há interrupções ou mudanças de iluminação programadas?
-5. Como a idade do lote é registrada? Existem períodos em que mais de um lote aparece no campo de visão?
-6. Que registros e indicadores já são usados para avaliar a ocupação? Qual decisão um histórico por nível ajudaria a tomar?
-7. Quem poderá fornecer as imagens, revisar as zonas e esclarecer ambiguidades? Quais datas de envio são viáveis?
-8. Há sensores e histórico ambiental? Quais variáveis, unidades, posições e frequências estão disponíveis?
-9. Onde os arquivos podem ser armazenados, quem pode acessá-los e por quanto tempo? Há pessoas ou informações restritas nas gravações?
-10. Qual erro de contagem ainda permite usar a informação? A equipe aceita validar primeiro a medição sem classificar comportamento ou recomendar manejo?
+4. Quanto histórico de gravações existe por câmera e lote? Quais datas, horários e idades cobre, qual o volume aproximado em horas ou arquivos, por quanto tempo é guardado e quanto pode ser exportado?
+5. O horário das gravações está correto? Qual fuso usa? Há interrupções ou mudanças de iluminação programadas?
+6. Como a idade do lote é registrada? Existem períodos em que mais de um lote aparece no campo de visão?
+7. Que registros e indicadores já são usados para avaliar a ocupação? Qual decisão um histórico por nível ajudaria a tomar?
+8. Quem poderá fornecer as imagens, revisar as zonas e esclarecer ambiguidades? Quais datas de envio são viáveis?
+9. Há sensores e histórico ambiental? Quais variáveis, unidades, posições e frequências estão disponíveis?
+10. Onde os arquivos podem ser armazenados, quem pode acessá-los e por quanto tempo? Há pessoas ou informações restritas nas gravações?
+11. Qual erro de contagem ainda permite usar a informação? A equipe aceita validar primeiro a medição sem classificar comportamento ou recomendar manejo?
 
 ## Critérios de aceite desta definição
 
