@@ -1,6 +1,8 @@
 {
   "label": "Sprint 1",
   "position": 2,
-  "collapsible": true,
-  "collapsed": false
+  "link": {
+    "type": "generated-index",
+    "description": "Documentação produzida durante a Sprint 1 do projeto AgroTech Inteli aplicado à Raiar Orgânicos."
+  }
 }
