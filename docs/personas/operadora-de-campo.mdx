@@ -1,71 +1,71 @@
----
-title: Joana: Operadora de campo
-description: Persona hipotética da pessoa que verifica alertas e ocorrências no galpão
+﻿---
+title: "Joana: Operadora da recria"
+description: Persona hipotética da equipe que acompanha a rotina dos lotes na recria
 sidebar_position: 1
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-# Joana — Operadora de campo
+# Joana — Operadora da recria
 
 <div className="persona-hero">
   <figure className="persona-hero__figure">
-    <img className="persona-hero__portrait" src={useBaseUrl('/img/personas/joana-operadora.png')} alt="Retrato ilustrativo de Joana, em um galpão de criação livre" />
+    <img className="persona-hero__portrait" src={useBaseUrl('/img/personas/joana-recria.png')} alt="Retrato ilustrativo de Joana acompanhando frangas em uma instalação de recria" />
     <figcaption>Retrato fictício para representar a persona</figcaption>
   </figure>
   <div className="persona-hero__copy">
-    <p className="persona-hero__eyebrow">Perfil hipotético · operação de campo</p>
-    <blockquote>“Se o sistema apontar a zona e o horário, consigo direcionar a próxima verificação.”</blockquote>
-    <p>Joana representa uma pessoa da equipe de campo que percorre o galpão, coleta ovos e pode verificar locais sinalizados pelo sistema. O TAP prevê alertas MQTT para a equipe quando ovos fora dos ninhos forem detectados; não especifica o cargo exato, o dispositivo de recebimento nem o processo operacional de resposta.</p>
+    <p className="persona-hero__eyebrow">Perfil hipotético · operação da recria</p>
+    <blockquote>“Quero manter as informações do lote organizadas para acompanhar o ciclo junto com a equipe.”</blockquote>
+    <p>Joana representa uma pessoa que participa das rotinas de acompanhamento dos lotes durante a recria. Suas tarefas e responsabilidades específicas devem ser confirmadas com a equipe da Raiar.</p>
   </div>
 </div>
 
 ## Contexto
 
-Joana trabalha próxima à operação diária. A identificação de ovos de cama ocorre hoje durante rondas de coleta, de forma manual e pontual. A solução proposta busca detectar essas ocorrências por câmera e registrar quando e em qual zona aconteceram.
+Joana acompanha o dia a dia dos lotes na recria e pode registrar observações ou medições definidas pela equipe técnica. Ela precisa consultar o que já foi anotado para manter a continuidade entre as rotinas e compartilhar informações com outras pessoas da operação.
 
 ## Objetivos
 
-- Localizar uma ocorrência detectada sem precisar procurar às cegas por todo o galpão.
-- Verificar o ovo fora do ninho e seguir o procedimento definido pela equipe da Raiar.
-- Entender se há novas ocorrências em uma zona ou período já acompanhado.
-- Ter confiança de que o alerta se refere a uma detecção que merece verificação.
+- Registrar informações da rotina ligadas ao lote e ao período correspondente.
+- Consultar registros anteriores sem depender de anotações dispersas.
+- Comunicar à equipe técnica o que observou durante o acompanhamento.
+- Manter um histórico organizado ao longo do ciclo de recria.
 
-## Dificuldades atuais
+## Dificuldades
 
-- A ronda manual pode levar tempo e não registra todas as ocorrências de maneira consistente.
-- Sem um histórico organizado, é difícil lembrar onde e quando as ocorrências se repetem.
-- Um aviso sem localização ou horário claros pode gerar deslocamentos desnecessários.
+- Registros distribuídos em diferentes meios podem dificultar a consulta posterior.
+- Informações sem data ou identificação do lote perdem contexto.
+- Rotinas diferentes entre equipes podem tornar os registros difíceis de comparar.
 
 ## Necessidades para o sistema
 
-- Alerta legível, com horário, zona do galpão e informação de que houve uma detecção de ovo de cama.
-- Um fluxo simples para distinguir uma nova detecção de registros históricos.
-- Uma forma de consultar ocorrências recentes para orientar a verificação.
-- Indicação clara de que o alerta pede conferência humana e não substitui o procedimento de coleta.
+- Um fluxo simples para registrar e consultar informações periódicas.
+- Identificação clara do lote e do período a que cada registro se refere.
+- Campos e instruções alinhados ao procedimento definido pela Raiar.
+- Histórico legível que ajude a compartilhar observações com a equipe técnica.
 
-## Cenário de uso a validar
+## Jornada de acompanhamento a validar
 
-1. O modelo detecta um possível ovo de cama em uma imagem processada localmente.
-2. O sistema registra a ocorrência e envia um alerta operacional pelo fluxo MQTT previsto.
-3. Joana consulta a zona e o horário informados e verifica o local conforme o procedimento da operação.
-4. A ocorrência permanece no histórico para análise posterior pela equipe responsável.
+1. Joana seleciona o lote e o período da recria que está acompanhando.
+2. Registra as observações ou medições previstas na rotina acordada.
+3. Consulta o histórico para verificar registros anteriores do mesmo lote.
+4. Compartilha informações relevantes com a equipe técnica durante o acompanhamento periódico.
 
-O TAP descreve detecção, registro e alerta; os passos de confirmação, descarte, coleta e encerramento do alerta ainda precisam ser definidos com a Raiar.
+Esta jornada não depende de notificações ou alertas em tempo real. Os dados e a frequência de registro ainda precisam ser definidos com a Raiar.
+
+## História de usuário
+
+> **Como** operadora da recria, **eu quero** registrar e consultar observações periódicas por lote e período, **para** acompanhar o ciclo e compartilhar um histórico organizado com a equipe técnica.
 
 ## Critérios de experiência
 
-- Joana consegue identificar rapidamente **onde** e **quando** verificar.
-- O alerta diferencia uma ocorrência recente de uma informação histórica.
-- O texto evita afirmar que a detecção foi confirmada por uma pessoa quando isso ainda não ocorreu.
+- O registro mantém associação explícita com lote e data ou período.
+- Joana consegue localizar o histórico sem precisar interpretar métricas ainda não definidas.
+- A interface diferencia dado registrado de comentário ou interpretação.
 
 ## Perguntas para validação
 
-- Quem recebe o alerta e em qual dispositivo ou canal?
-- Que informação é necessária para chegar à zona sinalizada?
-- Qual ação a equipe deve tomar depois de verificar uma detecção?
-- Como lidar com alerta repetido, falso positivo ou falta de conectividade?
-
-## Limites do escopo
-
-A identificação individual de aves e a instalação física do sistema no galpão não fazem parte do MVP definido no TAP. O canal final e o procedimento operacional de resposta também não estão especificados.
+- Quais observações e medições fazem parte da rotina da operação?
+- Como a equipe identifica cada lote e suas fases durante a recria?
+- Quem registra as informações e em que momento da rotina?
+- Quais informações Joana precisa compartilhar com a equipe técnica?
