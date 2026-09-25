@@ -38,13 +38,10 @@ const config: Config = {
 
   presets: [
     [
-        'classic',
+      'classic',
       {
         docs: {
-          // Personas ficam em docs/personas sem sobrepor as páginas em src/pages.
-          path: 'personas',
-          include: ['*.mdx'],
-          routeBasePath: 'personas',
+          routeBasePath: '/',
           sidebarPath: './sidebars.ts',
         },
         blog: false,
@@ -86,11 +83,6 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
-        {
-          to: '/personas',
-          label: 'Personas',
-          position: 'left',
-        },
         {
           href: 'https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar',
           label: 'GitHub',
