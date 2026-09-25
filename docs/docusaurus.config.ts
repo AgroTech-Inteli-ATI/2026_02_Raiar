@@ -38,9 +38,12 @@ const config: Config = {
 
   presets: [
     [
-      'classic',
+        'classic',
       {
         docs: {
+          // Os documentos ficam diretamente na raiz do projeto Docusaurus.
+          path: '.',
+          include: ['index.mdx', 'personas/**/*.mdx'],
           routeBasePath: '/',
           sidebarPath: './sidebars.ts',
         },

@@ -1,0 +1,72 @@
+---
+title: Marina: Profissional de produção e bem-estar
+description: Persona hipotética que analisa dados de incidência, comportamento e ambiente
+sidebar_position: 2
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+# Marina — Profissional de produção e bem-estar
+
+<div className="persona-hero">
+  <figure className="persona-hero__figure">
+    <img className="persona-hero__portrait" src={useBaseUrl('/img/personas/marina-producao.png')} alt="Retrato ilustrativo de Marina observando um lote de galinhas em criação livre" />
+    <figcaption>Retrato fictício para representar a persona</figcaption>
+  </figure>
+  <div className="persona-hero__copy">
+    <p className="persona-hero__eyebrow">Perfil hipotético · leitura zootécnica</p>
+    <blockquote>“Quero enxergar quando e onde o padrão muda para investigar o manejo com a equipe.”</blockquote>
+    <p>Marina representa uma profissional com conhecimento zootécnico ou responsabilidade pelo acompanhamento da produção e do bem-estar do lote. O TAP prevê alinhamento sobre indicadores zootécnicos com a Raiar, mas não confirma um cargo ou uma pessoa específica.</p>
+  </div>
+</div>
+
+## Contexto
+
+Marina precisa compreender a ocorrência de ovos postos fora dos ninhos em um sistema de criação solta. Além das rondas, ela se beneficia de dados que mostrem padrões por zona e horário. O projeto também propõe calcular um *Unrest Index* por zona por meio de fluxo óptico e correlacioná-lo com leituras ambientais.
+
+## Objetivos
+
+- Identificar zonas e períodos em que a incidência de ovos de cama se repete.
+- Comparar as ocorrências com o índice de agitação e as leituras ambientais disponíveis.
+- Formular perguntas de investigação para a equipe, com base em evidências registradas.
+- Acompanhar mudanças ao longo do tempo sem depender apenas de observações pontuais.
+
+## Dificuldades atuais
+
+- A inspeção manual não gera por si só uma série histórica consistente sobre local, horário e condições.
+- Observações subjetivas podem variar entre pessoas e rondas.
+- Um indicador comportamental isolado não explica automaticamente o motivo de uma mudança.
+
+## Necessidades para o sistema
+
+- Histórico consultável de detecções por data, horário e zona.
+- Visualização do *Unrest Index* por zona, com contexto temporal.
+- Acesso às variáveis ambientais efetivamente coletadas, com unidades e horários compreensíveis.
+- Comparação dos dados no painel sem apresentar associação estatística como causalidade confirmada.
+- Terminologia e indicadores acordados com a equipe técnica da Raiar.
+
+## Cenário de uso a validar
+
+1. Marina seleciona um período no painel e observa as zonas com ocorrências de ovos de cama.
+2. Compara os horários com o histórico do *Unrest Index* e as leituras ambientais disponíveis.
+3. Identifica uma coincidência ou padrão que merece investigação operacional.
+4. Discute a observação com a equipe da Raiar antes de associá-la a uma causa de manejo ou bem-estar.
+
+O TAP descreve uma correlação básica com as leituras de temperatura no MVP e prevê dados ambientais do BMP280. A definição das visualizações, da granularidade e dos critérios zootécnicos deve ser validada com o parceiro.
+
+## Critérios de experiência
+
+- Marina consegue filtrar ou interpretar os registros por zona e período.
+- O painel diferencia claramente incidência detectada, índice de movimento e leitura ambiental.
+- O sistema mostra a origem e o período dos dados, evitando sugerir uma causa que o projeto não comprovou.
+
+## Perguntas para validação
+
+- Quais zonas, horários e períodos de comparação são relevantes para a rotina técnica?
+- Como a Raiar interpreta e prefere nomear o índice de agitação?
+- Quais limites ou faixas ambientais seriam úteis e quem deve defini-los?
+- Como registrar a interpretação posterior da equipe sem transformar hipótese em diagnóstico automático?
+
+## Limites do escopo
+
+O *Unrest Index* é um indicador de movimento coletivo, não uma identificação individual nem um diagnóstico. Previsões de doenças ou produtividade e monitoramento de conversão alimentar estão fora do escopo atual.

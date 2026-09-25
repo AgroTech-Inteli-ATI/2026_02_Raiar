@@ -1,0 +1,71 @@
+---
+title: Joana: Operadora de campo
+description: Persona hipotética da pessoa que verifica alertas e ocorrências no galpão
+sidebar_position: 1
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+# Joana — Operadora de campo
+
+<div className="persona-hero">
+  <figure className="persona-hero__figure">
+    <img className="persona-hero__portrait" src={useBaseUrl('/img/personas/joana-operadora.png')} alt="Retrato ilustrativo de Joana, em um galpão de criação livre" />
+    <figcaption>Retrato fictício para representar a persona</figcaption>
+  </figure>
+  <div className="persona-hero__copy">
+    <p className="persona-hero__eyebrow">Perfil hipotético · operação de campo</p>
+    <blockquote>“Se o sistema apontar a zona e o horário, consigo direcionar a próxima verificação.”</blockquote>
+    <p>Joana representa uma pessoa da equipe de campo que percorre o galpão, coleta ovos e pode verificar locais sinalizados pelo sistema. O TAP prevê alertas MQTT para a equipe quando ovos fora dos ninhos forem detectados; não especifica o cargo exato, o dispositivo de recebimento nem o processo operacional de resposta.</p>
+  </div>
+</div>
+
+## Contexto
+
+Joana trabalha próxima à operação diária. A identificação de ovos de cama ocorre hoje durante rondas de coleta, de forma manual e pontual. A solução proposta busca detectar essas ocorrências por câmera e registrar quando e em qual zona aconteceram.
+
+## Objetivos
+
+- Localizar uma ocorrência detectada sem precisar procurar às cegas por todo o galpão.
+- Verificar o ovo fora do ninho e seguir o procedimento definido pela equipe da Raiar.
+- Entender se há novas ocorrências em uma zona ou período já acompanhado.
+- Ter confiança de que o alerta se refere a uma detecção que merece verificação.
+
+## Dificuldades atuais
+
+- A ronda manual pode levar tempo e não registra todas as ocorrências de maneira consistente.
+- Sem um histórico organizado, é difícil lembrar onde e quando as ocorrências se repetem.
+- Um aviso sem localização ou horário claros pode gerar deslocamentos desnecessários.
+
+## Necessidades para o sistema
+
+- Alerta legível, com horário, zona do galpão e informação de que houve uma detecção de ovo de cama.
+- Um fluxo simples para distinguir uma nova detecção de registros históricos.
+- Uma forma de consultar ocorrências recentes para orientar a verificação.
+- Indicação clara de que o alerta pede conferência humana e não substitui o procedimento de coleta.
+
+## Cenário de uso a validar
+
+1. O modelo detecta um possível ovo de cama em uma imagem processada localmente.
+2. O sistema registra a ocorrência e envia um alerta operacional pelo fluxo MQTT previsto.
+3. Joana consulta a zona e o horário informados e verifica o local conforme o procedimento da operação.
+4. A ocorrência permanece no histórico para análise posterior pela equipe responsável.
+
+O TAP descreve detecção, registro e alerta; os passos de confirmação, descarte, coleta e encerramento do alerta ainda precisam ser definidos com a Raiar.
+
+## Critérios de experiência
+
+- Joana consegue identificar rapidamente **onde** e **quando** verificar.
+- O alerta diferencia uma ocorrência recente de uma informação histórica.
+- O texto evita afirmar que a detecção foi confirmada por uma pessoa quando isso ainda não ocorreu.
+
+## Perguntas para validação
+
+- Quem recebe o alerta e em qual dispositivo ou canal?
+- Que informação é necessária para chegar à zona sinalizada?
+- Qual ação a equipe deve tomar depois de verificar uma detecção?
+- Como lidar com alerta repetido, falso positivo ou falta de conectividade?
+
+## Limites do escopo
+
+A identificação individual de aves e a instalação física do sistema no galpão não fazem parte do MVP definido no TAP. O canal final e o procedimento operacional de resposta também não estão especificados.

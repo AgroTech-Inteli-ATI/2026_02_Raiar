@@ -137,3 +137,77 @@
   background-color: rgba(255, 208, 67, 0.45);
   color: var(--raiar-text);
 }
+
+/* Retratos editoriais das personas, com linguagem visual de caderno de campo. */
+.persona-hero {
+  margin: 1.5rem 0 2.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(37, 77, 105, 0.12);
+  border-radius: 1.25rem;
+  background: linear-gradient(120deg, #f5f3e9 0%, #fffdf8 62%, #edf3e9 100%);
+  box-shadow: 0 14px 36px rgba(33, 43, 54, 0.08);
+}
+
+.persona-hero__figure {
+  position: relative;
+  height: clamp(260px, 42vw, 410px);
+  margin: 0;
+  overflow: hidden;
+  background: #e8e5d8;
+}
+
+.persona-hero__portrait {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.persona-hero__figure figcaption {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(28, 52, 39, 0.82);
+  color: #ffffff;
+  font-size: 0.72rem;
+}
+
+.persona-hero__copy {
+  min-width: 0;
+  padding: clamp(1.1rem, 3vw, 2rem);
+  border-top: 4px solid #477653;
+}
+
+.persona-hero__eyebrow {
+  margin-bottom: 0.8rem;
+  color: #477653;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.persona-hero__copy blockquote {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid #477653;
+  border-radius: 0 0.65rem 0.65rem 0;
+  background: rgba(71, 118, 83, 0.09);
+  color: var(--raiar-text);
+  font-size: 1.05rem;
+}
+
+.persona-hero__copy p:last-child {
+  margin-bottom: 0;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .persona-hero__portrait {
+    object-position: center 22%;
+  }
+}
