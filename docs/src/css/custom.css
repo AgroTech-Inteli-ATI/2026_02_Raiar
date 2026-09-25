@@ -1,0 +1,139 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/*
+ * Paleta Raiar Orgânicos (https://www.raiarorganicos.com.br/).
+ * Tema único (claro): o seletor de modo claro/escuro está desativado
+ * em docusaurus.config.ts.
+ */
+:root {
+  --raiar-blue: #254d69;
+  --raiar-yellow: #ffd043;
+  --raiar-orange: #eb7f49;
+  --raiar-cyan: #5cdcf2;
+  --raiar-text: #212b36;
+  --raiar-text-secondary: #637381;
+  --raiar-grey: #f4f6f8;
+
+  --ifm-color-primary: #254d69;
+  --ifm-color-primary-dark: #21455f;
+  --ifm-color-primary-darker: #1f4159;
+  --ifm-color-primary-darkest: #1a364a;
+  --ifm-color-primary-light: #295573;
+  --ifm-color-primary-lighter: #2b5979;
+  --ifm-color-primary-lightest: #306488;
+
+  --ifm-color-secondary: #ffd043;
+  --ifm-color-secondary-dark: #ffc823;
+  --ifm-color-secondary-darker: #ffc413;
+  --ifm-color-secondary-darkest: #e1a900;
+  --ifm-color-secondary-light: #ffd863;
+  --ifm-color-secondary-lighter: #ffdc73;
+  --ifm-color-secondary-lightest: #ffe8a4;
+
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-font-color-base: var(--raiar-text);
+  --ifm-font-color-secondary: var(--raiar-text-secondary);
+  --ifm-heading-color: var(--raiar-blue);
+  --ifm-link-color: var(--raiar-blue);
+  --ifm-link-hover-color: var(--raiar-orange);
+
+  --ifm-code-font-size: 95%;
+  --ifm-code-background: var(--raiar-grey);
+  --docusaurus-highlighted-code-line-bg: rgba(255, 208, 67, 0.25);
+
+  /* Sidebar / menus */
+  --ifm-menu-color: var(--raiar-text);
+  --ifm-menu-color-active: var(--raiar-blue);
+  --ifm-menu-color-background-active: rgba(37, 77, 105, 0.08);
+  --ifm-menu-color-background-hover: rgba(255, 208, 67, 0.2);
+
+  --ifm-toc-link-color: var(--raiar-text-secondary);
+}
+
+/* Navbar azul como o cabeçalho do site, com links brancos e destaque amarelo. */
+.navbar {
+  --ifm-navbar-background-color: var(--raiar-blue);
+  --ifm-navbar-link-color: #ffffff;
+  --ifm-navbar-link-hover-color: var(--raiar-yellow);
+  --ifm-navbar-link-active-color: var(--raiar-yellow);
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  border-bottom: 4px solid var(--raiar-yellow);
+}
+
+.navbar__title {
+  color: #ffffff;
+}
+
+.navbar__toggle {
+  color: #ffffff;
+}
+
+/* Menu lateral no mobile: topo azul, painel claro para leitura. */
+.navbar-sidebar {
+  background-color: #ffffff;
+}
+
+.navbar-sidebar__brand {
+  background-color: var(--raiar-blue);
+}
+
+.navbar-sidebar__close {
+  color: #ffffff;
+}
+
+/* Rodapé no azul da marca, com títulos em amarelo. */
+.footer {
+  --ifm-footer-background-color: var(--raiar-blue);
+  --ifm-footer-color: #ffffff;
+  --ifm-footer-link-color: #ffffff;
+  --ifm-footer-link-hover-color: var(--raiar-yellow);
+  --ifm-footer-title-color: var(--raiar-yellow);
+}
+
+/* Links do conteúdo */
+.markdown a {
+  text-decoration: underline;
+  text-decoration-color: rgba(37, 77, 105, 0.35);
+  text-underline-offset: 2px;
+}
+
+.markdown a:hover {
+  text-decoration-color: var(--raiar-orange);
+}
+
+/* Item ativo do menu lateral com marcador amarelo */
+.menu__link--active:not(.menu__link--sublist) {
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--raiar-yellow);
+}
+
+/* Paginação e TOC */
+.pagination-nav__link:hover {
+  border-color: var(--raiar-yellow);
+}
+
+.table-of-contents__link--active {
+  color: var(--raiar-blue);
+  font-weight: 600;
+}
+
+/* Tabelas */
+.markdown table thead tr {
+  background-color: var(--raiar-blue);
+  color: #ffffff;
+}
+
+.markdown table tr:nth-child(2n) {
+  background-color: var(--raiar-grey);
+}
+
+/* Barra de rolagem/seleção de texto na cor da marca */
+::selection {
+  background-color: rgba(255, 208, 67, 0.45);
+  color: var(--raiar-text);
+}
