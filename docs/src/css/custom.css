@@ -1,0 +1,258 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/*
+ * Paleta Raiar Orgânicos (https://www.raiarorganicos.com.br/).
+ * Tema único (claro): o seletor de modo claro/escuro está desativado
+ * em docusaurus.config.ts.
+ */
+:root {
+  --raiar-blue: #254d69;
+  --raiar-yellow: #ffd043;
+  --raiar-orange: #eb7f49;
+  --raiar-cyan: #5cdcf2;
+  --raiar-text: #212b36;
+  --raiar-text-secondary: #637381;
+  --raiar-grey: #f4f6f8;
+
+  --ifm-color-primary: #254d69;
+  --ifm-color-primary-dark: #21455f;
+  --ifm-color-primary-darker: #1f4159;
+  --ifm-color-primary-darkest: #1a364a;
+  --ifm-color-primary-light: #295573;
+  --ifm-color-primary-lighter: #2b5979;
+  --ifm-color-primary-lightest: #306488;
+
+  --ifm-color-secondary: #ffd043;
+  --ifm-color-secondary-dark: #ffc823;
+  --ifm-color-secondary-darker: #ffc413;
+  --ifm-color-secondary-darkest: #e1a900;
+  --ifm-color-secondary-light: #ffd863;
+  --ifm-color-secondary-lighter: #ffdc73;
+  --ifm-color-secondary-lightest: #ffe8a4;
+
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-font-color-base: var(--raiar-text);
+  --ifm-font-color-secondary: var(--raiar-text-secondary);
+  --ifm-heading-color: var(--raiar-blue);
+  --ifm-link-color: var(--raiar-blue);
+  --ifm-link-hover-color: var(--raiar-orange);
+
+  --ifm-code-font-size: 95%;
+  --ifm-code-background: var(--raiar-grey);
+  --docusaurus-highlighted-code-line-bg: rgba(255, 208, 67, 0.25);
+
+  /* Sidebar / menus */
+  --ifm-menu-color: var(--raiar-text);
+  --ifm-menu-color-active: var(--raiar-blue);
+  --ifm-menu-color-background-active: rgba(37, 77, 105, 0.08);
+  --ifm-menu-color-background-hover: rgba(255, 208, 67, 0.2);
+
+  --ifm-toc-link-color: var(--raiar-text-secondary);
+}
+
+/* Navbar azul como o cabeçalho do site, com links brancos e destaque amarelo. */
+.navbar {
+  --ifm-navbar-background-color: var(--raiar-blue);
+  --ifm-navbar-link-color: #ffffff;
+  --ifm-navbar-link-hover-color: var(--raiar-yellow);
+  --ifm-navbar-link-active-color: var(--raiar-yellow);
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  border-bottom: 4px solid var(--raiar-yellow);
+}
+
+.navbar__title {
+  color: #ffffff;
+}
+
+.navbar__toggle {
+  color: #ffffff;
+}
+
+/* Menu lateral no mobile: topo azul, painel claro para leitura. */
+.navbar-sidebar {
+  background-color: #ffffff;
+}
+
+.navbar-sidebar__brand {
+  background-color: var(--raiar-blue);
+}
+
+.navbar-sidebar__close {
+  color: #ffffff;
+}
+
+/* Rodapé no azul da marca, com títulos em amarelo. */
+.footer {
+  --ifm-footer-background-color: var(--raiar-blue);
+  --ifm-footer-color: #ffffff;
+  --ifm-footer-link-color: #ffffff;
+  --ifm-footer-link-hover-color: var(--raiar-yellow);
+  --ifm-footer-title-color: var(--raiar-yellow);
+}
+
+/* Links do conteúdo */
+.markdown a {
+  text-decoration: underline;
+  text-decoration-color: rgba(37, 77, 105, 0.35);
+  text-underline-offset: 2px;
+}
+
+.markdown a:hover {
+  text-decoration-color: var(--raiar-orange);
+}
+
+/* Item ativo do menu lateral com marcador amarelo */
+.menu__link--active:not(.menu__link--sublist) {
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--raiar-yellow);
+}
+
+/* Paginação e TOC */
+.pagination-nav__link:hover {
+  border-color: var(--raiar-yellow);
+}
+
+.table-of-contents__link--active {
+  color: var(--raiar-blue);
+  font-weight: 600;
+}
+
+/* Tabelas */
+.markdown table thead tr {
+  background-color: var(--raiar-blue);
+  color: #ffffff;
+}
+
+.markdown table tr:nth-child(2n) {
+  background-color: var(--raiar-grey);
+}
+
+/* Barra de rolagem/seleção de texto na cor da marca */
+::selection {
+  background-color: rgba(255, 208, 67, 0.45);
+  color: var(--raiar-text);
+}
+
+/*
+ * Formatação ABNT para o corpo do texto (NBR 14724):
+ * parágrafos justificados, com recuo de primeira linha (1,25 cm)
+ * e espaçamento entre linhas de 1,5.
+ */
+.markdown p {
+  text-align: justify;
+  text-indent: 1.25cm;
+  line-height: 1.5;
+}
+
+/* Figura (NBR 14724): título na parte superior, ilustração
+   centralizada e indicação obrigatória da fonte logo abaixo.
+   Markdown esperado: "**Figura N – Título**", imagem, "Fonte: ...". */
+.markdown p:has(+ p > img) {
+  text-align: center;
+  text-indent: 0;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.markdown p:has(> img) {
+  text-align: center;
+  text-indent: 0;
+  margin-bottom: 0.25rem;
+}
+
+.markdown p:has(> img) + p {
+  text-align: center;
+  text-indent: 0;
+  line-height: 1.2;
+  font-size: 0.9em;
+  color: var(--raiar-text-secondary);
+  margin-top: 0;
+}
+
+/* Referências (NBR 6023): alinhadas à esquerda, sem recuo de
+   primeira linha e com espaçamento simples entre entradas. */
+#referencias ~ p {
+  text-align: left;
+  text-indent: 0;
+  line-height: 1;
+  margin-bottom: 1em;
+  overflow-wrap: anywhere;
+}
+/* Retratos editoriais das personas, com linguagem visual de caderno de campo. */
+.persona-hero {
+  margin: 1.5rem 0 2.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(37, 77, 105, 0.12);
+  border-radius: 1.25rem;
+  background: linear-gradient(120deg, #f5f3e9 0%, #fffdf8 62%, #edf3e9 100%);
+  box-shadow: 0 14px 36px rgba(33, 43, 54, 0.08);
+}
+
+.persona-hero__figure {
+  position: relative;
+  height: clamp(260px, 42vw, 410px);
+  margin: 0;
+  overflow: hidden;
+  background: #e8e5d8;
+}
+
+.persona-hero__portrait {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.persona-hero__figure figcaption {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(28, 52, 39, 0.82);
+  color: #ffffff;
+  font-size: 0.72rem;
+}
+
+.persona-hero__copy {
+  min-width: 0;
+  padding: clamp(1.1rem, 3vw, 2rem);
+  border-top: 4px solid #477653;
+}
+
+.persona-hero__eyebrow {
+  margin-bottom: 0.8rem;
+  color: #477653;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.persona-hero__copy blockquote {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid #477653;
+  border-radius: 0 0.65rem 0.65rem 0;
+  background: rgba(71, 118, 83, 0.09);
+  color: var(--raiar-text);
+  font-size: 1.05rem;
+}
+
+.persona-hero__copy p:last-child {
+  margin-bottom: 0;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .persona-hero__portrait {
+    object-position: center 22%;
+  }
+}
