@@ -1,0 +1,71 @@
+﻿---
+title: "Marina: Profissional de produção e bem-estar"
+description: Persona hipotética que analisa o acompanhamento dos lotes durante a recria
+sidebar_position: 3
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+# Marina — Profissional de produção e bem-estar
+
+<div className="persona-hero">
+  <figure className="persona-hero__figure">
+    <img className="persona-hero__portrait" src={useBaseUrl('/img/personas/marina-recria.png')} alt="Retrato ilustrativo de Marina observando frangas em uma instalação de recria" />
+    <figcaption>Retrato fictício para representar a persona</figcaption>
+  </figure>
+  <div className="persona-hero__copy">
+    <p className="persona-hero__eyebrow">Perfil hipotético · análise zootécnica</p>
+    <blockquote>“Quero comparar os registros do ciclo para identificar mudanças que merecem uma avaliação técnica.”</blockquote>
+    <p>Marina representa uma profissional de produção ou bem-estar que interpreta informações dos lotes em conjunto com os critérios técnicos definidos pela Raiar. O cargo e os indicadores relevantes ainda devem ser validados.</p>
+  </div>
+</div>
+
+## Contexto
+
+Marina acompanha a evolução dos lotes durante a recria. Para avaliar o andamento do ciclo, precisa consultar informações organizadas por lote e período e interpretá-las com conhecimento técnico, sem tratar um registro isolado como diagnóstico.
+
+## Objetivos
+
+- Acompanhar mudanças registradas ao longo do ciclo de recria.
+- Comparar informações entre períodos ou lotes quando os critérios forem equivalentes.
+- Identificar pontos que merecem investigação ou discussão com a equipe.
+- Relacionar os dados ao contexto e aos parâmetros definidos pela Raiar.
+
+## Dificuldades
+
+- Registros sem contexto temporal ou identificação consistente do lote dificultam a análise.
+- Comparações podem ser enganosas se os períodos ou critérios forem diferentes.
+- Uma variação observada não explica, sozinha, sua causa ou consequência.
+
+## Necessidades para o sistema
+
+- Histórico consultável por lote e período da recria.
+- Comparação clara entre registros compatíveis, com origem e data visíveis.
+- Apresentação dos indicadores e parâmetros somente após definição com a equipe técnica.
+- Separação visual entre informações registradas e interpretações profissionais.
+
+## Jornada de acompanhamento a validar
+
+1. Marina seleciona um lote e o período que deseja analisar.
+2. Consulta a evolução dos registros disponíveis ao longo do ciclo.
+3. Compara períodos ou lotes usando critérios acordados com a Raiar.
+4. Discute variações relevantes com a equipe antes de associá-las a uma causa.
+
+O fluxo é de consulta e análise periódica; não pressupõe alertas em tempo real nem conclusões automáticas.
+
+## História de usuário
+
+> **Como** profissional de produção e bem-estar, **eu quero** consultar e comparar registros da recria por lote e período, **para** identificar variações e orientar uma avaliação técnica contextualizada.
+
+## Critérios de experiência
+
+- Cada dado exibe o lote e o período a que se refere.
+- Comparações não misturam períodos ou critérios diferentes sem deixar isso explícito.
+- O sistema não apresenta associação ou variação como causa comprovada.
+
+## Perguntas para validação
+
+- Quais indicadores e parâmetros a equipe técnica usa durante a recria?
+- Quais fases e recortes temporais fazem sentido para a análise?
+- Que comparações entre lotes são válidas para a Raiar?
+- Quem deve interpretar uma variação antes de transformá-la em decisão de manejo?
