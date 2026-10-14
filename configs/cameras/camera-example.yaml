@@ -1,0 +1,13 @@
+# EXEMPLO: substituir pelos níveis observáveis e confirmar a calibração.
+# Não habilitar para imagens reais sem revisão do enquadramento.
+camera_id: camera-example
+version: exemplo-v1
+rule_version: borda-inferior-v1
+calibrated: false
+reference_size: [1280, 720]
+aspect_ratio_tolerance: 0.02
+zones:
+  - id: nivel-superior
+    polygon: [[0.05, 0.05], [0.95, 0.05], [0.95, 0.45], [0.05, 0.45]]
+  - id: nivel-inferior
+    polygon: [[0.05, 0.50], [0.95, 0.50], [0.95, 0.95], [0.05, 0.95]]

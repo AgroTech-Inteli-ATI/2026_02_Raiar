@@ -1,0 +1,5 @@
+model: poultryvision
+confidence: 0.25
+imgsz: 640
+sample_seconds: 20
+save_annotated: true
