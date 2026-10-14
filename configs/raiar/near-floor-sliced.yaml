@@ -1,0 +1,13 @@
+model: poultryvision
+confidence: 0.25
+imgsz: 640
+sample_seconds: 20
+roi: [0.087890625, 0.5729166666666666, 0.537109375, 0.8680555555555556]
+save_annotated: true
+slicing:
+  enabled: true
+  height: 128
+  width: 128
+  overlap: 0.2
+  merge_iou: 0.5
+  standard_prediction: false

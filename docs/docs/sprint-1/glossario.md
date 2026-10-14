@@ -111,3 +111,53 @@ Este glossário explica os termos usados na [proposta de solução](./proposta-d
 **Bbox ou caixa delimitadora:** retângulo desenhado ao redor de uma ave na imagem para registrar a posição do animal. As letras `px` significam pixels, os pequenos pontos que compõem a imagem digital.
 
 **RF e RNF:** abreviações de requisito funcional e requisito não funcional. RF descreve uma tarefa que o sistema deve realizar. RNF descreve uma condição de qualidade, por exemplo o tempo de resposta ou o que acontece quando a conexão cai. Os requisitos associados a esta proposta ainda são uma versão inicial.
+
+## Detecção e treinamento de aves
+
+**OCR:** reconhecimento automático de texto em imagens. Localizar galinhas é uma tarefa de detecção de objetos.
+
+**Detecção de objetos:** localização de objetos na imagem, com uma caixa, uma classe e uma confiança para cada previsão.
+
+**YOLO:** família de modelos para tarefas de visão computacional, incluindo detecção de objetos. O módulo de aves utiliza a implementação da Ultralytics.
+
+**COCO:** conjunto público de imagens e anotações de objetos. Sua classe `bird` reúne aves em geral; não equivale a uma classe especializada em galinhas.
+
+**Pesos ou checkpoint:** arquivo que guarda os parâmetros aprendidos por um modelo. O mesmo código pode carregar versões diferentes desse arquivo.
+
+**Inferência:** aplicação de um modelo já treinado a uma imagem nova para produzir detecções.
+
+**Fine-tuning:** continuação do treinamento de um modelo pré-treinado com os exemplos do projeto. Permite adaptar a detecção às imagens da Raiar.
+
+**Dataset:** conjunto de imagens, anotações e informações sobre sua origem. Neste projeto, possui versões e partições de treino, validação e teste.
+
+**Grupo de origem:** conjunto de quadros da mesma sessão ou de trechos próximos da mesma câmera e dia. O grupo permanece inteiro em uma partição para evitar que imagens quase iguais facilitem artificialmente a avaliação.
+
+**Precisão:** proporção das detecções aceitas que correspondem às aves anotadas, conforme o critério de correspondência utilizado.
+
+**Recall:** proporção das aves anotadas que o detector conseguiu encontrar.
+
+**Falso positivo e falso negativo:** uma detecção que não corresponde a uma ave anotada e uma ave anotada que o detector deixou de encontrar, respectivamente.
+
+**IoU:** proporção de interseção sobre união entre duas caixas. Serve para medir o quanto a caixa prevista coincide com a caixa manual e também participa do filtro de detecções sobrepostas.
+
+**AP e mAP:** medidas que resumem a relação entre precisão e recall. AP50 utiliza IoU de 0,50; mAP50–95 considera limiares de 0,50 a 0,95. Essas métricas não substituem o erro de contagem por nível.
+
+**SQLite:** banco de dados guardado em um arquivo local. Preserva as análises mesmo quando a plataforma central está indisponível.
+
+**JSON e JSONL:** formatos de texto para dados estruturados. JSONL guarda um objeto JSON por linha, permitindo registrar quadros progressivamente.
+
+**YAML:** formato de texto usado para configurações de modelo, dataset e câmera.
+
+**Benchmark:** ensaio de desempenho sob condições registradas, por exemplo tempo de processamento, CPU e memória.
+
+**ONNX e NCNN:** formatos e ferramentas de execução para usar modelos exportados. A qualidade e a velocidade precisam ser verificadas novamente após a exportação.
+
+**Backend e endpoint:** serviço que recebe e armazena resultados e endereço de uma operação desse serviço. O módulo oferece um contrato de envio, sem definir a plataforma central.
+
+**ROI, ou região de interesse:** parte definida da imagem que será analisada ou anotada. Contar aves em uma ROI não representa a contagem da imagem inteira.
+
+**SAHI:** biblioteca que divide uma imagem em blocos, aplica o detector em cada um e combina as caixas nas coordenadas originais. Pode ajudar com objetos pequenos, mas sua utilidade precisa ser medida no material real.
+
+**NMS:** filtro que reduz caixas repetidas sobre o mesmo objeto conforme a sobreposição e a confiança. As regras utilizadas devem ficar registradas.
+
+**PNG e JPEG:** formatos de imagem. PNG preserva os pixels ao salvar; JPEG pode acrescentar compressão com perda. Usar PNG na extração não recupera detalhes já perdidos no vídeo.
