@@ -36,3 +36,4 @@ runs/*
 *.onnx
 reports/generated/
 data/annotations/*
+.tmp
