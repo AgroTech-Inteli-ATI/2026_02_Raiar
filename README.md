@@ -129,3 +129,18 @@ Os pesos e as imagens são baixados ou fornecidos localmente e não entram no Gi
 Treinamento próprio, calibração na Raiar e homologação na Raspberry Pi dependem
 das imagens revisadas e do dispositivo real. O dashboard é uma integração posterior
 que poderá consumir os registros estruturados do módulo.
+
+## Modelo construído do zero (RaiarNet)
+
+Identificação e contagem direta de aves em N0, N1 e N2, escritas do zero em
+PyTorch em `src/` (`preprocessing`, `models`, `training`, `evaluation`,
+`labeling` e `baseline`). Execute os comandos dentro de `src/`:
+
+```bash
+python -m training.train_raiarnet --name r1 --iters 3000
+python -m models.predict --source video.mp4 --weights ../models/trained/raiarnet-r1.pt --out ../outputs/c1
+python -m evaluation.benchmark --raiarnet ../models/trained/raiarnet-r1.pt
+```
+
+O processo completo e os resultados estão na seção
+[Modelo de visão computacional](docs/docs/sprint-2/visao-computacional/index.mdx).
