@@ -1,1 +1,6 @@
 Arquivos/
+/src/arquivos/
+.ipynb_checkpoints/
+/src/modelos_PIO/midias/
+/src/modelos_PIO/resultados/
+/src/modelos_PIO/pesos_iniciais/
