@@ -1,0 +1,17 @@
+models:
+  poultryvision:
+    provider: huggingface
+    repo_id: Williamsanderson/PoultryVision
+    filename: best.pt
+    revision: null
+    architecture: YOLO11m
+    classes: [chicken, egg]
+    source: https://huggingface.co/Williamsanderson/PoultryVision
+    license: AGPL-3.0
+  coco:
+    provider: ultralytics
+    filename: yolo11n.pt
+    architecture: YOLO11n
+    target_class: bird
+    source: https://docs.ultralytics.com/models/yolo11/
+    license: AGPL-3.0
