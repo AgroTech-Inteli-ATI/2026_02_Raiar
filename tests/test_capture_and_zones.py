@@ -3,9 +3,9 @@ import numpy as np
 import pytest
 import yaml
 
-from raiar_vision.capture import iter_frames, write_image
-from raiar_vision.domain import parse_timestamp
-from raiar_vision.zones import Zone, ZoneConfig, load_zones
+from chicken_yolo.capture import iter_frames, write_image
+from chicken_yolo.domain import parse_timestamp
+from chicken_yolo.zones import Zone, ZoneConfig, load_zones
 
 
 def test_unicode_image_path_and_missing_time(tmp_path):

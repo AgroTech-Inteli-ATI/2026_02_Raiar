@@ -5,11 +5,27 @@ import numpy as np
 import pytest
 from conftest import FakeDetector
 
-from raiar_vision.benchmark import benchmark
-from raiar_vision.capture import write_image
-from raiar_vision.cli import main
-from raiar_vision.config import InferenceConfig
-from raiar_vision.pipeline import Pipeline
+from chicken_yolo.benchmark import benchmark
+from chicken_yolo.capture import write_image
+from chicken_yolo.cli import main
+from chicken_yolo.config import InferenceConfig
+from chicken_yolo.pipeline import Pipeline
+
+
+@pytest.mark.parametrize("arguments,expected", [([], "poultryvision"), (["coco"], "coco")])
+def test_prepare_model_accepts_default_and_explicit_model(
+    tmp_path, monkeypatch, arguments, expected
+):
+    (tmp_path / "pyproject.toml").write_text("[project]\nname='test'\n", encoding="utf-8")
+    prepared = []
+
+    def prepare(root, model):
+        prepared.append((root, model))
+        return {"id": model}
+
+    monkeypatch.setattr("chicken_yolo.cli.prepare_model", prepare)
+    assert main(["--root", str(tmp_path), "prepare-model", *arguments]) == 0
+    assert prepared == [(tmp_path.resolve(), expected)]
 
 
 def test_cli_end_to_end_creates_history_and_exports(tmp_path, monkeypatch):
@@ -19,7 +35,7 @@ def test_cli_end_to_end_creates_history_and_exports(tmp_path, monkeypatch):
     (root / "config.yaml").write_text("model: coco\nsave_annotated: true\n", encoding="utf-8")
     source = root / "input.png"
     write_image(source, np.full((100, 100, 3), 120, dtype=np.uint8))
-    monkeypatch.setattr("raiar_vision.cli.YOLODetector", lambda *args: FakeDetector())
+    monkeypatch.setattr("chicken_yolo.cli.YOLODetector", lambda *args: FakeDetector())
     code = main(
         [
             "--root",
@@ -86,7 +102,7 @@ def test_video_capture_failure_is_recorded_in_local_history(tmp_path, monkeypatc
     (root / "pyproject.toml").write_text("[project]\nname='test'\n", encoding="utf-8")
     (root / "config.yaml").write_text("model: coco\n", encoding="utf-8")
     (root / "invalid.avi").write_bytes(b"broken-video")
-    monkeypatch.setattr("raiar_vision.cli.YOLODetector", lambda *args: FakeDetector())
+    monkeypatch.setattr("chicken_yolo.cli.YOLODetector", lambda *args: FakeDetector())
     assert (
         main(
             [
