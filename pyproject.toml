@@ -19,13 +19,22 @@ dependencies = [
 ]
 
 [project.scripts]
-raiar-vision = "raiar_vision.cli:main"
+chicken-yolo = "chicken_yolo.cli:main"
+raiar-vision = "chicken_yolo.cli:main"
 
 [dependency-groups]
 dev = ["pytest>=8,<10", "ruff>=0.9,<1"]
+notebooks = [
+  "ipykernel>=6.29,<8",
+  "ipywidgets>=8.1,<9",
+  "jupyterlab>=4.4,<5",
+  "matplotlib>=3.8,<4",
+  "nbclient>=0.10,<1",
+  "nbformat>=5.10,<6",
+]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/raiar_vision"]
+packages = ["src/chicken_yolo"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

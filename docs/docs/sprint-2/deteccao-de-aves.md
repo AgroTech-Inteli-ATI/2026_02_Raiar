@@ -7,7 +7,7 @@ description: Implementação do detector pré-treinado, preparação dos dados e
 
 # Detecção de aves com YOLO
 
-O módulo `raiar_vision` localiza aves visíveis em imagens e quadros de vídeos,
+O módulo `chicken_yolo` localiza aves visíveis em imagens e quadros de vídeos,
 produz contagens e permite ajustar o modelo com dados próprios. **Detecção de
 objetos** localiza animais por caixas delimitadoras; OCR reconhece texto. A tarefa
 deste projeto é detecção, de acordo com a [proposta de solução](../sprint-1/proposta-de-solucao.md).
@@ -34,18 +34,30 @@ exigem acesso à internet. Os pesos publicados declaram licença AGPL-3.0 [1][2]
 
 ```bash
 uv sync --frozen
-uv run --frozen raiar-vision prepare-model poultryvision
-uv run --frozen raiar-vision prepare-model coco
 ```
 
+No PowerShell, ative o ambiente e use o comando curto:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+chicken-yolo --help
+chicken-yolo prepare-model
+```
+
+`prepare-model` utiliza PoultryVision por padrão. Para selecionar a referência
+genérica, execute `chicken-yolo prepare-model coco`. Os demais exemplos desta
+página pressupõem a `.venv` ativa. Sem ativá-la, use `uv run --frozen chicken-yolo`
+seguido do subcomando. A execução por `python -m chicken_yolo` e o comando
+`raiar-vision` continuam disponíveis.
+
 Execute a partir da raiz. Para chamar o programa de outra pasta, use
-`raiar-vision --root CAMINHO_DO_REPOSITORIO` antes do subcomando.
+`chicken-yolo --root CAMINHO_DO_REPOSITORIO` antes do subcomando.
 
 ## Organização do código e dos arquivos
 
 | Pasta | Responsabilidade |
 | --- | --- |
-| `src/raiar_vision/` | Captura, qualidade, detector, zonas, pipeline, armazenamento, dataset, treino, avaliação, benchmark e sincronização |
+| `src/chicken_yolo/` | Captura, qualidade, detector, zonas, pipeline, armazenamento, dataset, treino, avaliação, benchmark e sincronização |
 | `configs/` | Parâmetros e calibrações por câmera |
 | `data/raw/` | Imagens e vídeos originais, preservados |
 | `data/interim/` | Quadros extraídos e manifestos para anotação |
@@ -71,9 +83,9 @@ e para medir a qualidade, separados da execução de predições.
 Copie um arquivo para `data/raw/`. Os exemplos abaixo usam nomes ilustrativos:
 
 ```bash
-uv run --frozen raiar-vision predict --source data/raw/imagem.jpg
-uv run --frozen raiar-vision predict --source data/raw/video.mp4 --camera-id camera-01 --lote-id lote-01 --captured-at 2026-10-14T10:00:00-03:00
-uv run --frozen raiar-vision predict --source data/raw/imagem.jpg --model coco
+chicken-yolo predict --source data/raw/imagem.jpg
+chicken-yolo predict --source data/raw/video.mp4 --camera-id camera-01 --lote-id lote-01 --captured-at 2026-10-14T10:00:00-03:00
+chicken-yolo predict --source data/raw/imagem.jpg --model coco
 ```
 
 `configs/inference.yaml` define modelo, classes aceitas, confiança, IoU, resolução,
@@ -106,6 +118,37 @@ não decodificadas ou reprovadas na triagem técnica produzem `imagem_inadequada
 O comando retorna código de erro se houver falha de processamento. Brilho,
 resolução e desfoque são critérios configuráveis; essa triagem não garante que
 os níveis físicos estejam visíveis e não substitui a revisão humana.
+
+## Visualização com notebook
+
+O notebook `src/chicken_yolo/notebooks/visualizar-deteccoes.ipynb` executa o mesmo pipeline de
+detecção do comando `predict`. Ele oferece controles para entrada, modelo,
+confiança, resolução, intervalo, limite de quadros e comparação entre o modo
+direto e SAHI.
+
+Instale as dependências opcionais na raiz do projeto:
+
+```bash
+uv sync --frozen --group notebooks
+```
+
+Com a `.venv` ativa, abra a interface:
+
+```powershell
+jupyter lab src/chicken_yolo/notebooks/visualizar-deteccoes.ipynb
+```
+
+Selecione o kernel Python da `.venv` e execute as células na ordem. A etapa 3
+carrega o modelo e realiza novas inferências. A etapa 4 desenha o original e as
+previsões lado a lado; mover seu controle de quadro apenas exibe resultados já
+calculados. Para aplicar novos parâmetros, reexecute a etapa 3 e atualize a
+visualização e a tabela.
+
+Cada execução cria `outputs/notebook-.../`, com PNGs originais, imagens com as
+caixas, configurações, CSV/JSONL e um resumo. O histórico SQLite é preservado.
+O notebook entregue para versionamento não contém saídas nem imagens
+incorporadas. A visualização facilita a exploração; não constitui treinamento
+nem medição de acurácia.
 
 ## Exemplo no segundo vídeo da Raiar
 
@@ -140,7 +183,7 @@ não estiver calibrado. A câmera deve corresponder ao quadro, e sua proporção
 ser compatível com a referência.
 
 ```bash
-uv run --frozen raiar-vision predict --source data/raw/imagem.jpg --camera-id camera-01 --lote-id lote-01 --zones configs/cameras/camera-01.yaml
+chicken-yolo predict --source data/raw/imagem.jpg --camera-id camera-01 --lote-id lote-01 --zones configs/cameras/camera-01.yaml
 ```
 
 A regra usa o centro da borda inferior da caixa. Fronteiras, sobreposição de zonas
@@ -165,7 +208,7 @@ anotadores. Ampliar a cobertura após confirmar o protocolo de visibilidade e
 atribuição. O comando de extração preserva o original e gera um manifesto:
 
 ```bash
-uv run --frozen raiar-vision extract --source data/raw/video.mp4 --session-id sessao-01 --camera-id camera-01 --lote-id lote-01 --sample-seconds 20 --captured-at 2026-10-14T10:00:00-03:00
+chicken-yolo extract --source data/raw/video.mp4 --session-id sessao-01 --camera-id camera-01 --lote-id lote-01 --sample-seconds 20 --captured-at 2026-10-14T10:00:00-03:00
 ```
 
 A extração salva PNG por padrão; `--image-format jpg` é uma alternativa. O lote
@@ -197,7 +240,7 @@ Quadros de um grupo ficam juntos. São necessários pelo menos três grupos
 independentes; isso permite dividir, mas não comprova representatividade.
 
 ```bash
-uv run --frozen raiar-vision prepare-dataset --manifest data/manifests/anotacoes.jsonl --output data/processed/galinhas-v1 --seed 42
+chicken-yolo prepare-dataset --manifest data/manifests/anotacoes.jsonl --output data/processed/galinhas-v1 --seed 42
 ```
 
 A divisão padrão 70/15/15 opera sobre grupos e é aproximada em número de imagens.
@@ -218,7 +261,7 @@ para ser executável sem GPU. Ajustar `device` e o ambiente PyTorch à máquina 
 treino. A Raspberry Pi é o alvo de inferência.
 
 ```bash
-uv run --frozen raiar-vision train --config configs/training.yaml
+chicken-yolo train --config configs/training.yaml
 ```
 
 O treinamento usa as pastas de treino e validação. Ao terminar, copia `best.pt`
@@ -228,9 +271,9 @@ o modelo como `aguardando_avaliacao`. Concluir o treino não comprova melhora.
 Durante desenvolvimento, comparar os candidatos na validação:
 
 ```bash
-uv run --frozen raiar-vision evaluate --dataset data/processed/galinhas-v1/dataset.yaml --model poultryvision --split val
-uv run --frozen raiar-vision evaluate --dataset data/processed/galinhas-v1/dataset.yaml --model coco --split val
-uv run --frozen raiar-vision evaluate --dataset data/processed/galinhas-v1/dataset.yaml --weights models/trained/NOME_DO_TREINO/best.pt --split val
+chicken-yolo evaluate --dataset data/processed/galinhas-v1/dataset.yaml --model poultryvision --split val
+chicken-yolo evaluate --dataset data/processed/galinhas-v1/dataset.yaml --model coco --split val
+chicken-yolo evaluate --dataset data/processed/galinhas-v1/dataset.yaml --weights models/trained/NOME_DO_TREINO/best.pt --split val
 ```
 
 Depois de fixar modelo e parâmetros, usar `--split test` para a avaliação final.
@@ -257,7 +300,7 @@ ambiente de desenvolvimento comprova essas metas na Raiar.
 O benchmark reproduz arquivos locais e mede duração, atrasos, CPU e memória:
 
 ```bash
-uv run --frozen raiar-vision benchmark --source data/raw/video.mp4 --model coco --duration-seconds 60 --interval-seconds 5
+chicken-yolo benchmark --source data/raw/video.mp4 --model coco --duration-seconds 60 --interval-seconds 5
 ```
 
 No dispositivo, ampliar o ensaio para 24 horas com entrada representativa e
@@ -268,8 +311,8 @@ vivo, conectividade, montagem, aquecimento ou capacidade com três dispositivos.
 Essas verificações continuam necessárias para os RNF03, RNF11 e RNF12.
 
 ```bash
-uv run --frozen raiar-vision export --weights models/trained/NOME_DO_TREINO/best.pt --format onnx
-uv run --frozen raiar-vision export --weights models/trained/NOME_DO_TREINO/best.pt --format ncnn
+chicken-yolo export --weights models/trained/NOME_DO_TREINO/best.pt --format onnx
+chicken-yolo export --weights models/trained/NOME_DO_TREINO/best.pt --format ncnn
 ```
 
 A exportação pode instalar componentes adicionais. Após exportar, usar
@@ -284,7 +327,7 @@ O histórico local serve de fila durável enquanto não há rede. Um backend
 configurado pode receber lotes de resultados por HTTPS:
 
 ```bash
-uv run --frozen raiar-vision sync --url https://SEU_BACKEND/api/analyses --batch-size 100
+chicken-yolo sync --url https://SEU_BACKEND/api/analyses --batch-size 100
 ```
 
 Se necessário, definir o token na variável de ambiente `RAIAR_SYNC_TOKEN`.

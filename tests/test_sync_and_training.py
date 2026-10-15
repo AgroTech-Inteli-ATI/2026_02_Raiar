@@ -8,12 +8,12 @@ import requests
 import yaml
 from conftest import FakeDetector
 
-from raiar_vision.config import InferenceConfig, file_hash
-from raiar_vision.detector import YOLODetector, resolve_weights
-from raiar_vision.pipeline import Pipeline
-from raiar_vision.storage import ResultStore
-from raiar_vision.sync import sync_pending
-from raiar_vision.training import export_model, train_model
+from chicken_yolo.config import InferenceConfig, file_hash
+from chicken_yolo.detector import YOLODetector, resolve_weights
+from chicken_yolo.pipeline import Pipeline
+from chicken_yolo.storage import ResultStore
+from chicken_yolo.sync import sync_pending
+from chicken_yolo.training import export_model, train_model
 
 
 def store_frames(tmp_path, frame):

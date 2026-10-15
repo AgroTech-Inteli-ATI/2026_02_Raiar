@@ -10,7 +10,8 @@ Projeto da AgroTech Inteli com a Raiar Orgânicos para monitorar, por visão com
 │   ├── docs/               # Páginas em Markdown/MDX, organizadas por sprint
 │   ├── src/css/            # Estilos globais (paleta Raiar e formatação ABNT)
 │   └── static/img/         # Imagens usadas nas páginas
-├── src/raiar_vision/        # Detecção, níveis, dataset, treino e avaliação
+├── src/chicken_yolo/        # Detecção, níveis, dataset, treino e avaliação
+│   └── notebooks/          # Execução visual e comparação das detecções
 ├── configs/                # Configurações de inferência, treino e câmeras
 ├── data/                   # Dados locais, excluídos do Git
 ├── models/                 # Registro dos modelos e pesos locais
@@ -44,14 +45,27 @@ Execute os comandos abaixo na raiz do repositório:
 
 ```bash
 uv sync --frozen
-uv run --frozen raiar-vision prepare-model poultryvision
 ```
+
+No PowerShell, ative o ambiente e prepare o modelo padrão:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+chicken-yolo prepare-model
+```
+
+Com a `.venv` ativa, o comando `chicken-yolo` fica disponível diretamente no
+terminal. `prepare-model` usa PoultryVision por padrão; `chicken-yolo --help`
+mostra as operações e exemplos de uso.
 
 Copie uma imagem para `data/raw/imagem.jpg` e execute:
 
-```bash
-uv run --frozen raiar-vision predict --source data/raw/imagem.jpg
+```powershell
+chicken-yolo predict --source data/raw/imagem.jpg
 ```
+
+Para executar sem ativar o ambiente, use `uv run --frozen chicken-yolo` seguido
+do subcomando e dos argumentos.
 
 O YOLO identifica as aves automaticamente com os pesos pré-treinados. Não é
 necessário desenhar caixas nem fornecer rótulos para executar as predições.
@@ -63,10 +77,35 @@ O modelo padrão é o [PoultryVision](https://huggingface.co/Williamsanderson/Po
 pré-treinado para `chicken` e `egg`; o pipeline aceita somente as classes de aves
 configuradas. Para comparar com a variante leve e genérica:
 
-```bash
-uv run --frozen raiar-vision prepare-model coco
-uv run --frozen raiar-vision predict --source data/raw/imagem.jpg --model coco
+```powershell
+chicken-yolo prepare-model coco
+chicken-yolo predict --source data/raw/imagem.jpg --model coco
 ```
+
+## Visualização com notebook
+
+O [notebook de visualização](src/chicken_yolo/notebooks/visualizar-deteccoes.ipynb) permite escolher
+o vídeo ou a imagem, ajustar o modelo e os parâmetros, executar a detecção e
+comparar os quadros originais com as previsões lado a lado.
+
+Instale as dependências opcionais:
+
+```bash
+uv sync --frozen --group notebooks
+```
+
+Com a `.venv` ativa, abra o notebook:
+
+```powershell
+jupyter lab src/chicken_yolo/notebooks/visualizar-deteccoes.ipynb
+```
+
+Selecione o Python da `.venv` e execute as células de cima para baixo. A etapa 3
+executa o modelo; a etapa 4 permite trocar os quadros já processados sem repetir
+a inferência. Alterar os parâmetros exige reexecutar a etapa 3. As novas saídas
+ficam em `outputs/notebook-.../`; o notebook é entregue sem imagens incorporadas.
+
+## Dados e evolução do detector
 
 A contagem por nível exige zonas calibradas para a câmera. Até configurar as zonas,
 o programa informa a quantidade detectada e mantém o nível indeterminado.

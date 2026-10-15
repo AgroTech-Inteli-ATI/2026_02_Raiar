@@ -3,9 +3,9 @@ import json
 import pytest
 from conftest import FakeDetector
 
-from raiar_vision.config import InferenceConfig
-from raiar_vision.domain import Detection
-from raiar_vision.evaluation import average_precision, count_metrics, evaluate_dataset, matching
+from chicken_yolo.config import InferenceConfig
+from chicken_yolo.domain import Detection
+from chicken_yolo.evaluation import average_precision, count_metrics, evaluate_dataset, matching
 
 
 def test_duplicate_detections_cannot_match_the_same_bird_twice():

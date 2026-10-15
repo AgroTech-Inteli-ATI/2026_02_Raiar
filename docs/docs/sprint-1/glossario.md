@@ -161,3 +161,7 @@ Este glossário explica os termos usados na [proposta de solução](./proposta-d
 **NMS:** filtro que reduz caixas repetidas sobre o mesmo objeto conforme a sobreposição e a confiança. As regras utilizadas devem ficar registradas.
 
 **PNG e JPEG:** formatos de imagem. PNG preserva os pixels ao salvar; JPEG pode acrescentar compressão com perda. Usar PNG na extração não recupera detalhes já perdidos no vídeo.
+
+**Notebook Jupyter:** documento com células de texto e código Python, cujas saídas podem incluir tabelas, imagens e controles. Neste projeto, permite executar o detector e visualizar suas previsões.
+
+**Kernel:** processo Python que executa as células de um notebook. Deve usar o ambiente `.venv` do projeto para ter acesso às mesmas dependências e ao detector.

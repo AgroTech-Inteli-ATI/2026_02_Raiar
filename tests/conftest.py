@@ -3,10 +3,10 @@ import json
 import numpy as np
 import pytest
 
-from raiar_vision.capture import write_image
-from raiar_vision.dataset import prepare_dataset
-from raiar_vision.domain import Detection, Frame, InferenceOutput
-from raiar_vision.zones import Zone, ZoneConfig
+from chicken_yolo.capture import write_image
+from chicken_yolo.dataset import prepare_dataset
+from chicken_yolo.domain import Detection, Frame, InferenceOutput
+from chicken_yolo.zones import Zone, ZoneConfig
 
 
 class FakeDetector:

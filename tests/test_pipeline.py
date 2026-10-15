@@ -4,10 +4,10 @@ import numpy as np
 import pytest
 from conftest import FakeDetector
 
-from raiar_vision.config import InferenceConfig
-from raiar_vision.domain import Detection, Frame
-from raiar_vision.pipeline import Pipeline
-from raiar_vision.storage import ResultStore
+from chicken_yolo.config import InferenceConfig
+from chicken_yolo.domain import Detection, Frame
+from chicken_yolo.pipeline import Pipeline
+from chicken_yolo.storage import ResultStore
 
 
 def test_levels_and_indeterminate_have_correct_denominator(frame, zones):
