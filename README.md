@@ -72,7 +72,7 @@ A contagem por nível exige zonas calibradas para a câmera. Até configurar as 
 o programa informa a quantidade detectada e mantém o nível indeterminado.
 Confiança do detector não equivale à acurácia medida.
 
-O [guia de detecção de aves](docs/docs/sprint-1/deteccao-de-aves.md) explica vídeos,
+O [guia de detecção de aves](docs/docs/sprint-2/deteccao-de-aves.md) explica vídeos,
 metadados, preparação de dados para treino, partições por grupo, fine-tuning,
 avaliação, benchmark, exportação e o contrato de sincronização com o backend.
 

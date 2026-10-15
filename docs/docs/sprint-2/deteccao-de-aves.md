@@ -1,7 +1,7 @@
 ---
 title: Detecção de aves com YOLO
 sidebar_label: Detector de aves
-sidebar_position: 8
+sidebar_position: 1
 description: Implementação do detector pré-treinado, preparação dos dados e evolução para treinamento próprio.
 ---
 
@@ -10,11 +10,11 @@ description: Implementação do detector pré-treinado, preparação dos dados e
 O módulo `raiar_vision` localiza aves visíveis em imagens e quadros de vídeos,
 produz contagens e permite ajustar o modelo com dados próprios. **Detecção de
 objetos** localiza animais por caixas delimitadoras; OCR reconhece texto. A tarefa
-deste projeto é detecção, de acordo com a [proposta de solução](./proposta-de-solucao.md).
+deste projeto é detecção, de acordo com a [proposta de solução](../sprint-1/proposta-de-solucao.md).
 
 O processamento mantém a separação entre quadro vazio, imagem inadequada e falha.
 As contagens abrangem apenas as aves detectadas; aves ocultas e o total do lote
-não são estimados. Os termos técnicos estão no [glossário](./glossario.md).
+não são estimados. Os termos técnicos estão no [glossário](../sprint-1/glossario.md).
 
 ## Modelos e ambiente
 
@@ -107,6 +107,30 @@ O comando retorna código de erro se houver falha de processamento. Brilho,
 resolução e desfoque são critérios configuráveis; essa triagem não garante que
 os níveis físicos estejam visíveis e não substitui a revisão humana.
 
+## Exemplo no segundo vídeo da Raiar
+
+Em 15 de outubro de 2026, foram extraídos 12 quadros do segundo vídeo fornecido,
+um por segundo, em sua resolução original de 1024 × 576 pixels. A Figura 1
+mostra o quadro em aproximadamente 2 segundos, processado automaticamente pelo
+PoultryVision YOLO11m com SAHI: blocos de 256 × 256 pixels, sobreposição de 20%,
+tamanho de inferência de 640 pixels e confiança mínima de 0,25.
+
+**Figura 1 – Detecções automáticas de galinhas no segundo vídeo da Raiar**
+
+![Quadro do aviário com duas caixas de detecção sobre galinhas próximas à plataforma.](/img/detector-aves/resultado-video-02.jpg)
+
+Fonte: elaborado pelos autores (2026), a partir do vídeo fornecido pela Raiar e
+das saídas automáticas do PoultryVision.
+
+As duas caixas incidem sobre galinhas distinguíveis, mas muitas outras aves
+visíveis permanecem sem detecção. No teste com essa configuração, oito dos
+12 quadros receberam alguma caixa, com zero a duas caixas por quadro. Esses
+números descrevem previsões do modelo; não demonstram contagem completa,
+precisão, recall ou mAP. Não foi realizado treinamento próprio nesse ensaio.
+
+O frame ilustrativo integra a documentação. Os demais frames, vídeos, pesos e
+arquivos de execução continuam no armazenamento local, conforme o `.gitignore`.
+
 ## Zonas do Jump Start
 
 Copie `configs/cameras/camera-example.yaml` para uma configuração da instalação.
@@ -122,7 +146,7 @@ uv run --frozen raiar-vision predict --source data/raw/imagem.jpg --camera-id ca
 A regra usa o centro da borda inferior da caixa. Fronteiras, sobreposição de zonas
 e pontos fora das zonas resultam em nível indeterminado. Perspectiva inadequada
 exige rever a instalação e o protocolo, conforme o
-[dicionário de dados](./dicionario-de-dados.md). O programa não resolve sozinho a
+[dicionário de dados](../sprint-1/dicionario-de-dados.md). O programa não resolve sozinho a
 ambiguidade entre uma zona desenhada e um nível físico.
 
 Percentuais usam a soma das aves atribuídas aos níveis. Total atribuído zero
@@ -145,7 +169,7 @@ uv run --frozen raiar-vision extract --source data/raw/video.mp4 --session-id se
 ```
 
 A extração salva PNG por padrão; `--image-format jpg` é uma alternativa. O lote
-pode ficar nulo quando desconhecido. O [piloto com o vídeo da Raiar](./piloto-video-raiar.md)
+pode ficar nulo quando desconhecido. O [piloto com o vídeo da Raiar](../sprint-1/piloto-video-raiar.md)
 mostra a exportação de recortes e os testes automáticos com SAHI.
 
 Anotar todas as galinhas distinguíveis e exportar um `.txt` por imagem no formato
@@ -225,7 +249,7 @@ O relatório inclui erro de contagem total e por nível, erro de distribuição 
 pontos percentuais, falsos positivos e negativos, cobertura, rejeições e falhas.
 Previsões vazias continuam penalizadas na contagem; quadros sem denominador são
 excluídos apenas do cálculo percentual. As metas de 15% e 10 pontos percentuais
-dos [requisitos](./requisitos.md) continuam preliminares. Nenhum resultado do
+dos [requisitos](../sprint-1/requisitos.md) continuam preliminares. Nenhum resultado do
 ambiente de desenvolvimento comprova essas metas na Raiar.
 
 ## Capacidade e exportação
