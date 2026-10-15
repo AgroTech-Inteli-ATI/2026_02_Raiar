@@ -33,11 +33,27 @@ def configure_runtime(root: Path):
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Detecção e contagem de aves visíveis — Raiar")
+    parser = argparse.ArgumentParser(
+        prog="chicken-yolo",
+        description="Detecção e contagem de aves visíveis — Raiar",
+        epilog=(
+            "Exemplos:\n"
+            "  chicken-yolo prepare-model\n"
+            "  chicken-yolo predict --source data/raw/video.mp4\n"
+            "  chicken-yolo predict --help"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument("--root", type=Path, default=Path.cwd(), help="Raiz do repositório.")
     commands = parser.add_subparsers(dest="command", required=True)
     prepare = commands.add_parser("prepare-model", help="Baixar e registrar pesos pré-treinados.")
-    prepare.add_argument("model", choices=["poultryvision", "coco"])
+    prepare.add_argument(
+        "model",
+        choices=["poultryvision", "coco"],
+        nargs="?",
+        default="poultryvision",
+        help="Modelo pré-treinado (padrão: poultryvision).",
+    )
     predict = commands.add_parser("predict", help="Processar imagem, vídeo ou pasta local.")
     predict.add_argument("--source", type=Path, required=True)
     predict.add_argument("--camera-id")

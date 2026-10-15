@@ -114,7 +114,7 @@ def resolve_weights(root: Path, model: str, weights: str | None = None) -> tuple
     metadata_path = root / "models/pretrained" / model / "metadata.json"
     if not metadata_path.is_file():
         raise FileNotFoundError(
-            f"Modelo não preparado. Execute: raiar-vision prepare-model {model}"
+            f"Modelo não preparado. Execute: chicken-yolo prepare-model {model}"
         )
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
     path = resolve_path(root, metadata["weights"])

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from raiar_vision.dataset import (
+from chicken_yolo.dataset import (
     prepare_dataset,
     publish_dataset,
     read_labels,

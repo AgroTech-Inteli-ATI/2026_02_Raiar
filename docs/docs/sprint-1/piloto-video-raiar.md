@@ -13,7 +13,7 @@ pré-treinado ao enquadramento real da câmera CAM16. O arquivo tem aproximadame
 segundo. Uma cópia foi preservada e conferida por SHA-256. Os arquivos reais,
 quadros e resultados permanecem locais e excluídos do Git.
 
-O [guia do detector](./deteccao-de-aves.md) explica o pacote. O resultado deste
+O [guia do detector](../sprint-2/deteccao-de-aves.md) explica o pacote. O resultado deste
 piloto ainda não comprova a qualidade exigida nos [requisitos](./requisitos.md).
 Os termos técnicos estão no [glossário](./glossario.md).
 
@@ -135,7 +135,7 @@ grupos para criar treino, validação e teste; ainda são necessárias outras
 gravações e cobertura das condições relevantes.
 
 Depois das revisões e de novas sessões, consolidar os manifestos revisados e
-seguir o [fluxo de treinamento e comparação](./deteccao-de-aves.md). Se as aves
+seguir o [fluxo de treinamento e comparação](../sprint-2/deteccao-de-aves.md). Se as aves
 continuarem indistinguíveis para anotação, será necessário rever a resolução
 ou o enquadramento. A instalação na Raspberry Pi também depende de ensaio no
 dispositivo, sem utilizar os tempos desta máquina como comprovação.

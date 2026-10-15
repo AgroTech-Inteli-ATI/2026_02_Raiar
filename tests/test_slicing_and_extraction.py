@@ -5,12 +5,12 @@ import numpy as np
 import pytest
 from conftest import FakeDetector
 
-from raiar_vision.capture import read_image, write_image
-from raiar_vision.config import InferenceConfig, SlicingConfig
-from raiar_vision.dataset import export_crops, extract_frames, read_jsonl
-from raiar_vision.detector import YOLODetector, roi_pixels
-from raiar_vision.evaluation import evaluate_dataset
-from raiar_vision.pipeline import Pipeline
+from chicken_yolo.capture import read_image, write_image
+from chicken_yolo.config import InferenceConfig, SlicingConfig
+from chicken_yolo.dataset import export_crops, extract_frames, read_jsonl
+from chicken_yolo.detector import YOLODetector, roi_pixels
+from chicken_yolo.evaluation import evaluate_dataset
+from chicken_yolo.pipeline import Pipeline
 
 
 def test_lossless_extraction_preserves_native_pixels_and_unknown_metadata(tmp_path):
