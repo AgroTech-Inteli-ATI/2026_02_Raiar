@@ -1,0 +1,7 @@
+{
+  "descricao": "Partição temporal dos quadros anotados. Treino e teste não compartilham instantes; validação fica entre eles.",
+  "camera": "configs/cameras/c1-jump-start.json",
+  "treino": ["v3_t00000", "v3_t01000", "v3_t02000", "v3_t03000", "v3_t04000", "v3_t05000", "v3_t06000", "v2_t00000", "v2_t04500"],
+  "validacao": ["v3_t07500", "v2_t07500"],
+  "teste": ["v3_t09000", "v3_t09500", "v3_t10000", "v3_t10500", "v3_t11000", "v3_t11500", "v2_t13500"]
+}
