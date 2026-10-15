@@ -1,7 +1,7 @@
 ---
 title: Detecção de aves com YOLO
 sidebar_label: Detector de aves
-sidebar_position: 1
+sidebar_position: 2
 description: Implementação do detector pré-treinado, preparação dos dados e evolução para treinamento próprio.
 ---
 

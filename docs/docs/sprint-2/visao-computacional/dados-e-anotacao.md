@@ -24,7 +24,7 @@ Os vídeos v2 e v3 mostram exatamente o mesmo enquadramento da C1, um de dia e o
 
 ## Anotação assistida por pontos
 
-Anotamos cada ave visível como **um ponto no centro do corpo**. Escolhemos pontos, e não caixas, porque as aves se sobrepõem com frequência e o ponto é o rótulo mais rápido e menos ambíguo em aglomerações [1]. Desenvolvemos uma ferramenta própria em `src/labeling/annotate.py` com três recursos:
+Anotamos cada ave visível como **um ponto no centro do corpo**. Escolhemos pontos, e não caixas, porque as aves se sobrepõem com frequência e o ponto é o rótulo mais rápido e menos ambíguo em aglomerações [1]. Desenvolvemos uma ferramenta própria em `src/raiarnet/labeling/annotate.py` com três recursos:
 
 1. **Blocos ampliados com grade de coordenadas**: o quadro é recortado em blocos de 160 a 300 pixels, ampliados de 2 a 4 vezes, com realce de exposição e saturação apenas para a revisão visual. A grade permite registrar a posição de cada ave em pixels do quadro original, como mostra a Figura 1.
 2. **Propagação por fluxo óptico**: depois de anotar um quadro, os pontos são levados ao quadro seguinte pelo fluxo óptico denso de Farnebäck [2]. A revisão passa a consistir em corrigir aves que se moveram, entraram ou saíram, em vez de recomeçar do zero.
@@ -40,7 +40,7 @@ Testamos também um detector de vocabulário aberto (OWLv2) para propor caixas a
 
 ## Caixas de referência
 
-As métricas de detecção (mAP, precisão e revocação) e o treino do baseline exigem caixas. Convertemos cada ponto em uma caixa em duas etapas, implementadas em `src/labeling/boxes.py`:
+As métricas de detecção (mAP, precisão e revocação) e o treino do baseline exigem caixas. Convertemos cada ponto em uma caixa em duas etapas, implementadas em `src/raiarnet/labeling/boxes.py`:
 
 1. **Prior de perspectiva**: medimos manualmente o tamanho de 34 aves isoladas em N0, N1 e N2 e interpolamos o tamanho esperado em qualquer posição do quadro. Uma ave no primeiro plano mede cerca de 50 × 45 pixels; no fundo do corredor, cerca de 12 × 11 pixels.
 2. **Refinamento com Segment Anything (SAM)** [3]: usamos o ponto como prompt positivo e os quatro vizinhos mais próximos como prompts negativos. A caixa do SAM só é aceita quando tem entre 0,6 e 1,6 vez o tamanho do prior e contém o ponto perto do centro. Nos demais casos, mantemos a caixa do prior.
@@ -65,7 +65,7 @@ Separamos os quadros por instante, e não aleatoriamente, para que o teste não 
 | Validação | 2 | 178 | 152 | v3 em 7,5 s e v2 em 7,5 s |
 | Teste | 7 | 867 | 837 | v3 de 9 a 11,5 s (6 quadros) e v2 em 13,5 s |
 
-As partições estão em `configs/dataset-splits.json`. Os quadros e anotações ficam em `data/`, fora do Git, como os demais dados do projeto.
+As partições estão em `src/raiarnet/configs/dataset-splits.json`. Os quadros e anotações ficam em `data/`, fora do Git, como os demais dados do projeto.
 
 Reconhecemos o principal limite deste conjunto: ele vem de uma única câmera, em dois horários de um mesmo dia, e o teste cobre poucos segundos de vídeo. Os resultados medem o desempenho neste enquadramento e devem ser confirmados com gravações de outros dias e idades do lote antes de qualquer uso operacional.
 

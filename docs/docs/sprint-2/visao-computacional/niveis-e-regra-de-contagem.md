@@ -33,7 +33,7 @@ Fonte: elaborado pelos autores (2026).
 
 Nas imagens de referência das câmeras que recebemos, duas marcações sobre o quadro real da C1 orientam a delimitação das zonas, e o parceiro esclareceu o significado de cada uma.
 
-A **divisória verde**, no fundo do corredor, corresponde a uma divisória física fixa da seção. Por isso, usamos essa divisória como limite geométrico fixo da **região de interesse (ROI)**: os polígonos de N0, N1 e N2 terminam nela, e nenhuma ave além dela é contada pela C1. No arquivo `configs/cameras/c1-jump-start.json`, o segmento `divisoria` registra essa referência.
+A **divisória verde**, no fundo do corredor, corresponde a uma divisória física fixa da seção. Por isso, usamos essa divisória como limite geométrico fixo da **região de interesse (ROI)**: os polígonos de N0, N1 e N2 terminam nela, e nenhuma ave além dela é contada pela C1. No arquivo `src/raiarnet/configs/cameras/c1-jump-start.json`, o segmento `divisoria` registra essa referência.
 
 A **região azul**, no alto à esquerda do quadro, atrás da plataforma, não é uma divisória física fixa nem uma área fechada. Ali ficam as estruturas e mesas laterais e centrais, em diferentes níveis, cuja configuração e posição a equipe da Raiar altera ao longo da recria, conforme a idade das aves e o manejo adotado para estimular a movimentação vertical e a ocupação progressiva. As aves se deslocam horizontalmente entre essas áreas e a seção que observamos.
 
@@ -53,7 +53,7 @@ Por isso, medimos **cada nível diretamente**: uma ave só entra na contagem de 
 
 ## Regra adotada no MVP
 
-Implementamos a regra em `src/preprocessing/roi.py` e `src/models/counter.py`:
+Implementamos a regra em `src/raiarnet/preprocessing/roi.py` e `src/raiarnet/models/counter.py`:
 
 1. Cada ave identificada é atribuída a um único nível pelo **centro do corpo** (o mesmo ponto que anotamos). Escolhemos o centro, e não a base da caixa, porque os pés ficam ocultos na maioria das aves aglomeradas ou atrás das barras.
 2. Aves com centro fora dos três polígonos não são contadas pela C1.
