@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="620" viewBox="0 0 1500 620" role="img" aria-labelledby="title desc">
+  <title id="title">Arquitetura preliminar da contagem de aves visíveis</title>
+  <desc id="desc">Fluxo da câmera para quadros, detector e zonas, contagem local, sincronização e plataforma proposta. Configuração versionada e anotação manual apoiam o processamento.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#496a78"/>
+    </marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #163544; }
+      .title { font-size: 31px; font-weight: 700; }
+      .label { font-size: 23px; font-weight: 700; }
+      .detail { font-size: 18px; }
+      .note { font-size: 20px; font-weight: 700; }
+      .small { font-size: 17px; }
+      .line { fill: none; stroke: #496a78; stroke-width: 4; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1500" height="620" rx="18" fill="#f5f9fa"/>
+  <text x="40" y="54" class="title">Da imagem à contagem por nível</text>
+  <rect x="40" y="75" width="1115" height="34" rx="8" fill="#d9f0f2"/>
+  <text x="56" y="98" class="small">Módulo local existente, sujeito à calibração e à validação com imagens da Raiar</text>
+  <rect x="1220" y="75" width="240" height="34" rx="8" fill="#fff0cd"/>
+  <text x="1239" y="98" class="small">Integração proposta</text>
+
+  <rect x="40" y="152" width="240" height="175" rx="14" fill="#e7f4f5" stroke="#267c87" stroke-width="3"/>
+  <text x="62" y="202" class="label">Câmera e vídeo</text>
+  <text x="62" y="243" class="detail">Câmera, lote, origem</text>
+  <text x="62" y="273" class="detail">e horário de captura</text>
+
+  <rect x="335" y="152" width="240" height="175" rx="14" fill="#e7f4f5" stroke="#267c87" stroke-width="3"/>
+  <text x="357" y="202" class="label">Quadros</text>
+  <text x="357" y="243" class="detail">Amostragem e triagem</text>
+  <text x="357" y="273" class="detail">de qualidade</text>
+
+  <rect x="630" y="152" width="240" height="175" rx="14" fill="#e7f4f5" stroke="#267c87" stroke-width="3"/>
+  <text x="652" y="202" class="label">Detecção e zonas</text>
+  <text x="652" y="243" class="detail">YOLO e atribuição</text>
+  <text x="652" y="273" class="detail">a níveis calibrados</text>
+
+  <rect x="925" y="152" width="240" height="175" rx="14" fill="#e7f4f5" stroke="#267c87" stroke-width="3"/>
+  <text x="947" y="202" class="label">Resultado local</text>
+  <text x="947" y="243" class="detail">Contagem por nível</text>
+  <text x="947" y="273" class="detail">SQLite e fila de envio</text>
+
+  <rect x="1220" y="152" width="240" height="175" rx="14" fill="#fff7e6" stroke="#bc8421" stroke-width="3"/>
+  <text x="1242" y="202" class="label">Plataforma</text>
+  <text x="1242" y="243" class="detail">Recepção, histórico,</text>
+  <text x="1242" y="273" class="detail">painel e exportação</text>
+
+  <path d="M 285 240 L 325 240" class="line"/>
+  <path d="M 580 240 L 620 240" class="line"/>
+  <path d="M 875 240 L 915 240" class="line"/>
+  <path d="M 1170 240 L 1210 240" class="line"/>
+  <text x="1170" y="357" class="small">Envio quando houver rede</text>
+
+  <rect x="40" y="412" width="680" height="140" rx="14" fill="#eaf0fb" stroke="#5379ab" stroke-width="2"/>
+  <text x="64" y="456" class="note">Configuração versionada</text>
+  <text x="64" y="494" class="detail">Câmera, modelo, polígonos e posição das mesas.</text>
+  <text x="64" y="524" class="detail">Mudança física exige revisão das zonas.</text>
+
+  <rect x="760" y="412" width="700" height="140" rx="14" fill="#edf5eb" stroke="#669153" stroke-width="2"/>
+  <text x="784" y="456" class="note">Validação humana</text>
+  <text x="784" y="494" class="detail">Contagens revisadas por nível, qualidade e oclusão.</text>
+  <text x="784" y="524" class="detail">Comparar erro antes de confiar no resultado.</text>
+
+  <text x="42" y="594" class="small">Uma medição = um quadro, uma câmera, uma versão de zonas e um nível. Câmeras sobrepostas não são somadas.</text>
+</svg>
