@@ -9,43 +9,50 @@ description: Câmeras, modelos, zonas e caminho proposto até a consulta dos res
 
 Esta é a arquitetura **de integração proposta**, baseada nos componentes e resultados documentados até 16 de outubro de 2026. O piloto mede aves **visíveis** em N0 (piso), N1 (meio) e N2 (plataforma), por câmera e instante. A [separação dos níveis](./visao-computacional/niveis-e-regra-de-contagem.md) tem polígonos de trabalho para C1. A aprovação física das zonas, o acesso contínuo às imagens e a execução no hardware da Raiar ainda precisam de validação.
 
-**Figura 1: visão geral da arquitetura de medição por nível**
+**Figura 1: da câmera à contagem das aves, em blocos e ícones**
 
-![Arquitetura preliminar da Raiar em quatro faixas: origem e acesso ao vídeo, contagem por nível, registro e consulta, e validação. C1 corresponde à CAM 3; USB do servidor e acesso por rede estão pendentes de teste; o histórico local pertence ao Chicken-YOLO.](/img/visao-computacional/arquitetura-raiar-preliminar.png)
+![Fluxo em blocos e ícones: receber imagens das câmeras, reconhecer e contar as aves por nível, salvar as contagens e preparar sua consulta. Blocos tracejados indicam escolhas ou integrações pendentes.](/img/visao-computacional/arquitetura-apresentacao.svg)
 
-Fonte: elaboração da equipe (2026). Setas amarelas pontilhadas indicam acessos ou integrações ainda não validados. A faixa de registro representa o caminho implementado pelo **Chicken-YOLO**; a RaiarNet ainda não grava no mesmo histórico local. A figura não representa uma operação implantada.
+Fonte: elaboração da equipe (2026). Cada bloco representa uma etapa; o ícone ajuda a reconhecer sua função. Blocos amarelos tracejados indicam escolhas ou integrações a validar. Os vídeos recebidos são o ponto de partida dos testes. O histórico local pertence ao **Chicken-YOLO**; a RaiarNet ainda não grava nesse histórico.
 
 **Figura 2: arquitetura para apresentação, em Mermaid editável**
 
 ```mermaid
 %%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "20px", "primaryColor": "#f5effb", "primaryTextColor": "#352044", "primaryBorderColor": "#8050ad", "lineColor": "#8050ad", "clusterBkg": "#faf7fd", "clusterBorder": "#c7aedb", "edgeLabelBackground": "#ffffff"}, "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
 flowchart TB
-  subgraph ACESSO["1 · Origem e acesso ao vídeo"]
+  subgraph ACESSO["1. Receber as imagens"]
     direction LR
-    CAM["C1 · CAM 3"] --> SERV["Servidor de câmeras\nUSB / rede a validar"]
-    SERV -.-> ARQ["Vídeos recebidos"]
-    ARQ --> QUADRO["Extração de quadros\ne qualidade"]
+    CAM["📷 Câmera do aviário\nC1 = CAM 3"]
+    SERV["🗄️ Gravador das câmeras\nGuarda os vídeos\nAcesso USB/rede a confirmar"]
+    IMAGENS["🎞️ Vídeos para o projeto\nArquivos já recebidos\nImagens selecionadas para análise"]
+    CAM --> SERV
+    SERV -.-> IMAGENS
   end
-  subgraph MEDICAO["2 · Contagem por nível"]
+  subgraph CONTAGEM["2. Contar as aves por nível"]
     direction LR
-    MODELO["RaiarNet ou Chicken-YOLO\ncandidatos"] --> ROI["N0 piso · N1 meio\nN2 plataforma"]
-    ROI --> RESULT["Contagem por nível\ncâmera + instante"]
+    MODELO["🐔 Reconhecer as aves\nModelos em avaliação:\nRaiarNet ou Chicken-YOLO"]
+    NIVEIS["🪜 Identificar o nível\nN0 Piso · N1 Meio\nN2 Plataforma"]
+    TOTAL["📊 Contar as aves\nPor nível, câmera e horário"]
+    MODELO --> NIVEIS
+    NIVEIS --> TOTAL
   end
-  subgraph REGISTRO["3 · Registro e consulta"]
+  subgraph REGISTRO["3. Guardar e acompanhar (Chicken-YOLO)"]
     direction LR
-    LOCAL[("Histórico local\nChicken-YOLO")] --> ENVIO["Cliente de sincronização\nChicken-YOLO"]
-    ENVIO -.-> CENTRAL["Histórico central\nproposto"]
-    CENTRAL -.-> PAINEL["Painel\nproposto"]
+    LOCAL["💾 Salvar as contagens\nResultados salvos no computador"]
+    ENVIO["📤 Enviar os resultados\nEnvio preparado no protótipo\nConexão com o painel a validar"]
+    PAINEL["🖥️ Ver gráficos e histórico\nPlataforma e painel propostos"]
+    LOCAL --> ENVIO
+    ENVIO -.-> PAINEL
   end
-  ACESSO -->|quadros| MEDICAO
-  MEDICAO -->|saída Chicken-YOLO| REGISTRO
+  ACESSO -->|imagens para análise| CONTAGEM
+  CONTAGEM -->|contagens do Chicken-YOLO| REGISTRO
   classDef existing fill:#f5effb,stroke:#8050ad,color:#352044,stroke-width:2px;
   classDef pending fill:#fff5df,stroke:#a96a00,color:#5b410d,stroke-width:2px,stroke-dasharray:5 4;
-  class CAM,ARQ,QUADRO,ROI,RESULT,LOCAL,ENVIO existing;
-  class SERV,MODELO,CENTRAL,PAINEL pending;
+  class CAM,IMAGENS,NIVEIS,TOTAL,LOCAL existing;
+  class SERV,MODELO,ENVIO,PAINEL pending;
 ```
 
-Fonte: elaboração da equipe a partir da [regra de níveis](./visao-computacional/niveis-e-regra-de-contagem.md), dos [resultados da RaiarNet](./visao-computacional/contagem-por-nivel.md), do [detector Chicken-YOLO](./deteccao-de-aves.md) e dos [requisitos](../sprint-1/requisitos.md). Leia cada faixa da esquerda para a direita, seguindo de cima para baixo. Roxo indica equipamento relatado ou componente local; amarelo e contornos tracejados indicam acesso, escolha ou componente pendente. Setas transportam vídeo, quadros ou resultados; as pontilhadas marcam integrações ainda não demonstradas. Os ensaios começam nos vídeos recebidos. Cada modelo usa zonas próprias; a faixa de registro pertence ao Chicken-YOLO, e a RaiarNet ainda não usa esse histórico. C2 permanece uma vista complementar em avaliação. A figura não comprova operação em campo.
+Fonte: elaboração da equipe a partir da [regra de níveis](./visao-computacional/niveis-e-regra-de-contagem.md), dos [resultados da RaiarNet](./visao-computacional/contagem-por-nivel.md), do [detector Chicken-YOLO](./deteccao-de-aves.md) e dos [requisitos](../sprint-1/requisitos.md). O gravador é o servidor de câmeras; selecionar imagens inclui extrair quadros e conferir sua qualidade. Cada modelo usa zonas próprias, e a terceira faixa se aplica ao Chicken-YOLO. C2 permanece uma vista complementar em avaliação.
 
 Arquivos para apresentação: [Mermaid editável](/img/visao-computacional/arquitetura-apresentacao.mmd), [SVG vetorial](/img/visao-computacional/arquitetura-apresentacao.svg) e [PNG em alta resolução](/img/visao-computacional/arquitetura-apresentacao.png).
 

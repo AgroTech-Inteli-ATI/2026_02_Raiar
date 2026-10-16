@@ -1,25 +1,32 @@
 %%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "20px", "primaryColor": "#f5effb", "primaryTextColor": "#352044", "primaryBorderColor": "#8050ad", "lineColor": "#8050ad", "clusterBkg": "#faf7fd", "clusterBorder": "#c7aedb", "edgeLabelBackground": "#ffffff"}, "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
 flowchart TB
-  subgraph ACESSO["1 · Origem e acesso ao vídeo"]
+  subgraph ACESSO["1. Receber as imagens"]
     direction LR
-    CAM["C1 · CAM 3"] --> SERV["Servidor de câmeras\nUSB / rede a validar"]
-    SERV -.-> ARQ["Vídeos recebidos"]
-    ARQ --> QUADRO["Extração de quadros\ne qualidade"]
+    CAM["📷 Câmera do aviário\nC1 = CAM 3"]
+    SERV["🗄️ Gravador das câmeras\nGuarda os vídeos\nAcesso USB/rede a confirmar"]
+    IMAGENS["🎞️ Vídeos para o projeto\nArquivos já recebidos\nImagens selecionadas para análise"]
+    CAM --> SERV
+    SERV -.-> IMAGENS
   end
-  subgraph MEDICAO["2 · Contagem por nível"]
+  subgraph CONTAGEM["2. Contar as aves por nível"]
     direction LR
-    MODELO["RaiarNet ou Chicken-YOLO\ncandidatos"] --> ROI["N0 piso · N1 meio\nN2 plataforma"]
-    ROI --> RESULT["Contagem por nível\ncâmera + instante"]
+    MODELO["🐔 Reconhecer as aves\nModelos em avaliação:\nRaiarNet ou Chicken-YOLO"]
+    NIVEIS["🪜 Identificar o nível\nN0 Piso · N1 Meio\nN2 Plataforma"]
+    TOTAL["📊 Contar as aves\nPor nível, câmera e horário"]
+    MODELO --> NIVEIS
+    NIVEIS --> TOTAL
   end
-  subgraph REGISTRO["3 · Registro e consulta"]
+  subgraph REGISTRO["3. Guardar e acompanhar (Chicken-YOLO)"]
     direction LR
-    LOCAL[("Histórico local\nChicken-YOLO")] --> ENVIO["Cliente de sincronização\nChicken-YOLO"]
-    ENVIO -.-> CENTRAL["Histórico central\nproposto"]
-    CENTRAL -.-> PAINEL["Painel\nproposto"]
+    LOCAL["💾 Salvar as contagens\nResultados salvos no computador"]
+    ENVIO["📤 Enviar os resultados\nEnvio preparado no protótipo\nConexão com o painel a validar"]
+    PAINEL["🖥️ Ver gráficos e histórico\nPlataforma e painel propostos"]
+    LOCAL --> ENVIO
+    ENVIO -.-> PAINEL
   end
-  ACESSO -->|quadros| MEDICAO
-  MEDICAO -->|saída Chicken-YOLO| REGISTRO
+  ACESSO -->|imagens para análise| CONTAGEM
+  CONTAGEM -->|contagens do Chicken-YOLO| REGISTRO
   classDef existing fill:#f5effb,stroke:#8050ad,color:#352044,stroke-width:2px;
   classDef pending fill:#fff5df,stroke:#a96a00,color:#5b410d,stroke-width:2px,stroke-dasharray:5 4;
-  class CAM,ARQ,QUADRO,ROI,RESULT,LOCAL,ENVIO existing;
-  class SERV,MODELO,CENTRAL,PAINEL pending;
+  class CAM,IMAGENS,NIVEIS,TOTAL,LOCAL existing;
+  class SERV,MODELO,ENVIO,PAINEL pending;
