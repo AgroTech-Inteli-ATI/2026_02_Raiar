@@ -149,6 +149,18 @@
   line-height: 1.5;
 }
 
+/* Rótulos Mermaid não são parágrafos do texto corrido. */
+.markdown foreignObject p {
+  text-align: center;
+  text-indent: 0;
+  line-height: 1.2;
+}
+
+.markdown .docusaurus-mermaid-container {
+  display: flex;
+  justify-content: center;
+}
+
 /* Figura (NBR 14724): título na parte superior, ilustração
    centralizada e indicação obrigatória da fonte logo abaixo.
    Markdown esperado: "**Figura N – Título**", imagem, "Fonte: ...". */
