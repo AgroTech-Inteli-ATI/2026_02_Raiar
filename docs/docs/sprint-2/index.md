@@ -16,3 +16,5 @@ Na Sprint 2, a equipe desenvolveu três abordagens para identificar aves em imag
 | PIOFlow e YOLOPIO | Rede experimental em TensorFlow/Keras com pesos aleatórios e YOLO11n ajustado | Base pública PIO (Zenodo) | [Detecção e contagem de galinhas](./deteccao-e-contagem-de-galinhas.md) |
 
 Os resultados quantitativos de cada página foram obtidos em dados e protocolos diferentes. Por isso, não são diretamente comparáveis entre si. Os termos técnicos estão no [glossário](../sprint-1/glossario.md).
+
+A composição e as limitações dos conjuntos de dados estão resumidas em [Análise dos dados dos experimentos](./analise-dos-dados.md).

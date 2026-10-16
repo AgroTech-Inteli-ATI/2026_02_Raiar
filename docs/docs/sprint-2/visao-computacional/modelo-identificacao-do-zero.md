@@ -62,7 +62,7 @@ Treinamos em CPU (AMD Ryzen 5 5600G), sem GPU, com recortes aleatórios de 320 �
 
 ## Evolução do treino
 
-Treinamos o modelo final por 3.000 iterações (cerca de 75 minutos em CPU). A Figura 2 mostra as perdas de treino e as métricas de validação ao longo das iterações. O melhor checkpoint, na iteração 2.700, foi salvo em `models/trained/raiarnet-r1.pt`.
+Treinamos o modelo final por 3.000 iterações (cerca de 75 minutos em CPU). A Figura 2 mostra as perdas de treino e as métricas de validação ao longo das iterações. O melhor checkpoint, na iteração 2.700, foi salvo como `best.pt` na pasta da execução, por exemplo `src/raiarnet/runs/raiarnet/r1/best.pt`.
 
 **Figura 2 – Perdas de treino e métricas de validação da RaiarNet ao longo das iterações**
 
