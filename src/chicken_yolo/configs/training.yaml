@@ -1,0 +1,12 @@
+# O modelo nano é o candidato inicial para execução na Raspberry Pi.
+model: coco
+weights: null
+dataset: data/processed/galinhas-v1/dataset.yaml
+epochs: 50
+patience: 10
+imgsz: 640
+batch: 8
+device: cpu
+workers: 0
+seed: 42
+deterministic: true

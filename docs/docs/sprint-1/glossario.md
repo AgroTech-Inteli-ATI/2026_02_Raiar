@@ -111,3 +111,117 @@ Este glossário explica os termos usados na [proposta de solução](./proposta-d
 **Bbox ou caixa delimitadora:** retângulo desenhado ao redor de uma ave na imagem para registrar a posição do animal. As letras `px` significam pixels, os pequenos pontos que compõem a imagem digital.
 
 **RF e RNF:** abreviações de requisito funcional e requisito não funcional. RF descreve uma tarefa que o sistema deve realizar. RNF descreve uma condição de qualidade, por exemplo o tempo de resposta ou o que acontece quando a conexão cai. Os requisitos associados a esta proposta ainda são uma versão inicial.
+
+## Detecção e treinamento de aves
+
+**OCR:** reconhecimento automático de texto em imagens. Localizar galinhas é uma tarefa de detecção de objetos.
+
+**Detecção de objetos:** localização de objetos na imagem, com uma caixa, uma classe e uma confiança para cada previsão.
+
+**YOLO:** família de modelos para tarefas de visão computacional, incluindo detecção de objetos. O módulo de aves utiliza a implementação da Ultralytics.
+
+**COCO:** conjunto público de imagens e anotações de objetos. Sua classe `bird` reúne aves em geral; não equivale a uma classe especializada em galinhas.
+
+**Pesos ou checkpoint:** arquivo que guarda os parâmetros aprendidos por um modelo. O mesmo código pode carregar versões diferentes desse arquivo.
+
+**Inferência:** aplicação de um modelo já treinado a uma imagem nova para produzir detecções.
+
+**Fine-tuning:** continuação do treinamento de um modelo pré-treinado com os exemplos do projeto. Permite adaptar a detecção às imagens da Raiar.
+
+**Dataset:** conjunto de imagens, anotações e informações sobre sua origem. Neste projeto, possui versões e partições de treino, validação e teste.
+
+**Grupo de origem:** conjunto de quadros da mesma sessão ou de trechos próximos da mesma câmera e dia. O grupo permanece inteiro em uma partição para evitar que imagens quase iguais facilitem artificialmente a avaliação.
+
+**Precisão:** proporção das detecções aceitas que correspondem às aves anotadas, conforme o critério de correspondência utilizado.
+
+**Recall:** proporção das aves anotadas que o detector conseguiu encontrar.
+
+**Falso positivo e falso negativo:** uma detecção que não corresponde a uma ave anotada e uma ave anotada que o detector deixou de encontrar, respectivamente.
+
+**IoU:** proporção de interseção sobre união entre duas caixas. Serve para medir o quanto a caixa prevista coincide com a caixa manual e também participa do filtro de detecções sobrepostas.
+
+**AP e mAP:** medidas que resumem a relação entre precisão e recall. AP50 utiliza IoU de 0,50; mAP50–95 considera limiares de 0,50 a 0,95. Essas métricas não substituem o erro de contagem por nível.
+
+**SQLite:** banco de dados guardado em um arquivo local. Preserva as análises mesmo quando a plataforma central está indisponível.
+
+**JSON e JSONL:** formatos de texto para dados estruturados. JSONL guarda um objeto JSON por linha, permitindo registrar quadros progressivamente.
+
+**YAML:** formato de texto usado para configurações de modelo, dataset e câmera.
+
+**Benchmark:** ensaio de desempenho sob condições registradas, por exemplo tempo de processamento, CPU e memória.
+
+**ONNX e NCNN:** formatos e ferramentas de execução para usar modelos exportados. A qualidade e a velocidade precisam ser verificadas novamente após a exportação.
+
+**Backend e endpoint:** serviço que recebe e armazena resultados e endereço de uma operação desse serviço. O módulo oferece um contrato de envio, sem definir a plataforma central.
+
+**ROI, ou região de interesse:** parte definida da imagem que será analisada ou anotada. Contar aves em uma ROI não representa a contagem da imagem inteira.
+
+**SAHI:** biblioteca que divide uma imagem em blocos, aplica o detector em cada um e combina as caixas nas coordenadas originais. Pode ajudar com objetos pequenos, mas sua utilidade precisa ser medida no material real.
+
+**NMS:** filtro que reduz caixas repetidas sobre o mesmo objeto conforme a sobreposição e a confiança. As regras utilizadas devem ficar registradas.
+
+**PNG e JPEG:** formatos de imagem. PNG preserva os pixels ao salvar; JPEG pode acrescentar compressão com perda. Usar PNG na extração não recupera detalhes já perdidos no vídeo.
+
+**Notebook Jupyter:** documento com células de texto e código Python, cujas saídas podem incluir tabelas, imagens e controles. Neste projeto, permite executar o detector e visualizar suas previsões.
+
+**Kernel:** processo Python que executa as células de um notebook. Deve usar o ambiente `.venv` do projeto para ter acesso às mesmas dependências e ao detector.
+
+## Modelo de visão computacional construído do zero
+
+Os termos abaixo aparecem nas páginas do [modelo de visão computacional](../sprint-2/visao-computacional/index.mdx).
+
+**N0, N1 e N2:** níveis observados pela câmera C1 no Jump Start. N0 é o piso de maravalha, N1 é o meio, parcialmente oculto sob a borda das mesas, e N2 é a plataforma superior.
+
+**Divisória verde:** divisória física fixa no fundo da seção, usada como limite fixo da região de interesse.
+
+**Região azul:** área das estruturas e mesas laterais e centrais, que mudam de posição e altura ao longo da recria. Não é uma divisória nem uma área fechada, e as aves circulam por ela.
+
+**Contagem por diferença:** obter um nível subtraindo os outros de um total, como N1 = total − N0 − N2. É proibida no projeto, porque o total não é estável e os erros dos outros níveis seriam transferidos para N1.
+
+**Treino do zero:** treinamento de uma rede neural que parte de pesos aleatórios, sem aproveitar pesos aprendidos em outros conjuntos de dados.
+
+**RaiarNet:** nome do modelo de identificação e contagem de aves que escrevemos do zero em PyTorch para este projeto.
+
+**PyTorch:** biblioteca de código aberto para construir e treinar redes neurais.
+
+**Heatmap de centros:** mapa produzido pela rede em que cada ave aparece como um pico no centro do corpo.
+
+**Mapa de densidade:** mapa produzido pela rede cuja soma, em uma região, estima quantas aves há nela, mesmo quando estão aglomeradas.
+
+**SPD-Conv:** bloco que reduz a resolução reorganizando pixels em canais, sem descartá-los, para preservar objetos pequenos.
+
+**Atenção por coordenadas e CBAM:** blocos que aprendem a dar mais peso às posições e aos canais da imagem que contêm as aves.
+
+**BiFPN:** parte da rede que combina informações de resoluções diferentes, em caminhos de ida e volta, com pesos aprendidos.
+
+**Focal loss e Wise-IoU:** funções de perda usadas no treino. A primeira dá mais peso aos exemplos difíceis do heatmap; a segunda mede quanto a caixa prevista se afasta da caixa de referência.
+
+**Soft-NMS:** variação do NMS que reduz a confiança de caixas sobrepostas em vez de apagá-las, para não eliminar aves aglomeradas.
+
+**Augmentation:** variações artificiais aplicadas às imagens de treino, como grade sintética, borrão e mudança de brilho, para o modelo generalizar melhor.
+
+**CLAHE:** equalização de histograma adaptativa e com limite de contraste, que realça detalhes locais da imagem.
+
+**MSRCR (Retinex):** técnica de realce que separa a iluminação da cor dos objetos para clarear sombras.
+
+**Correção gama adaptativa:** ajuste de brilho que clareia regiões escuras e escurece regiões estouradas conforme a luminância local.
+
+**Filtro bilateral e filtro guiado:** filtros que suavizam ruído e textura sem apagar os contornos.
+
+**Ablação:** experimento que treina o mesmo modelo retirando ou trocando uma parte por vez, para medir a contribuição de cada uma.
+
+**Fluxo óptico:** estimativa do deslocamento de cada pixel entre dois quadros de vídeo, usada para levar as anotações de um quadro ao seguinte.
+
+**SAM (Segment Anything):** modelo de segmentação usado apenas como ferramenta de rotulagem, para ajustar as caixas de referência a partir dos pontos anotados.
+
+**F1:** média harmônica entre precisão e recall (também chamado de revocação). Resume as duas medidas em um único número.
+
+**RMSE e MAPE:** medidas complementares ao MAE. O RMSE dá mais peso aos erros grandes; o MAPE é o erro absoluto médio em percentual da contagem real.
+
+**FPS:** quadros processados por segundo.
+
+**Filtro de Kalman e média móvel exponencial:** técnicas que suavizam a contagem ao longo do vídeo, reduzindo as oscilações entre quadros.
+
+**TTA:** inferência com variações da imagem, como o espelhamento horizontal, cujas saídas são combinadas.
+
+**Chicken-YOLO:** detector de galinhas baseado no YOLO11n, publicado em 2025, que será usado como referência de comparação na próxima etapa.

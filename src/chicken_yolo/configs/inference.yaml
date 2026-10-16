@@ -1,0 +1,20 @@
+# Caminhos relativos à raiz do repositório. Pesos são baixados com prepare-model.
+model: poultryvision
+weights: null
+allowed_classes: [chicken, bird, galinha]
+confidence: 0.25
+iou: 0.6
+imgsz: 640
+max_det: 1000
+device: cpu
+sample_seconds: 1.0
+zones: null
+output_dir: outputs
+database: outputs/results.sqlite3
+save_annotated: true
+quality:
+  min_width: 64
+  min_height: 64
+  min_brightness: 5.0
+  max_brightness: 250.0
+  min_blur_score: null
