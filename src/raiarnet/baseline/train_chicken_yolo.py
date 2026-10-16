@@ -21,7 +21,7 @@ import cv2
 from preprocessing.roi import LevelROI
 from training.dataset import load_frame, load_split, train_boxes, train_frames
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 YOLO_DATA = ROOT / "data" / "processed" / "yolo"
 RUNS = ROOT / "runs" / "chicken-yolo"
 PRETRAINED = ROOT / "models" / "pretrained" / "yolo11n.pt"

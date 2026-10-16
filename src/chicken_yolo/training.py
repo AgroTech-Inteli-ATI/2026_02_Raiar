@@ -32,7 +32,7 @@ def train_model(config_path: Path) -> dict:
     best = Path(model.trainer.save_dir) / "weights/best.pt"
     if not best.is_file():
         raise RuntimeError("Treinamento não produziu weights/best.pt.")
-    destination = root / "models/trained" / name
+    destination = root / "src/chicken_yolo/models/trained" / name
     destination.mkdir(parents=True, exist_ok=False)
     target = destination / "best.pt"
     shutil.copy2(best, target)

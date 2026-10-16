@@ -47,11 +47,11 @@ class _SAHIModelProxy:
 
 
 def prepare_model(root: Path, name: str) -> dict:
-    registry = load_yaml(root / "models/registry.yaml")["models"]
+    registry = load_yaml(root / "src/chicken_yolo/models/registry.yaml")["models"]
     if name not in registry:
         raise ValueError(f"Modelo desconhecido: {name}. Opções: {', '.join(registry)}")
     entry = registry[name]
-    destination = root / "models/pretrained" / name
+    destination = root / "src/chicken_yolo/models/pretrained" / name
     destination.mkdir(parents=True, exist_ok=True)
     metadata_file = destination / "metadata.json"
     if metadata_file.is_file():
@@ -111,7 +111,7 @@ def resolve_weights(root: Path, model: str, weights: str | None = None) -> tuple
                 raise ValueError("Hash do checkpoint próprio não corresponde aos metadados.")
             return path, metadata
         return path, {"id": "custom", "weights": str(path), "sha256": checksum}
-    metadata_path = root / "models/pretrained" / model / "metadata.json"
+    metadata_path = root / "src/chicken_yolo/models/pretrained" / model / "metadata.json"
     if not metadata_path.is_file():
         raise FileNotFoundError(
             f"Modelo não preparado. Execute: chicken-yolo prepare-model {model}"

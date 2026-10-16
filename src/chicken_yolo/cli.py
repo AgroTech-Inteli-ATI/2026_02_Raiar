@@ -66,7 +66,7 @@ def build_parser() -> argparse.ArgumentParser:
         commands.add_parser("evaluate", help="Avaliar usando referências revisadas."),
         commands.add_parser("benchmark", help="Medir tempo e recursos com entrada local."),
     ):
-        sub.add_argument("--config", type=Path, default=Path("configs/inference.yaml"))
+        sub.add_argument("--config", type=Path, default=Path("src/chicken_yolo/configs/inference.yaml"))
         sub.add_argument("--weights", help="Checkpoint próprio ou artefato exportado.")
         sub.add_argument("--model", choices=["poultryvision", "coco"])
         sub.add_argument("--zones", help="YAML de zonas calibradas.")
@@ -108,7 +108,7 @@ def build_parser() -> argparse.ArgumentParser:
     dataset.add_argument("--seed", type=int, default=42)
     dataset.add_argument("--ratios", type=float, nargs=3, default=(0.7, 0.15, 0.15))
     train = commands.add_parser("train", help="Ajustar pesos pré-treinados com dataset próprio.")
-    train.add_argument("--config", type=Path, default=Path("configs/training.yaml"))
+    train.add_argument("--config", type=Path, default=Path("src/chicken_yolo/configs/training.yaml"))
     export = commands.add_parser("export", help="Exportar checkpoint para ONNX ou NCNN.")
     export.add_argument("--weights", type=Path, required=True)
     export.add_argument("--format", choices=["onnx", "ncnn"], required=True)

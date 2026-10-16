@@ -19,7 +19,7 @@ import cv2
 import numpy as np
 
 LEVELS = ("N0", "N1", "N2")
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CAMERA = ROOT / "configs" / "cameras" / "c1-jump-start.json"
 
 

@@ -24,7 +24,7 @@ from labeling.boxes import BOXES
 from preprocessing.pipeline import run as run_pipeline
 from preprocessing.roi import LevelROI
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 # A partição pode ser trocada pela variável RAIAR_SPLITS (ex.: configs/dataset-splits-v3.json).
 SPLITS = ROOT / os.environ.get("RAIAR_SPLITS", "configs/dataset-splits.json")
 CACHE = ROOT / "data" / "processed"

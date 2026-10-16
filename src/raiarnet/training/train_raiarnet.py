@@ -23,7 +23,7 @@ from models.raiarnet import RaiarNet, RaiarNetConfig, count_parameters
 from preprocessing.roi import LEVELS, LevelROI
 from training.dataset import FrameCrops, collate, eval_boxes, load_frame, load_split, to_tensor, train_frames
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 RUNS = ROOT / "runs" / "raiarnet"
 
 

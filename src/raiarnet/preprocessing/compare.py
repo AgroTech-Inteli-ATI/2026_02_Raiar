@@ -22,8 +22,8 @@ from preprocessing.pipeline import PIPELINES, image_stats, run
 from preprocessing.roi import LEVELS, LevelROI
 from training.dataset import load_boxes, load_split
 
-ROOT = Path(__file__).resolve().parents[2]
-FIG = ROOT / "docs" / "static" / "img" / "visao-computacional"
+ROOT = Path(__file__).resolve().parents[1]
+FIG = ROOT.parent.parent / "docs" / "static" / "img" / "visao-computacional"
 REPORT = ROOT / "reports" / "preprocessamento.json"
 
 

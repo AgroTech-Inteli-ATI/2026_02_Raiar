@@ -43,3 +43,17 @@ Arquivos/
 /src/modelos_PIO/resultados/
 /src/modelos_PIO/pesos_iniciais/
 
+
+# Dados e artefatos de execução dentro de cada modelo
+src/*/data/*
+!src/*/data/*/
+src/*/data/*/*
+!src/*/data/*/.gitkeep
+src/*/runs/*
+!src/*/runs/.gitkeep
+src/*/outputs/*
+!src/*/outputs/.gitkeep
+src/chicken_yolo/models/pretrained/*
+!src/chicken_yolo/models/pretrained/.gitkeep
+src/chicken_yolo/models/trained/*
+!src/chicken_yolo/models/trained/.gitkeep

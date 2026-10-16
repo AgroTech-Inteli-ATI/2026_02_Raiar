@@ -15,7 +15,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 FRAMES = ROOT / "data" / "interim" / "frames"
 ANN = ROOT / "data" / "annotations"
 DEFAULT_ROIS = ROOT / "configs" / "cameras" / "c1-jump-start.json"

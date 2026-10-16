@@ -15,7 +15,7 @@ Os resultados quantitativos desta página vêm da divisão de validação da bas
 
 ### Base PIO
 
-A base **PIO** (*A Large-Scale Dataset for Broiler Chicken Detection under Real Poultry Farming Conditions*) é um conjunto público de imagens de frangos de corte em granjas comerciais do Panamá, anotado em formato YOLO e disponibilizado sob licença CC BY 4.0 [1]. O dataset foi obtido em [https://zenodo.org/records/16686320](https://zenodo.org/records/16686320).
+A base **PIO** (*A Large-Scale Dataset for Broiler Chicken Detection under Real Poultry Farming Conditions*) é um conjunto público de imagens de frangos de corte em granjas comerciais do Panamá, anotado em formato YOLO e disponibilizado sob licença CC BY 4.0 [1]. Foi usada a **versão 1 (v.1)** do dataset, obtida em [https://zenodo.org/records/16686320](https://zenodo.org/records/16686320).
 
 A base PIO disponível localmente contém imagens e arquivos de rótulos nas divisões `train` e `val`. Cada linha de rótulo segue o formato YOLO: classe, centro horizontal, centro vertical, largura e altura da caixa, com coordenadas normalizadas entre 0 e 1. A única classe utilizada é `0`, correspondente a **galinha**.
 

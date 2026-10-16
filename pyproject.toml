@@ -37,7 +37,7 @@ notebooks = [
 packages = ["src/chicken_yolo"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["src/chicken_yolo/tests"]
 pythonpath = ["src"]
 
 [tool.ruff]
