@@ -7,7 +7,7 @@ description: Decisão de arquitetura, blocos, funções de perda e treino da Rai
 
 # Modelo de identificação construído do zero
 
-Construímos o modelo de identificação de aves inteiramente em PyTorch, sem bibliotecas de detecção prontas e sem pesos pré-treinados. Chamamos esse modelo de **RaiarNet**. O código está em `src/models/`: blocos em `blocks.py`, rede em `raiarnet.py`, alvos e perdas em `losses.py` e decodificação em `decode.py`. A adaptação para contagem por nível e os resultados no teste estão em [contagem e resultados](./contagem-por-nivel.md).
+Construímos o modelo de identificação de aves inteiramente em PyTorch, sem bibliotecas de detecção prontas e sem pesos pré-treinados. Chamamos esse modelo de **RaiarNet**. O código está em `src/raiarnet/models/`: blocos em `blocks.py`, rede em `raiarnet.py`, alvos e perdas em `losses.py` e decodificação em `decode.py`. A adaptação para contagem por nível e os resultados no teste estão em [contagem e resultados](./contagem-por-nivel.md).
 
 ## Decisão de paradigma
 
@@ -49,7 +49,7 @@ A **cabeça de densidade** prevê um mapa não negativo cuja soma estima o núme
 
 ### Funções de perda
 
-Implementamos todas as perdas em `src/models/losses.py`:
+Implementamos todas as perdas em `src/raiarnet/models/losses.py`:
 
 - **focal loss** modificada sobre o heatmap gaussiano [5][9], com raio da gaussiana calculado a partir do tamanho da ave;
 - **L1** para o tamanho e o deslocamento nas células de centro;

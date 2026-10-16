@@ -1,7 +1,7 @@
 ---
 title: Detecção de aves com YOLO
 sidebar_label: Detector de aves
-sidebar_position: 1
+sidebar_position: 2
 description: Implementação do detector pré-treinado, preparação dos dados e evolução para treinamento próprio.
 ---
 
@@ -24,7 +24,7 @@ não são estimados. Os termos técnicos estão no [glossário](../sprint-1/glos
 | `coco` | YOLO11n pré-treinado; classe genérica `bird` no COCO [2][3] | Referência leve e ponto de partida para o treino na Raspberry Pi |
 
 O primeiro download registra a revisão disponível, o caminho e o SHA-256 em
-`models/pretrained/<modelo>/metadata.json`. Downloads posteriores reutilizam esse
+`src/chicken_yolo/models/pretrained/<modelo>/metadata.json`. Downloads posteriores reutilizam esse
 artefato se o hash continuar igual. Uma troca de checkpoint exige preservar a
 versão anterior. Resultados divulgados por terceiros não são métricas da Raiar.
 
@@ -58,16 +58,16 @@ Execute a partir da raiz. Para chamar o programa de outra pasta, use
 | Pasta | Responsabilidade |
 | --- | --- |
 | `src/chicken_yolo/` | Captura, qualidade, detector, zonas, pipeline, armazenamento, dataset, treino, avaliação, benchmark e sincronização |
-| `configs/` | Parâmetros e calibrações por câmera |
+| `src/chicken_yolo/configs/` | Parâmetros e calibrações por câmera |
 | `data/raw/` | Imagens e vídeos originais, preservados |
 | `data/interim/` | Quadros extraídos e manifestos para anotação |
 | `data/processed/` | Datasets preparados, com imagens e rótulos em `train`, `val` e `test` |
 | `data/manifests/` | Manifestos revisados com origem, qualidade e grupos |
-| `models/pretrained/` e `models/trained/` | Pesos e metadados locais |
+| `src/chicken_yolo/models/pretrained/` e `trained/` | Pesos e metadados locais |
 | `outputs/` | Histórico SQLite e exportações de inferência |
 | `runs/` | Artefatos de treino e curvas produzidas pela Ultralytics |
 | `reports/generated/` | Relatórios locais de avaliação e capacidade |
-| `tests/` | Verificação das regras e integrações do módulo |
+| `src/chicken_yolo/tests/` | Verificação das regras e integrações do módulo |
 
 Dados, pesos, caches e saídas são excluídos do Git. A equipe pode versionar
 relatórios revisados em `reports/`, sem imagens ou metadados restritos.
@@ -88,7 +88,7 @@ chicken-yolo predict --source data/raw/video.mp4 --camera-id camera-01 --lote-id
 chicken-yolo predict --source data/raw/imagem.jpg --model coco
 ```
 
-`configs/inference.yaml` define modelo, classes aceitas, confiança, IoU, resolução,
+`src/chicken_yolo/configs/inference.yaml` define modelo, classes aceitas, confiança, IoU, resolução,
 máximo de detecções e intervalo de amostragem. O intervalo de um segundo é apenas
 um valor de desenvolvimento. A frequência homologada dependerá dos dados e do
 ensaio no dispositivo. O detector recebe cada quadro individualmente [4].
@@ -176,14 +176,14 @@ arquivos de execução continuam no armazenamento local, conforme o `.gitignore`
 
 ## Zonas do Jump Start
 
-Copie `configs/cameras/camera-example.yaml` para uma configuração da instalação.
+Copie `src/chicken_yolo/configs/cameras/camera-example.yaml` para uma configuração da instalação.
 Defina câmera, versão, dimensões da referência e polígonos normalizados entre 0 e
 1. Após revisão, marque `calibrated: true`. O exemplo permanece bloqueado enquanto
 não estiver calibrado. A câmera deve corresponder ao quadro, e sua proporção deve
 ser compatível com a referência.
 
 ```bash
-chicken-yolo predict --source data/raw/imagem.jpg --camera-id camera-01 --lote-id lote-01 --zones configs/cameras/camera-01.yaml
+chicken-yolo predict --source data/raw/imagem.jpg --camera-id camera-01 --lote-id lote-01 --zones src/chicken_yolo/configs/cameras/camera-01.yaml
 ```
 
 A regra usa o centro da borda inferior da caixa. Fronteiras, sobreposição de zonas
@@ -253,7 +253,7 @@ reservado; a divisão não deve ser refeita para favorecer resultados.
 
 ## Treinamento próprio e comparação
 
-`configs/training.yaml` começa com o YOLO11n pré-treinado para avaliar uma solução
+`src/chicken_yolo/configs/training.yaml` começa com o YOLO11n pré-treinado para avaliar uma solução
 leve. Pode-se selecionar `poultryvision` para comparar outra inicialização. O
 fine-tuning parte dos pesos aprendidos, em vez de treinamento do zero [6].
 Treinar em máquina com GPU quando disponível; a configuração inicial usa CPU
@@ -261,11 +261,11 @@ para ser executável sem GPU. Ajustar `device` e o ambiente PyTorch à máquina 
 treino. A Raspberry Pi é o alvo de inferência.
 
 ```bash
-chicken-yolo train --config configs/training.yaml
+chicken-yolo train --config src/chicken_yolo/configs/training.yaml
 ```
 
 O treinamento usa as pastas de treino e validação. Ao terminar, copia `best.pt`
-para uma pasta única em `models/trained/`, registra a origem e o dataset, e marca
+para uma pasta única em `src/chicken_yolo/models/trained/`, registra a origem e o dataset, e marca
 o modelo como `aguardando_avaliacao`. Concluir o treino não comprova melhora.
 
 Durante desenvolvimento, comparar os candidatos na validação:
@@ -273,7 +273,7 @@ Durante desenvolvimento, comparar os candidatos na validação:
 ```bash
 chicken-yolo evaluate --dataset data/processed/galinhas-v1/dataset.yaml --model poultryvision --split val
 chicken-yolo evaluate --dataset data/processed/galinhas-v1/dataset.yaml --model coco --split val
-chicken-yolo evaluate --dataset data/processed/galinhas-v1/dataset.yaml --weights models/trained/NOME_DO_TREINO/best.pt --split val
+chicken-yolo evaluate --dataset data/processed/galinhas-v1/dataset.yaml --weights src/chicken_yolo/models/trained/NOME_DO_TREINO/best.pt --split val
 ```
 
 Depois de fixar modelo e parâmetros, usar `--split test` para a avaliação final.
@@ -311,8 +311,8 @@ vivo, conectividade, montagem, aquecimento ou capacidade com três dispositivos.
 Essas verificações continuam necessárias para os RNF03, RNF11 e RNF12.
 
 ```bash
-chicken-yolo export --weights models/trained/NOME_DO_TREINO/best.pt --format onnx
-chicken-yolo export --weights models/trained/NOME_DO_TREINO/best.pt --format ncnn
+chicken-yolo export --weights src/chicken_yolo/models/trained/NOME_DO_TREINO/best.pt --format onnx
+chicken-yolo export --weights src/chicken_yolo/models/trained/NOME_DO_TREINO/best.pt --format ncnn
 ```
 
 A exportação pode instalar componentes adicionais. Após exportar, usar
@@ -356,8 +356,8 @@ já oferecem um contrato para consulta e comparação.
 
 ```bash
 uv run --frozen pytest
-uv run --frozen ruff check src tests
-uv run --frozen ruff format --check src tests
+uv run --frozen ruff check src
+uv run --frozen ruff format --check src
 ```
 
 Os testes usam exemplos sintéticos e adapters controlados para verificar as

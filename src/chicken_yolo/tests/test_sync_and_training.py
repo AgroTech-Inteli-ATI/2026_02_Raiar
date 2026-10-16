@@ -92,7 +92,7 @@ def test_invalid_ack_and_external_plain_http_are_rejected(tmp_path, frame):
 
 def test_training_preserves_pretrained_origin_and_reserved_dataset(prepared_dataset, monkeypatch):
     root, dataset, _ = prepared_dataset
-    pretrained = root / "models/pretrained/coco"
+    pretrained = root / "src/chicken_yolo/models/pretrained/coco"
     pretrained.mkdir(parents=True)
     weights = pretrained / "base.pt"
     weights.write_bytes(b"fake-checkpoint-only-for-tests")

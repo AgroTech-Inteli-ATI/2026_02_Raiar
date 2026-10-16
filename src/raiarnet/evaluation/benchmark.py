@@ -34,7 +34,7 @@ from preprocessing.pipeline import run as run_pipeline
 from preprocessing.roi import LEVELS, LevelROI
 from training.dataset import ROI_DILATE, eval_boxes, load_frame, load_split, to_tensor
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def roi_filter(boxes, scores, roi):

@@ -1,6 +1,7 @@
 ---
 title: Detecção e contagem de galinhas em imagens
-sidebar_position: 1
+sidebar_label: Detector PIOFlow e YOLOPIO
+sidebar_position: 3
 description: Dados, experimentos e resultados dos detectores PIOFlow e YOLOPIO desenvolvidos na Sprint 2.
 ---
 
@@ -13,6 +14,8 @@ Os resultados quantitativos desta página vêm da divisão de validação da bas
 ## Dados e preparação das imagens
 
 ### Base PIO
+
+A base **PIO** (*A Large-Scale Dataset for Broiler Chicken Detection under Real Poultry Farming Conditions*) é um conjunto público de imagens de frangos de corte em granjas comerciais do Panamá, anotado em formato YOLO e disponibilizado sob licença CC BY 4.0 [1]. Foi usada a **versão 1 (v.1)** do dataset, obtida em [https://zenodo.org/records/16686320](https://zenodo.org/records/16686320).
 
 A base PIO disponível localmente contém imagens e arquivos de rótulos nas divisões `train` e `val`. Cada linha de rótulo segue o formato YOLO: classe, centro horizontal, centro vertical, largura e altura da caixa, com coordenadas normalizadas entre 0 e 1. A única classe utilizada é `0`, correspondente a **galinha**.
 
@@ -98,3 +101,7 @@ Fonte: notebook 'YOLOPIO' elaborado pelos autores (2026).
 ## Estado atual e validações pendentes
 
 O experimento com pesos pré-treinados alcançou métricas de detecção e contagem melhores na validação PIO do que a implementação experimental com pesos aleatórios. O próximo resultado necessário para avaliar uso nas câmeras da Raiar é um conjunto de quadros locais anotados e revisados, com caixas e contagens de referência. Essa avaliação deverá separar sessões de captura entre desenvolvimento e teste e informar os resultados por câmera e condição de imagem. Até lá, as previsões nos vídeos da Raiar servem para inspeção, sem uma medida quantitativa de desempenho local.
+
+## Referências {#referencias}
+
+[1] BONICHE, Keyla; CRUZ, Edmanuel. **PIO, A Large-Scale Dataset for Broiler Chicken Detection under Real Poultry Farming Conditions: DATASET v.1**. Zenodo, 2025. DOI: 10.5281/zenodo.16686320. Disponível em: [https://zenodo.org/records/16686320](https://zenodo.org/records/16686320). Acesso em: 15 out. 2026.

@@ -11,7 +11,7 @@ Nesta etapa, adaptamos o modelo de identificação construído do zero, a [Raiar
 
 ## Do detector à contagem por nível
 
-Implementamos a adaptação em `src/models/counter.py`. Para cada quadro, a RaiarNet produz duas estimativas por nível:
+Implementamos a adaptação em `src/raiarnet/models/counter.py`. Para cada quadro, a RaiarNet produz duas estimativas por nível:
 
 - **contagem por detecção**: número de aves identificadas (picos do heatmap acima do limiar) cujo centro cai no polígono do nível;
 - **contagem por densidade**: soma do mapa de densidade dentro do polígono do nível.
@@ -20,7 +20,7 @@ A detecção é precisa onde as aves estão separadas, mas perde aves aglomerada
 
 contagem da janela = detecções + máx(0, densidade − detecções − 0,5)
 
-Escolhemos o tamanho da janela e a tolerância na validação, entre 18 combinações (`src/evaluation/count_analysis.py`). A versão sem tolerância superestimava a contagem, porque somava o ruído da densidade em todas as janelas.
+Escolhemos o tamanho da janela e a tolerância na validação, entre 18 combinações (`src/raiarnet/evaluation/count_analysis.py`). A versão sem tolerância superestimava a contagem, porque somava o ruído da densidade em todas as janelas.
 
 Em nenhum momento calculamos N1 como total menos N0 e N2: cada nível é medido no próprio polígono, e as câmeras não são somadas.
 
@@ -31,8 +31,8 @@ Em vídeo, a contagem de um quadro oscila quando aves se cruzam ou ficam momenta
 O comando abaixo recebe um vídeo e grava o CSV com a contagem por quadro (bruta e filtrada), o resumo em JSON e o vídeo anotado:
 
 ```bash
-cd src
-python -m models.predict --source caminho/do/video.mp4 --weights ../models/trained/raiarnet-r1.pt --out ../outputs/c1 --stride-frames 3
+cd src/raiarnet
+python -m models.predict --source caminho/do/video.mp4 --weights caminho/dos/pesos.pt --out caminho/da/saida --stride-frames 3
 ```
 
 A Figura 1 mostra a série de contagem ao longo do vídeo diurno, comparada com a anotação manual. A faixa destacada corresponde aos quadros de teste.
@@ -90,9 +90,9 @@ Também testamos a inferência com espelhamento horizontal (TTA). Ela aumentou o
 
 Concluímos nesta entrega o modelo de identificação construído do zero e a sua adaptação para contagem por nível. Registramos o que ainda não foi feito, para orientar a próxima etapa:
 
-1. **Comparação com o Chicken-YOLO** [2]: deixamos pronta a reimplementação do baseline em `src/baseline/` (YOLO11n com MSEIExtractor, CGDown e DHMSEAM, com 5,43 milhões de parâmetros e 8,5 GFLOPs, próximos dos 5,5 milhões e 9,0 GFLOPs do artigo) e o protocolo de benchmark em `src/evaluation/benchmark.py`, com mesmos quadros, ROI e escolha de limiar na validação. A comparação será feita em conjunto com o colega responsável pelo Chicken-YOLO. Um ponto de atenção: o baseline precisa receber número de passos de otimização equivalente ao da RaiarNet (cerca de 3.000), pois 250 épocas sobre 9 imagens correspondem a apenas 750 passos.
+1. **Comparação com o Chicken-YOLO** [2]: deixamos pronta a reimplementação do baseline em `src/raiarnet/baseline/` (YOLO11n com MSEIExtractor, CGDown e DHMSEAM, com 5,43 milhões de parâmetros e 8,5 GFLOPs, próximos dos 5,5 milhões e 9,0 GFLOPs do artigo) e o protocolo de benchmark em `src/raiarnet/evaluation/benchmark.py`, com mesmos quadros, ROI e escolha de limiar na validação. A comparação será feita em conjunto com o colega responsável pelo Chicken-YOLO. Um ponto de atenção: o baseline precisa receber número de passos de otimização equivalente ao da RaiarNet (cerca de 3.000), pois 250 épocas sobre 9 imagens correspondem a apenas 750 passos.
 2. **Ablação do pré-processamento com o modelo**: o modelo final usa os quadros originais com a máscara de ROI. As medidas sem modelo estão em [tratamento de imagens](./tratamento-de-imagens.md); falta treinar a RaiarNet com cada pipeline de realce.
-3. **Mais dados de treino**: densificar os rótulos por fluxo óptico (já implementado em `src/labeling/densify.py`, com 22 quadros extras) e anotar gravações de outros dias e idades do lote.
+3. **Mais dados de treino**: densificar os rótulos por fluxo óptico (já implementado em `src/raiarnet/labeling/densify.py`, com 22 quadros extras) e anotar gravações de outros dias e idades do lote.
 4. **Regressão de tamanho e recall no fundo de N0**: aumentar o peso das perdas de caixa e a resolução efetiva no fundo do corredor.
 5. **Câmeras C2 e C3**: calibrar polígonos próprios e medir N1 e N2 por elas, sem somar câmeras.
 

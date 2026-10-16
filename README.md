@@ -10,15 +10,18 @@ Projeto da AgroTech Inteli com a Raiar Orgânicos para monitorar, por visão com
 │   ├── docs/               # Páginas em Markdown/MDX, organizadas por sprint
 │   ├── src/css/            # Estilos globais (paleta Raiar e formatação ABNT)
 │   └── static/img/         # Imagens usadas nas páginas
-├── src/chicken_yolo/        # Detecção, níveis, dataset, treino e avaliação
-│   └── notebooks/          # Execução visual e comparação das detecções
-├── configs/                # Configurações de inferência, treino e câmeras
-├── data/                   # Dados locais, excluídos do Git
-├── models/                 # Registro dos modelos e pesos locais
+├── src/
+│   ├── chicken_yolo/       # Detector YOLO pré-treinado: inferência, dataset, treino e avaliação
+│   │   ├── configs/        # Configurações de inferência, treino e câmeras
+│   │   ├── models/         # Registro dos modelos e pesos locais
+│   │   ├── notebooks/      # Execução visual e comparação das detecções
+│   │   └── tests/          # Testes do pipeline e das regras dos dados
+│   ├── raiarnet/           # Modelo construído do zero, com contagem por nível
+│   └── modelos_PIO/        # Notebooks PIOFlow e YOLOPIO (base PIO)
+├── data/                   # Dados do chicken_yolo, excluídos do Git
 ├── outputs/                # SQLite, CSV, JSON e imagens anotadas
 ├── runs/                   # Resultados dos treinamentos
 ├── reports/                # Relatórios; execuções em generated/ são locais
-├── tests/                  # Testes do pipeline e das regras dos dados
 ├── pyproject.toml          # Pacote Python e dependências
 ├── uv.lock                 # Versões fixadas das dependências
 ├── CONTRIBUTING.md         # Padrões de escrita e organização da documentação
@@ -117,12 +120,12 @@ avaliação, benchmark, exportação e o contrato de sincronização com o backe
 
 O [piloto com o vídeo da Raiar](docs/docs/sprint-1/piloto-video-raiar.md) registra a
 extração de 30 quadros PNG e os testes automáticos com SAHI.
-Os resultados detalhados estão em [reports/raiar-video-pilot.md](reports/raiar-video-pilot.md).
+Os resultados detalhados estão em [src/raiarnet/reports/raiar-video-pilot.md](src/raiarnet/reports/raiar-video-pilot.md).
 
 ```bash
 uv run --frozen pytest
-uv run --frozen ruff check src tests
-uv run --frozen ruff format --check src tests
+uv run --frozen ruff check src
+uv run --frozen ruff format --check src
 ```
 
 Os pesos e as imagens são baixados ou fornecidos localmente e não entram no Git.
@@ -133,13 +136,13 @@ que poderá consumir os registros estruturados do módulo.
 ## Modelo construído do zero (RaiarNet)
 
 Identificação e contagem direta de aves em N0, N1 e N2, escritas do zero em
-PyTorch em `src/` (`preprocessing`, `models`, `training`, `evaluation`,
-`labeling` e `baseline`). Execute os comandos dentro de `src/`:
+PyTorch em `src/raiarnet/` (`preprocessing`, `models`, `training`, `evaluation`,
+`labeling` e `baseline`). Execute os comandos dentro de `src/raiarnet/`:
 
 ```bash
 python -m training.train_raiarnet --name r1 --iters 3000
-python -m models.predict --source video.mp4 --weights ../models/trained/raiarnet-r1.pt --out ../outputs/c1
-python -m evaluation.benchmark --raiarnet ../models/trained/raiarnet-r1.pt
+python -m models.predict --source video.mp4 --weights runs/raiarnet/r1/best.pt --out outputs/c1
+python -m evaluation.benchmark --raiarnet runs/raiarnet/r1/best.pt
 ```
 
 O processo completo e os resultados estão na seção

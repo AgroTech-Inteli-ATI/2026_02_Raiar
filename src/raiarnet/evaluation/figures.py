@@ -11,8 +11,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[2]
-FIG = ROOT / "docs" / "static" / "img" / "visao-computacional"
+ROOT = Path(__file__).resolve().parents[1]
+FIG = ROOT.parent.parent / "docs" / "static" / "img" / "visao-computacional"
 INK = "#1f2a30"
 C_BACK, C_NECK, C_HEAD, C_OUT = "#dbe9f6", "#e8def8", "#fde7c8", "#d9f2e3"
 

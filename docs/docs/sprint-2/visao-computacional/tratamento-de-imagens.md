@@ -7,7 +7,7 @@ description: Hipóteses ópticas, técnicas de realce testadas, máscaras por n�
 
 # Tratamento de imagens do aviário
 
-Desenvolvemos o pipeline de tratamento de imagens em `src/preprocessing/` a partir dos quadros reais da câmera C1. Esta página registra as hipóteses que formulamos sobre os problemas ópticos do aviário, as técnicas que implementamos para cada uma, as medidas sem modelo e a decisão sobre o pipeline usado pela [RaiarNet](./modelo-identificacao-do-zero.md).
+Desenvolvemos o pipeline de tratamento de imagens em `src/raiarnet/preprocessing/` a partir dos quadros reais da câmera C1. Esta página registra as hipóteses que formulamos sobre os problemas ópticos do aviário, as técnicas que implementamos para cada uma, as medidas sem modelo e a decisão sobre o pipeline usado pela [RaiarNet](./modelo-identificacao-do-zero.md).
 
 ## Hipóteses sobre os problemas ópticos
 
@@ -23,7 +23,7 @@ Ao inspecionar os quadros diurnos e noturnos, levantamos cinco hipóteses de deg
 
 ## Técnicas implementadas
 
-Implementamos cada técnica como uma função independente em `src/preprocessing/enhance.py`, e as combinações ficam nomeadas em `src/preprocessing/pipeline.py`, o que permite reproduzir qualquer configuração do estudo:
+Implementamos cada técnica como uma função independente em `src/raiarnet/preprocessing/enhance.py`, e as combinações ficam nomeadas em `src/raiarnet/preprocessing/pipeline.py`, o que permite reproduzir qualquer configuração do estudo:
 
 - **CLAHE** (equalização adaptativa de histograma com limite de contraste) [1], aplicada à luminância L\* do espaço LAB ou ao canal V do HSV, com limite de recorte 2,0 e blocos de 8 × 8;
 - **MSRCR** (Retinex multiescala com restauração de cor) [2], com escalas gaussianas de 15, 80 e 200 pixels;
@@ -70,7 +70,7 @@ Tiramos três leituras dessa tabela. Primeiro, **N0 é o nível mais difícil**:
 O estudo de ablação com o detector, em que a RaiarNet é treinada com cada pipeline nas mesmas condições, ficou preparado, mas não foi executado nesta entrega por falta de tempo de processamento (cada treino leva de 15 a 75 minutos em CPU). Os pipelines candidatos são o original, CLAHE em LAB, MSRCR, gama adaptativa, filtro guiado, destaque cromático e a combinação de gama, CLAHE, filtro guiado e destaque cromático, com uma segunda semente do original para estimar a variação entre treinos. O comando de treino aceita o pipeline como parâmetro:
 
 ```bash
-cd src
+cd src/raiarnet
 python -m training.train_raiarnet --name abl-clahe --pipeline clahe-lab --iters 600
 ```
 

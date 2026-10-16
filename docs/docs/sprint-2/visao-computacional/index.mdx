@@ -27,6 +27,6 @@ flowchart LR
 | [Modelo do zero](./modelo-identificacao-do-zero.md) | Decisão de paradigma, arquitetura da RaiarNet, perdas e evolução do treino. |
 | [Contagem e resultados](./contagem-por-nivel.md) | Adaptação para contagem por nível, filtragem temporal, resultados no teste e próximos passos. |
 
-O código fica em `src/` (`labeling`, `preprocessing`, `models`, `training`, `evaluation` e `baseline`); os dados, quadros, pesos e resultados de execução ficam fora do Git. Os termos técnicos estão no [glossário](../../sprint-1/glossario.md).
+O código fica em `src/raiarnet/` (`labeling`, `preprocessing`, `models`, `training`, `evaluation` e `baseline`) e os comandos `python -m` desta seção são executados de dentro dessa pasta; os dados, quadros, pesos e resultados de execução ficam fora do Git. Os termos técnicos estão no [glossário](../../sprint-1/glossario.md).
 
 Resumo dos resultados no teste: no nível intermediário (N1), parcialmente oculto, o erro médio de contagem ficou em 0,62 ave (2,9%). No total da ROI, o erro foi de 8,7%, com subcontagem concentrada no fundo do piso (N0). Na identificação, o modelo atingiu mAP@50 de 0,41 e F1 de 0,54, a 3,5 quadros por segundo em CPU. A comparação com o Chicken-YOLO é o próximo passo.
