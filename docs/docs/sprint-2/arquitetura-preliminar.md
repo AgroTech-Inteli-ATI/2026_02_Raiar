@@ -15,29 +15,39 @@ Esta é a arquitetura **de integração proposta**, baseada nos componentes e re
 
 Fonte: elaboração da equipe (2026). Setas amarelas pontilhadas indicam acessos ou integrações ainda não validados. A faixa de registro representa o caminho implementado pelo **Chicken-YOLO**; a RaiarNet ainda não grava no mesmo histórico local. A figura não representa uma operação implantada.
 
-**Figura 2: caminho técnico em Mermaid, editável**
+**Figura 2: arquitetura para apresentação, em Mermaid editável**
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": false}}}%%
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "20px", "primaryColor": "#f5effb", "primaryTextColor": "#352044", "primaryBorderColor": "#8050ad", "lineColor": "#8050ad", "clusterBkg": "#faf7fd", "clusterBorder": "#c7aedb", "edgeLabelBackground": "#ffffff"}, "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
 flowchart TB
-  CAM["C1 = CAM 3: câmera existente"] --> SERV["Servidor de câmeras e gravação existente"]
-  SERV --> ARQ["Vídeos exportados como arquivos locais: caminho usado nos ensaios"]
-  SERV -.-> USB["Porta USB do servidor: forma de transferência a validar"]
-  SERV -.-> REDE["Acesso por rede ao vídeo: protocolo e permissão a confirmar"]
-  ARQ --> QUADRO["Extração de quadros e triagem de qualidade"]
-  USB -.-> QUADRO
-  REDE -.-> QUADRO
-  QUADRO --> ESCOLHA["Escolha do modelo: RaiarNet ou Chicken-YOLO"]
-  ESCOLHA --> ROI["Zonas próprias do modelo: N0, N1 e N2"]
-  ROI --> RESULT["Contagem direta por câmera e instante"]
-  RESULT -.-> HIST["Histórico central e painel propostos"]
-  classDef proposed fill:#fff2d8,stroke:#a96a00,color:#262626;
-  classDef measured fill:#e6f4f3,stroke:#1d6f77,color:#262626;
-  class USB,REDE,ESCOLHA,HIST proposed;
-  class CAM,SERV,ARQ,QUADRO,ROI,RESULT measured;
+  subgraph ACESSO["1 · Origem e acesso ao vídeo"]
+    direction LR
+    CAM["C1 · CAM 3"] --> SERV["Servidor de câmeras\nUSB / rede a validar"]
+    SERV -.-> ARQ["Vídeos recebidos"]
+    ARQ --> QUADRO["Extração de quadros\ne qualidade"]
+  end
+  subgraph MEDICAO["2 · Contagem por nível"]
+    direction LR
+    MODELO["RaiarNet ou Chicken-YOLO\ncandidatos"] --> ROI["N0 piso · N1 meio\nN2 plataforma"]
+    ROI --> RESULT["Contagem por nível\ncâmera + instante"]
+  end
+  subgraph REGISTRO["3 · Registro e consulta"]
+    direction LR
+    LOCAL[("Histórico local\nChicken-YOLO")] --> ENVIO["Cliente de sincronização\nChicken-YOLO"]
+    ENVIO -.-> CENTRAL["Histórico central\nproposto"]
+    CENTRAL -.-> PAINEL["Painel\nproposto"]
+  end
+  ACESSO -->|quadros| MEDICAO
+  MEDICAO -->|saída Chicken-YOLO| REGISTRO
+  classDef existing fill:#f5effb,stroke:#8050ad,color:#352044,stroke-width:2px;
+  classDef pending fill:#fff5df,stroke:#a96a00,color:#5b410d,stroke-width:2px,stroke-dasharray:5 4;
+  class CAM,ARQ,QUADRO,ROI,RESULT,LOCAL,ENVIO existing;
+  class SERV,MODELO,CENTRAL,PAINEL pending;
 ```
 
-Fonte: elaboração da equipe a partir da [regra de níveis](./visao-computacional/niveis-e-regra-de-contagem.md), dos [resultados da RaiarNet](./visao-computacional/contagem-por-nivel.md), do [detector Chicken-YOLO](./deteccao-de-aves.md) e dos [requisitos](../sprint-1/requisitos.md). Azul indica equipamento relatado, vídeo recebido ou código local; amarelo e setas pontilhadas indicam acesso ou integração pendente. Nenhuma cor indica homologação em campo. O fluxo executado nos ensaios começa nos arquivos de vídeo recebidos; a conexão automática com o servidor ainda não foi demonstrada. C2 é uma vista complementar proposta; sua necessidade depende da medição. As zonas precisam de versão própria para cada modelo; configuração das mesas e anotação humana orientam a calibração e a avaliação. O armazenamento local implementado pertence ao Chicken-YOLO. A seta pontilhada até o histórico não afirma que a RaiarNet já usa esse contrato.
+Fonte: elaboração da equipe a partir da [regra de níveis](./visao-computacional/niveis-e-regra-de-contagem.md), dos [resultados da RaiarNet](./visao-computacional/contagem-por-nivel.md), do [detector Chicken-YOLO](./deteccao-de-aves.md) e dos [requisitos](../sprint-1/requisitos.md). Leia cada faixa da esquerda para a direita, seguindo de cima para baixo. Roxo indica equipamento relatado ou componente local; amarelo e contornos tracejados indicam acesso, escolha ou componente pendente. Setas transportam vídeo, quadros ou resultados; as pontilhadas marcam integrações ainda não demonstradas. Os ensaios começam nos vídeos recebidos. Cada modelo usa zonas próprias; a faixa de registro pertence ao Chicken-YOLO, e a RaiarNet ainda não usa esse histórico. C2 permanece uma vista complementar em avaliação. A figura não comprova operação em campo.
+
+Arquivos para apresentação: [Mermaid editável](/img/visao-computacional/arquitetura-apresentacao.mmd), [SVG vetorial](/img/visao-computacional/arquitetura-apresentacao.svg) e [PNG em alta resolução](/img/visao-computacional/arquitetura-apresentacao.png).
 
 ## Conexão com as câmeras
 
