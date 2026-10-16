@@ -9,6 +9,12 @@ description: Como delimitamos N0, N1 e N2 na câmera C1 e por que medimos cada n
 
 Antes de escrever qualquer linha do modelo, precisamos decidir **o que exatamente contar** em cada quadro. Esta página registra a leitura que fizemos da geometria do aviário, o esclarecimento técnico validado com a Raiar e a regra de contagem que adotamos no MVP. Os termos técnicos estão no [glossário](../../sprint-1/glossario.md).
 
+**Figura 1: nomenclatura dos níveis no Jump Start**
+
+![Imagem ilustrativa do aviário: o piso em ciano é N0, a faixa intermediária parcialmente oculta em roxo é N1 e a plataforma em laranja é N2. A vista C1, identificada como CAM 3, aparece à direita; uma pequena prévia da CAM 16 ilustra C2 à esquerda.](/img/visao-computacional/niveis-jump-start-ilustracao-v5.png)
+
+Fonte: elaboração da equipe a partir dos quadros das câmeras CAM 3 e CAM 16 (2026). **C1 corresponde à CAM 3.** A sobreposição ilustra a nomenclatura e não comprova a calibração dos polígonos. A prévia da CAM 16 é de outra data e não representa uma captura simultânea à imagem principal.
+
 ## Geometria observada pela câmera C1
 
 A câmera **C1** é a câmera lateral superior que gerou os vídeos `.mp4` recebidos (identificada como CAM 3 na sobreposição da imagem). Ela enxerga, em perspectiva, uma seção do corredor do **Jump Start** [1]: a plataforma de grade metálica à esquerda, a borda das mesas com aves sob ela e o piso de maravalha à direita, até a divisória do fundo. Os dois vídeos diurnos e noturnos de 29 de setembro mostram o mesmo enquadramento, o que confirmamos sobrepondo pilares e bordas das mesas nos dois horários.
@@ -21,9 +27,9 @@ A partir dessa leitura, definimos três níveis observáveis:
 | N1 | Meio / parcialmente oculto | Faixa sob a borda da plataforma, onde as aves usam o patamar intermediário | Média: sombra intensa e oclusão pelas barras e pela própria mesa |
 | N2 | Plataforma | Superfície de grade da plataforma superior | Média de dia; à noite, parte das aves empoleiradas na borda distante sai do campo útil |
 
-A Figura 1 mostra os polígonos de cada nível sobre um quadro diurno e um noturno, além da máscara aplicada antes da inferência.
+A Figura 2 mostra os polígonos usados pela RaiarNet sobre um quadro diurno e um noturno, além da máscara aplicada antes da inferência.
 
-**Figura 1 – Regiões de interesse de N0, N1 e N2 na câmera C1 e máscara aplicada fora dos níveis**
+**Figura 2: regiões de interesse de N0, N1 e N2 na câmera C1 e máscara aplicada fora dos níveis**
 
 ![Quatro painéis: quadro diurno e quadro noturno da câmera C1 com os polígonos de N0 em azul, N1 em magenta e N2 em laranja; quadro diurno com tudo o que está fora dos níveis preenchido em cinza; legenda das cores.](/img/visao-computacional/roi-niveis-c1.png)
 
@@ -58,9 +64,9 @@ Implementamos a regra em `src/raiarnet/preprocessing/roi.py` e `src/raiarnet/mod
 1. Cada ave identificada é atribuída a um único nível pelo **centro do corpo** (o mesmo ponto que anotamos). Escolhemos o centro, e não a base da caixa, porque os pés ficam ocultos na maioria das aves aglomeradas ou atrás das barras.
 2. Aves com centro fora dos três polígonos não são contadas pela C1.
 3. Cada câmera responde apenas pelos níveis que observa com confiabilidade e gera **uma contagem por nível e instante**. As contagens de câmeras diferentes **não são somadas**, para não duplicar aves em áreas sobrepostas.
-4. Os conceitos de câmera **C2** (vista inferior oposta do nível intermediário) e **C3** (vista superior sobre a plataforma) seguem a mesma regra: cada uma terá polígonos próprios e será responsável pelo nível que enxerga melhor, sem soma com a C1.
+4. A câmera **C2** é uma vista complementar proposta para avaliar a região intermediária parcialmente oculta. Se for testada, terá polígonos próprios e resultados separados dos da C1, sem soma de campos de visão sobrepostos.
 
-Essa regra tem uma consequência que documentamos com transparência. À noite, um grupo grande de aves se empoleira junto à borda distante da plataforma, na transição para a região azul, e o centro do corpo delas fica acima da linha de N2 vista pela C1. Nos quadros noturnos anotados, 26 das 47 aves visíveis estavam nessa situação e ficaram fora da ROI. Essa é uma limitação de ângulo, e não do modelo: ela reforça a necessidade da câmera C3 sobre a plataforma para medir N2 à noite.
+Essa regra tem uma consequência que documentamos com transparência. À noite, um grupo grande de aves se empoleira junto à borda distante da plataforma, na transição para a região azul, e o centro do corpo delas fica acima da linha de N2 vista pela C1. Nos quadros noturnos anotados, 26 das 47 aves visíveis estavam nessa situação e ficaram fora da ROI. Essa é uma limitação de ângulo, e não do modelo. Sem uma vista superior definida nesta arquitetura, a cobertura de N2 à noite continua uma lacuna a medir e resolver com a Raiar.
 
 ## Referências {#referencias}
 

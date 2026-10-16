@@ -94,7 +94,7 @@ Concluímos nesta entrega o modelo de identificação construído do zero e a su
 2. **Ablação do pré-processamento com o modelo**: o modelo final usa os quadros originais com a máscara de ROI. As medidas sem modelo estão em [tratamento de imagens](./tratamento-de-imagens.md); falta treinar a RaiarNet com cada pipeline de realce.
 3. **Mais dados de treino**: densificar os rótulos por fluxo óptico (já implementado em `src/raiarnet/labeling/densify.py`, com 22 quadros extras) e anotar gravações de outros dias e idades do lote.
 4. **Regressão de tamanho e recall no fundo de N0**: aumentar o peso das perdas de caixa e a resolução efetiva no fundo do corredor.
-5. **Câmeras C2 e C3**: calibrar polígonos próprios e medir N1 e N2 por elas, sem somar câmeras.
+5. **Vista complementar C2**: testar se a vista reduz a oclusão de N1 com polígonos próprios e resultados separados. A cobertura de N2 à noite permanece uma lacuna; verificar com a Raiar se é possível resolvê-la com o enquadramento e os dados disponíveis antes de propor outra câmera.
 
 ## Referências {#referencias}
 
