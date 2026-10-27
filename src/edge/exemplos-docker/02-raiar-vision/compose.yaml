@@ -1,0 +1,48 @@
+# Ponto de partida para o nó de borda. Suba com:  RAIAR_TAG=dev docker compose up -d
+name: raiar-edge
+
+x-comum: &comum
+  image: raiar-vision:${RAIAR_TAG:-dev}
+  restart: unless-stopped
+  user: "1000:1000"
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  environment:
+    YOLO_CONFIG_DIR: /tmp/ultralytics
+    RAIAR_SYNC_TOKEN: ${RAIAR_SYNC_TOKEN:-}
+  volumes:
+    - ${RAIAR_DATA:-/opt/raiar/data}:/app/outputs
+  tmpfs:
+    - /tmp:size=64m
+
+services:
+  vision:
+    <<: *comum
+    # Laço de captura e inferência ao vivo: ainda não existe no código (a implementar).
+    # Hoje, "raiar-vision predict --source ARQUIVO" processa imagens e vídeos locais.
+    devices: ["/dev/video0:/dev/video0"]
+    group_add: ["${VIDEO_GID:-983}"]
+    mem_limit: 2g
+    cpus: 3.2
+    tmpfs:
+      - /tmp:size=64m
+      - /frames:size=128m
+
+  sync:
+    <<: *comum
+    entrypoint:
+      - sh
+      - -c
+      - |
+        while true; do
+          raiar-vision sync --database /app/outputs/results.sqlite3 \
+            --url "$$RAIAR_SYNC_URL" --token-env RAIAR_SYNC_TOKEN --batch-size 100 || true
+          sleep 300
+        done
+    environment:
+      YOLO_CONFIG_DIR: /tmp/ultralytics
+      RAIAR_SYNC_TOKEN: ${RAIAR_SYNC_TOKEN:-}
+      RAIAR_SYNC_URL: ${RAIAR_SYNC_URL:?defina RAIAR_SYNC_URL}
+    mem_limit: 128m
+    cpus: 0.5

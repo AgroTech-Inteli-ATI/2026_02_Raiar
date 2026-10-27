@@ -225,3 +225,59 @@ Os termos abaixo aparecem nas páginas do [modelo de visão computacional](../sp
 **TTA:** inferência com variações da imagem, como o espelhamento horizontal, cujas saídas são combinadas.
 
 **Chicken-YOLO:** detector de galinhas baseado no YOLO11n, publicado em 2025, que será usado como referência de comparação na próxima etapa.
+
+## Nó de borda e Raspberry Pi
+
+Os termos abaixo aparecem na página do [nó de borda no Raspberry Pi](../sprint-3/provisionamento-raspberry-pi.md).
+
+**Nó de borda (*Edge Computing*):** computador instalado no próprio aviário que processa as imagens no local, sem enviá-las antes a um servidor remoto.
+
+**Raspberry Pi 4 Model B:** computador de placa única que serve de nó de borda neste projeto, na versão de 4 GB de RAM.
+
+**Arch Linux ARM:** versão do Arch Linux para processadores ARM, usada aqui como sistema operacional do nó.
+
+**`aarch64`:** nome da arquitetura ARM de 64 bits, que o Raspberry Pi 4 executa.
+
+**Headless:** modo de operação sem monitor, teclado ou interface gráfica; o acesso é remoto, por SSH.
+
+**SSH:** protocolo de acesso remoto seguro a um terminal, usado para administrar o nó sem monitor.
+
+**Boot por USB (`USB-MSD`):** modo em que o Raspberry Pi inicia a partir de um dispositivo USB de armazenamento, sem cartão SD.
+
+**EEPROM e `BOOT_ORDER`:** memória interna do Raspberry Pi 4 que guarda a ordem em que ele tenta iniciar: cartão SD, USB e outras. O boot por USB exige que o USB esteja nessa ordem.
+
+**U-Boot:** programa que inicia o Raspberry Pi neste sistema e carrega o kernel a partir da partição de boot.
+
+**`PARTUUID`:** identificador único de uma partição. O boot o usa para achar a raiz do sistema no mesmo dispositivo de onde o kernel foi carregado, seja USB ou SD.
+
+**`gpu_mem`:** parâmetro do `config.txt` que define quanta RAM é reservada à GPU. Em um nó sem monitor, o valor mínimo libera memória para os modelos.
+
+**`journald`:** serviço de logs do sistema. Em modo volátil, guarda os registros na memória e os perde no desligamento.
+
+**`swappiness`:** parâmetro do kernel (`vm.swappiness`) que define o quanto ele prefere mover dados da RAM para o swap. Valores baixos evitam essa troca.
+
+**`wpa_supplicant`:** programa que conecta o Raspberry Pi a uma rede Wi-Fi protegida por senha.
+
+**Docker:** ferramenta que executa programas em **containers**, ambientes isolados com tudo o que cada programa precisa. Mantém a pilha dos modelos separada do sistema.
+
+**V4L2:** interface do kernel Linux para câmeras. Uma câmera USB aparece como um arquivo como `/dev/video0`.
+
+**Firmware:** programa gravado que um dispositivo de hardware precisa carregar para funcionar. No Linux, o pacote de firmware traz o de centenas de placas, e o nó mantém só o do Raspberry Pi.
+
+**`zram`:** área de swap que fica na própria RAM e guarda os dados comprimidos. Cobre picos de uso de memória sem escrever no cartão SD.
+
+**`NoExtract`:** opção do `pacman.conf` que impede a gravação de certos arquivos, como manuais e traduções, nas instalações de pacotes.
+
+**Imagem de container:** pacote imutável com o programa e tudo o que ele precisa para rodar. O container é uma execução dessa imagem.
+
+**Docker Compose:** ferramenta que descreve, em um único arquivo, vários containers e a forma como eles se conectam, e os sobe com um comando.
+
+**Volume:** pasta do nó ligada a um container, onde os dados sobrevivem quando o container é recriado. Aqui guarda o banco SQLite dos resultados.
+
+**`tmpfs`:** pasta mantida na memória RAM e não no cartão SD. Serve para arquivos temporários, como os quadros capturados, sem desgastar o cartão.
+
+**Build multiplataforma (`buildx`):** construção de uma imagem para outra arquitetura de processador. Permite gerar no notebook uma imagem `arm64` para o Raspberry Pi.
+
+**Modo WAL:** forma de o SQLite gravar alterações em um registro à parte, que permite um processo ler o banco enquanto outro escreve.
+
+**RTC (relógio de tempo real):** módulo com bateria que mantém a hora quando o aparelho está desligado. O Raspberry Pi não tem um, então depende da internet para acertar o relógio.
