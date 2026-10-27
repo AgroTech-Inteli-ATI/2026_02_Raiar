@@ -85,6 +85,54 @@ chicken-yolo prepare-model coco
 chicken-yolo predict --source data/raw/imagem.jpg --model coco
 ```
 
+## Execução dos modelos com Docker
+
+Docker executa os modelos em ambientes com dependências isoladas. As imagens deste
+repositório executam inferência por linha de comando em CPU; não iniciam uma API nem
+fazem treinamento. Vídeos, pesos e resultados ficam fora das imagens e são montados
+como volumes. Coloque entradas em `data/`; os resultados persistem em `outputs/`.
+Esta configuração cobre `chicken_yolo` e a RaiarNet; os experimentos PIOFlow e YOLOPIO
+permanecem nos notebooks e não fazem parte destas imagens.
+
+Instale Docker Desktop ou Docker Engine com o plugin Docker Compose e construa as imagens
+a partir da raiz do repositório:
+
+```bash
+docker compose build
+```
+
+Prepare os pesos do detector YOLO uma vez. O primeiro download requer internet:
+
+```bash
+docker compose run --rm chicken-yolo prepare-model
+```
+
+Coloque uma imagem ou vídeo em `data/raw/` e execute o detector:
+
+```bash
+docker compose run --rm chicken-yolo predict --source /app/data/raw/video.mp4
+```
+
+O histórico SQLite e as exportações ficam em `outputs/` no computador host. Para a
+RaiarNet, disponibilize o checkpoint `best.pt` em `src/raiarnet/runs/` e execute:
+
+```bash
+docker compose run --rm raiarnet --source /app/data/raw/video.mp4 --weights /app/src/raiarnet/runs/raiarnet/r1/best.pt --out /app/outputs/raiarnet/r1
+```
+
+O caminho do checkpoint é ilustrativo: use o caminho real do peso montado em
+`src/raiarnet/runs/`. A imagem da RaiarNet inclui o código de inferência, a configuração
+de câmera e as dependências de CPU. O Compose define `linux/arm64/v8`, arquitetura da
+Raspberry Pi 4 com sistema operacional de 64 bits, incluindo Arch Linux ARM64. Para
+construir no Windows ou em um PC x86, o Docker precisa de suporte a build multiplataforma;
+também é possível construir diretamente na Pi. Um sistema operacional de 32 bits não é
+contemplado por essas imagens.
+
+Compatibilidade de arquitetura não comprova que o tempo de inferência atende à frequência
+de captura do projeto. A RaiarNet foi medida a cerca de 3,5 quadros por segundo na CPU dos
+testes documentados, que não é a Raspberry Pi 4. Meça tempo por quadro, CPU, memória e
+temperatura na placa real antes de definir o intervalo de processamento em produção.
+
 ## Visualização com notebook
 
 O [notebook de visualização](src/chicken_yolo/notebooks/visualizar-deteccoes.ipynb) permite escolher
