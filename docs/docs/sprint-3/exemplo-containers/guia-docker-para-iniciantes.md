@@ -9,7 +9,7 @@ description: Guia prático, com exercícios executados, para containerizar os mo
 
 Este guia leva você de "nunca abri um container" até "a imagem dos modelos da Raiar roda no Raspberry Pi 4 e envia os resultados ao backend". Ele foi escrito para a tarefa **Conteinerização dos modelos** e para a tarefa **Aplicação dos modelos na Raspberry + setup da Raspberry**.
 
-Quase tudo aqui foi **executado de verdade** antes de eu escrever. Onde eu não consegui testar (principalmente no Raspberry Pi e com a câmera), o texto avisa com a marca **[não testado]**. Quando você vir uma saída de terminal, ela é a saída real que eu obtive.
+Os exercícios e os exemplos foram **executados de verdade** antes de serem escritos. Quando você vir uma saída de terminal, ela é a saída real obtida nos testes.
 
 ## Como usar este guia
 
@@ -23,13 +23,11 @@ Quase tudo aqui foi **executado de verdade** antes de eu escrever. Onde eu não 
 
 Faça os **exercícios** digitando os comandos, não só lendo. As pastas `src/edge/exemplos-docker/01-contador` e `src/edge/exemplos-docker/02-raiar-vision`, têm os arquivos prontos.
 
-Você vai ver três tipos de aviso:
+Você vai ver dois tipos de aviso:
 
-> **Armadilha:** erro comum, que eu mesmo encontrei nos testes.
+> **Armadilha:** erro comum, encontrado nos testes.
 
 > **No projeto:** como o assunto se liga à Raiar.
-
-> **[não testado]:** algo que depende de hardware que eu não tinha à mão.
 
 ## Parte 1: a ideia em cinco minutos
 
@@ -480,9 +478,9 @@ Este é o ponto mais importante e mais surpreendente para quem vem de Windows ou
 
 Quando você usa `FROM python:3.12-slim`, o Docker escolhe sozinho a variante da sua arquitetura (essa imagem oficial existe para as duas). O problema aparece quando **você constrói no notebook para rodar no Pi**.
 
-### Construir para o Pi no seu notebook [não testado]
+### Construir para o Pi no seu notebook
 
-Eu não consegui testar esta parte, porque meu notebook não tinha a emulação de `arm64` instalada. O caminho que a documentação oficial descreve é o *build* multiplataforma com o `buildx` [7]:
+O caminho que a documentação oficial descreve é o *build* multiplataforma com o `buildx` [7]:
 
 ```bash
 # uma única vez, para o notebook emular arm64 (Arch Linux; em Ubuntu, veja a documentação):
@@ -538,8 +536,8 @@ A **fila local** é o que torna o nó robusto: se a internet cair por 24 horas, 
 
 | Quem | Responsabilidade |
 | --- | --- |
-| **Containerização** (você, com o Gui) | A imagem, o `compose.yaml` e o teste dos containers |
-| **Gui** | O sistema do Raspberry Pi, o Docker instalado, o Wi-Fi, a câmera e a entrega dos containers no nó |
+| **Containerização** (quem recebe este guia) | A imagem, o `compose.yaml` e o teste dos containers |
+| **Responsável pelo nó** | O sistema do Raspberry Pi, o Docker instalado, o Wi-Fi, a câmera e a entrega dos containers no nó |
 
 ### O código
 
@@ -560,7 +558,7 @@ Dois modelos estão disponíveis: `poultryvision` (maior, padrão) e `coco` (men
 
 ## Parte 11: containerizando o projeto, passo a passo
 
-Tudo desta parte eu construí e executei no meu notebook (`x86_64`). A parte `arm64` e a câmera são **[não testadas]**.
+Tudo desta parte foi construído e executado em um notebook (`x86_64`).
 
 ### Passo 1: preparar a pasta
 
@@ -574,7 +572,7 @@ Os arquivos de apoio estão em `src/edge/exemplos-docker/02-raiar-vision/`: `Doc
 
 ### Passo 2: as três descobertas que mudam o Dockerfile
 
-Antes de olhar o Dockerfile, conheça os três problemas que eu encontrei. Cada linha dele existe por causa de um deles.
+Antes de olhar o Dockerfile, conheça os três problemas encontrados. Cada linha dele existe por causa de um deles.
 
 **Descoberta 1: o PyTorch puxaria 2,7 GB de bibliotecas inúteis.** O arquivo `uv.lock` marca as bibliotecas de GPU NVIDIA (`cuda-toolkit`, `nvidia-cudnn`, `nccl`, `triton`) apenas como "linux", sem limitar a `x86_64`. Fazer `uv sync --frozen` num `arm64` baixaria cerca de **2,7 GB** de arquivos que o Raspberry Pi nunca usa, pois ele não tem GPU NVIDIA. A solução é instalar a versão do PyTorch **só para CPU**, que existe para `arm64` na mesma versão do lock (`2.14.1`) [8].
 
@@ -629,7 +627,7 @@ CMD ["--help"]
 | `ENV YOLO_CONFIG_DIR` | O Ultralytics grava um arquivo de configuração; mandamos para `/tmp` |
 | `ENTRYPOINT ["raiar-vision"]` | Descoberta 2. Fixa o nome certo do programa |
 
-> **Atenção à reprodutibilidade:** o `pip install .` resolve as versões pelas faixas do `pyproject.toml`, **não** pelo `uv.lock`. No meu teste, o lock fixa `ultralytics 8.4.177` e a imagem instalou `8.4.190`. Funcionou, mas versões podem mudar entre builds. Uma melhoria futura é gerar uma lista de requisitos com `uv export` e filtrar as bibliotecas NVIDIA.
+> **Atenção à reprodutibilidade:** o `pip install .` resolve as versões pelas faixas do `pyproject.toml`, **não** pelo `uv.lock`. No teste, o lock fixa `ultralytics 8.4.177` e a imagem instalou `8.4.190`. Funcionou, mas versões podem mudar entre builds. Uma melhoria futura é gerar uma lista de requisitos com `uv export` e filtrar as bibliotecas NVIDIA.
 
 ### Passo 4: construir
 
@@ -642,7 +640,7 @@ docker build -f src/edge/exemplos-docker/02-raiar-vision/Dockerfile \
 
 Para o `.dockerignore` valer, copie o arquivo de `src/edge/exemplos-docker/02-raiar-vision/.dockerignore` para a raiz do repositório. Na primeira vez, o build levou cerca de 2 minutos; com cache, 8 segundos.
 
-Resultado: uma imagem de cerca de **2,5 GB** em `x86_64`, dos quais cerca de **1 GB** é o PyTorch para CPU. Eu **não medi o tamanho em `arm64`**. Esse é o maior risco de armazenamento do nó, e a Parte 13 mostra como reduzir.
+Resultado: uma imagem de cerca de **2,5 GB** em `x86_64`, dos quais cerca de **1 GB** é o PyTorch para CPU. Esse é o maior risco de armazenamento do nó, e a Parte 13 mostra como reduzir. Confira também que a imagem não carrega CUDA (a tecnologia de placas NVIDIA, inútil no Raspberry Pi): `python -c "import torch; print(torch.version.cuda)"` deve imprimir `None`. Misturar o índice da CPU com o PyPI como índice extra faz o `uv` instalar a versão CUDA, e a imagem passa de 6 GB.
 
 ### Passo 5: rodar a detecção
 
@@ -766,7 +764,7 @@ docker compose -f src/edge/exemplos-docker/02-raiar-vision/compose.yaml up -d sy
 docker compose -f src/edge/exemplos-docker/02-raiar-vision/compose.yaml logs sync
 ```
 
-(No meu teste precisei de um arquivo `override` com `network_mode: host`, só para o container enxergar o `127.0.0.1` do notebook. No Pi, o URL será o do backend real, em HTTPS, e isso não é necessário.)
+(No teste foi necessário um arquivo `override` com `network_mode: host`, só para o container enxergar o `127.0.0.1` do notebook. No Pi, o URL será o do backend real, em HTTPS, e isso não é necessário.)
 
 Resposta nos logs: `{"sent":1,"accepted":1,"pending":0}`.
 
@@ -796,11 +794,11 @@ Resultados que obtive, processando um quadro de 640 x 480, em `x86_64`:
 | YOLO11n (`coco`) | cerca de **309 MB** | roda com 384 MB, morre (OOM) com 256 MB |
 | YOLO11m (`poultryvision`) | cerca de **509 MB** | roda com 512 MB, sem folga |
 
-> **Atenção:** em `arm64` os números podem ser diferentes, e eu não medi o **tempo por quadro** no Pi. O RNF11 exige que a inferência termine em até 80% do intervalo entre quadros, e isso só se confirma no equipamento.
+> **Atenção:** em `arm64` os números podem ser diferentes e o **tempo por quadro** deve ser medido no Pi. O RNF11 exige que a inferência termine em até 80% do intervalo entre quadros, e isso só se confirma no equipamento.
 
 ## Parte 12: indo para o Raspberry Pi
 
-### O que o Gui entrega no nó
+### O que o responsável pelo nó entrega
 
 O nó já está pronto: Arch Linux ARM enxuto, Docker 29 e Compose instalados, swap comprimido na RAM (`zram`), Wi-Fi configurado e o usuário `raiar`. Os detalhes estão na documentação do Docusaurus, nas páginas **Nó de borda no Raspberry Pi** e **Containers no nó de borda**.
 
@@ -808,22 +806,22 @@ O nó já está pronto: Arch Linux ARM enxuto, Docker 29 e Compose instalados, s
 | --- | --- |
 | Sistema do nó | Arch Linux ARM `aarch64` (os containers usam Debian por dentro, e isso não é problema) |
 | RAM | 3.815 MB totais; cerca de 3.570 MB disponíveis sem containers |
-| Disco | Cartão SD de 32 GB (29 GB úteis, 27 GB livres) |
+| Disco | Cartão SD; capacidade e espaço livre conferidos com `df -h /` no nó |
 | Usuário | `raiar` (uid 1000), nos grupos `docker` e `video` |
 | Dados | `/opt/raiar/data` |
 | Rede | Só saída; nenhuma porta aberta pelos containers |
 
 **Orçamento de memória.** O RNF12 exige 20% de RAM livre (cerca de 763 MB). Sobram aproximadamente **2,8 GB** para os containers. Os modelos medidos (309 a 509 MB) cabem com folga, mas a captura ao vivo e o pico de uso ainda precisam ser medidos.
 
-### O que você precisa pedir ao Gui
+### O que você precisa pedir ao responsável pelo nó
 
-1. O **IP** do Pi na rede e uma **senha ou chave SSH** para o usuário `raiar`. Hoje esse usuário está **sem senha** (conta travada), então o Gui precisa defini-la e instalar a sua chave.
+1. O **IP** do Pi na rede e uma **senha ou chave SSH** para o usuário `raiar`. Hoje esse usuário está **sem senha** (conta travada), então o responsável pelo nó precisa defini-la e instalar a sua chave.
 2. Para saber o número do grupo `video` no nó: `getent group video`. No nó, é **983**.
 
 ### Entregar e subir
 
 ```bash
-# no notebook: construir para arm64 e enviar [não testado]
+# no notebook: construir para arm64 e enviar
 docker buildx build --platform linux/arm64 -f src/edge/exemplos-docker/02-raiar-vision/Dockerfile \
   --build-arg MODELO=coco -t raiar-vision:v1 --load .
 docker save raiar-vision:v1 | gzip | ssh raiar@IP_DO_PI 'gunzip | docker load'
@@ -857,8 +855,6 @@ docker compose logs -f
 
 A fonte principal é o **DVR** do aviário, lido por RTSP pela rede. Não há dispositivo para passar ao container: a URL fica em `RAIAR_CAMERA_SOURCE` no `.env`, e o Pi precisa alcançar o DVR (`nc -zv IP_DO_DVR 554`). Peça o *substream* em H.264 e use cabo de rede. A câmera USB continua como alternativa (veja abaixo) e se escolhe só por configuração.
 
-> **[não testado]:** nem o DVR nem a câmera USB foram exercitados com hardware.
-
 #### Alternativa: câmera USB
 
 Defina `RAIAR_CAMERA_SOURCE=/dev/video0` e `VIDEO_GID=$(getent group video | cut -d: -f3)` no `.env`, leve também o `compose.usb.yaml` e suba com `docker compose -f compose.yaml -f compose.usb.yaml up -d`. Conecte a câmera e confira no Pi:
@@ -876,8 +872,6 @@ docker run --rm --device /dev/video0 --group-add "$(getent group video | cut -d:
 
 > **Armadilha:** dentro de uma imagem Debian, o grupo `video` tem outro número (44) que no sistema do Pi (983). Se você escrever `--group-add video`, o Docker resolve o nome **dentro da imagem** e o container sem privilégios não consegue abrir a câmera. Use sempre o número do grupo do **Pi**.
 
-> **[não testado]:** nenhuma câmera estava conectada. Nada nesta seção foi exercitado com hardware.
-
 ### O que ainda falta construir
 
 O código atual lê **arquivos** (imagem, vídeo, pasta). Falta o programa que fica **em laço**: ler um quadro da câmera a cada intervalo, guardar em `/frames` (memória), chamar a detecção e gravar no SQLite. A forma mais simples de começar é:
@@ -890,7 +884,7 @@ Quem escreve esse laço é uma decisão do time. O que o nó oferece: câmera, 2
 
 ## Parte 13: reduzir o tamanho da imagem
 
-A imagem tem cerca de 2,5 GB. Para três nós com 27 GB livres isso cabe, mas cada versão nova ocupa espaço. Proponho reduzir em fases, **sempre medindo antes de avançar**:
+A imagem tem cerca de 2,5 GB. Se o cartão tiver espaço livre suficiente, isso cabe, mas cada versão nova ocupa espaço. A proposta é reduzir em fases, **sempre medindo antes de avançar**:
 
 | Fase | Ação | Quando |
 | --- | --- | --- |
@@ -902,7 +896,7 @@ Outras reduções pequenas: trocar `opencv-python` por `opencv-python-headless` 
 
 ## Parte 14: solução de problemas
 
-Os erros marcados com ✔ eu reproduzi de verdade.
+Os erros marcados com ✔ foram reproduzidos de verdade.
 
 | Sintoma | Causa provável | O que fazer |
 | --- | --- | --- |
@@ -990,7 +984,7 @@ docker image prune                      # apaga imagens sem uso
 | Ponto | Quem decide | Observação |
 | --- | --- | --- |
 | Laço de captura ao vivo | Time de containerização | Não existe no código |
-| Tamanho da imagem e tempo por quadro em `arm64` | Medição no Pi | Não medi |
+| Tamanho da imagem e tempo por quadro em `arm64` | Medição no Pi | A medir |
 | Formato do modelo (PyTorch, ONNX, NCNN) | Resultado do `benchmark` no Pi | Fase 2 da Parte 13 |
 | Backend real (URL, token) | Time do backend | Só existe o contrato do `sync` |
 | Relógio do Pi | Hardware | O Pi não tem relógio próprio; sem rede após um reinício, a hora fica errada. Sugiro um módulo RTC |

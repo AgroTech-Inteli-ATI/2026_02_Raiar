@@ -7,7 +7,7 @@ description: Material de apoio para quem vai containerizar os modelos da Raiar, 
 
 # Exemplo de containers para o nó de borda
 
-Esta seção reúne o material que preparei para quem vai containerizar os modelos e rodá-los no Raspberry Pi. Ela parte de dois exemplos que testei no notebook (`x86_64`), sem o Raspberry Pi e sem a câmera. Os termos técnicos estão no [glossário](../../sprint-1/glossario.md).
+Esta seção reúne o material de apoio para quem vai containerizar os modelos e rodá-los no Raspberry Pi. Ela parte de dois exemplos testados em um notebook (`x86_64`), sem o Raspberry Pi e sem a câmera. Um deles é didático (um contador simples) e o outro empacota o detector de aves da Raiar. Os termos técnicos estão no [glossário](../../sprint-1/glossario.md).
 
 | Material | O que contém |
 | --- | --- |

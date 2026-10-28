@@ -291,3 +291,31 @@ Os termos abaixo aparecem na página do [nó de borda no Raspberry Pi](../sprint
 **Modo WAL:** forma de o SQLite gravar alterações em um registro à parte, que permite um processo ler o banco enquanto outro escreve.
 
 **RTC (relógio de tempo real):** módulo com bateria que mantém a hora quando o aparelho está desligado. O Raspberry Pi não tem um, então depende da internet para acertar o relógio.
+
+**RAM:** memória de trabalho do computador, onde ficam os programas em execução. É mais rápida que o armazenamento e se esvazia quando o equipamento desliga.
+
+**CPU:** processador, a parte do computador que executa os cálculos. O Raspberry Pi 4 tem quatro núcleos, e os requisitos limitam o uso médio a 80%.
+
+**Pacote compactado (*tarball*):** arquivo único (`.tar.gz`) que reúne vários arquivos compactados. O sistema Arch Linux ARM é distribuído assim.
+
+**md5:** código curto calculado a partir de um arquivo. Se o código do arquivo baixado coincide com o publicado, o arquivo não veio corrompido.
+
+**Espelho (*mirror*):** servidor que mantém uma cópia dos arquivos de download. Trocar de espelho pode acelerar uma transferência lenta.
+
+**DHCP:** serviço da rede que atribui um endereço ao equipamento automaticamente, sem configuração manual.
+
+**Ethernet:** conexão de rede por cabo. É mais estável que o Wi-Fi e preferível entre o nó e o DVR.
+
+**PSK:** forma embaralhada da senha do Wi-Fi. Guardá-la no lugar da senha em texto evita expor a senha original.
+
+**CUDA:** tecnologia das placas de vídeo NVIDIA para acelerar cálculos. O Raspberry Pi não tem essa placa, então as bibliotecas CUDA só ocupam espaço na imagem.
+
+**Tag (versão da imagem):** etiqueta que identifica uma versão da imagem de container, como `0.1.0`. Voltar a uma versão anterior é escolher a etiqueta antiga.
+
+**Token:** senha de acesso que identifica o nó perante o backend. Fica em um arquivo `.env` protegido e nunca no repositório.
+
+**HTTPS:** forma protegida de transmitir dados pela internet, com criptografia. O envio ao backend só aceita essa forma.
+
+**Somente leitura (*read-only*):** modo em que o container não pode alterar seus próprios arquivos. Protege o sistema e o cartão SD, mas exige pastas separadas, gravadas em memória ou em volume, para o que o programa precisa escrever.
+
+**Healthcheck:** verificação automática que informa se um serviço continua funcionando. Ainda é uma melhoria prevista para o nó.

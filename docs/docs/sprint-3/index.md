@@ -7,7 +7,7 @@ description: Preparação do Raspberry Pi 4 como nó de borda e material para co
 
 # Nó de borda e containers
 
-Na Sprint 3, preparei o nó de borda que executará os modelos no aviário e o material para que meu colega containerize os modelos da Sprint 2. A origem das imagens segue a [arquitetura preliminar](../sprint-2/arquitetura-preliminar.md), cujo acesso ao servidor de câmeras ainda será validado com a Raiar. Os termos técnicos estão no [glossário](../sprint-1/glossario.md).
+Na Sprint 3, a equipe preparou o nó de borda, o pequeno computador que executará os modelos no aviário, e reuniu o material para containerizar os modelos da Sprint 2. Um container é um pacote que leva o programa e tudo o que ele precisa, para funcionar igual em qualquer equipamento. O objetivo é que os modelos rodem no Raspberry Pi e enviem seus resultados ao backend. A origem das imagens segue a [arquitetura preliminar](../sprint-2/arquitetura-preliminar.md), cujo acesso ao servidor de câmeras ainda será validado com a Raiar. Os termos técnicos estão no [glossário](../sprint-1/glossario.md).
 
 | Entrega | O que contém |
 | --- | --- |
