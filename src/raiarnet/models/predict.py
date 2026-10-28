@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 from pathlib import Path
 
 import cv2
@@ -60,7 +61,7 @@ def main():
     ap.add_argument("--no-video", action="store_true")
     args = ap.parse_args()
 
-    torch.set_num_threads(6)
+    torch.set_num_threads(max(1, int(os.environ.get("RAIARNET_NUM_THREADS", "6"))))
     ck = torch.load(args.weights, map_location="cpu", weights_only=False)
     thr = args.thr if args.thr is not None else float(ck.get("score_thr", 0.3))
     counter = load_counter(args.weights, score_thr=thr, mode=args.mode)
