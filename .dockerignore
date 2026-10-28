@@ -25,3 +25,6 @@ src/chicken_yolo/models/trained
 *.mov
 *.avi
 *.ipynb
+.env
+.env.*
+!.env.exemplo

@@ -1,0 +1,6 @@
+services:
+  vision:
+    devices:
+      - /dev/video0:/dev/video0
+    group_add:
+      - "${VIDEO_GID:-983}"

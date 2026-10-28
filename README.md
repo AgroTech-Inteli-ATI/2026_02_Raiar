@@ -87,51 +87,108 @@ chicken-yolo predict --source data/raw/imagem.jpg --model coco
 
 ## Execução dos modelos com Docker
 
-Docker executa os modelos em ambientes com dependências isoladas. As imagens deste
-repositório executam inferência por linha de comando em CPU; não iniciam uma API nem
-fazem treinamento. Vídeos, pesos e resultados ficam fora das imagens e são montados
-como volumes. Coloque entradas em `data/`; os resultados persistem em `outputs/`.
-Esta configuração cobre `chicken_yolo` e a RaiarNet; os experimentos PIOFlow e YOLOPIO
-permanecem nos notebooks e não fazem parte destas imagens.
+O Compose na raiz configura os serviços `vision` e `sync`. A imagem `raiar/vision` é
+construída a partir de `sprint-3/docker/chicken-yolo/Dockerfile`; o nome `raiar-vision`
+é usado como comando para evitar conflito com a CLI do Ultralytics. Os pesos do modelo
+selecionado por `MODELO` (por padrão, `coco`) são baixados durante o build e ficam na
+imagem, sem volume que os sobrescreva. O Dockerfile da RaiarNet em `sprint-3/docker/raiarnet/Dockerfile` produz uma imagem separada e não é um serviço do Compose atual. Seu checkpoint `best.pt` não está no Git nem é baixado durante o build.
 
-Instale Docker Desktop ou Docker Engine com o plugin Docker Compose e construa as imagens
-a partir da raiz do repositório:
+### Configuração local
+
+Copie `.env.exemplo` para `.env` e edite os valores. O arquivo `.env` contém a URL RTSP e
+o token de sincronização: mantenha-o local, fora do Git, e restrinja suas permissões:
 
 ```bash
+cp .env.exemplo .env
+chmod 600 .env
+```
+
+Em produção, prepare os diretórios persistentes e pertencentes ao usuário `raiar` (UID
+1000) no host:
+
+```bash
+sudo install -d -o raiar -g raiar -m 0750 /opt/raiar/data /opt/raiar/models
+```
+
+Copie o `best.pt` recebido ou produzido para `/opt/raiar/models/best.pt` no nó. O container recebe essa
+pasta como `/opt/raiar/models`, somente para leitura. Os dados do SQLite e as saídas são
+gravados em `/opt/raiar/data`, que não é `tmpfs` e sobrevive à recriação do container.
+
+Para RTSP, `RAIAR_CAMERA_SOURCE` recebe a URL do DVR, por exemplo
+`rtsp://USUARIO:SENHA@IP_DO_DVR:554/caminho/stream`. Cada canal do DVR deve ter seu próprio
+`RAIAR_CAMERA_ID`. Prefira o substream em H.264 para reduzir o uso de CPU da Raspberry Pi;
+o transporte RTSP está configurado para TCP pelo FFmpeg incluído no OpenCV. Não compartilhe
+saídas de `docker compose config` sem remover as variáveis interpoladas, pois elas podem
+conter credenciais.
+
+### Build e execução
+
+Valide a configuração e construa a imagem na arquitetura da máquina atual:
+
+```bash
+docker compose --env-file .env.exemplo config -q
 docker compose build
 ```
 
-Prepare os pesos do detector YOLO uma vez. O primeiro download requer internet:
+O build do `chicken_yolo` usa PyTorch 2.14.1 e torchvision 0.29.1 a partir do índice CPU;
+o OpenCV da imagem é `opencv-python-headless`. O serviço `sync` envia os registros
+pendentes a cada 300 segundos, usando o comando existente `raiar-vision sync`; falhas de
+rede não encerram o loop. Defina uma versão em `RAIAR_TAG` para poder voltar a uma imagem
+anterior.
+
+Depois do build, valide a imagem e o UID:
 
 ```bash
-docker compose run --rm chicken-yolo prepare-model
+docker run --rm raiar/vision:0.1.0 --help
+docker run --rm --entrypoint id raiar/vision:0.1.0
 ```
 
-Coloque uma imagem ou vídeo em `data/raw/` e execute o detector:
+Troque `0.1.0` pela tag configurada em `RAIAR_TAG` quando for diferente.
+
+Para a fonte USB, altere `RAIAR_CAMERA_SOURCE=/dev/video0` em `.env`, obtenha o GID do
+grupo `video` com `getent group video | cut -d: -f3`, defina `VIDEO_GID` e inicie com o
+override:
 
 ```bash
-docker compose run --rm chicken-yolo predict --source /app/data/raw/video.mp4
+docker compose -f compose.yaml -f compose.usb.yaml up -d
 ```
 
-O histórico SQLite e as exportações ficam em `outputs/` no computador host. Para a
-RaiarNet, disponibilize o checkpoint `best.pt` em `src/raiarnet/runs/` e execute:
+O Compose principal não concede dispositivos. Somente o override USB concede acesso a
+`/dev/video0` e ao GID informado. Para conferir a configuração USB sem iniciar serviços:
 
 ```bash
-docker compose run --rm raiarnet --source /app/data/raw/video.mp4 --weights /app/src/raiarnet/runs/raiarnet/r1/best.pt --out /app/outputs/raiarnet/r1
+docker compose --env-file .env.exemplo -f compose.yaml -f compose.usb.yaml config -q
 ```
 
-O caminho do checkpoint é ilustrativo: use o caminho real do peso montado em
-`src/raiarnet/runs/`. A imagem da RaiarNet inclui o código de inferência, a configuração
-de câmera e as dependências de CPU. O Compose define `linux/arm64/v8`, arquitetura da
-Raspberry Pi 4 com sistema operacional de 64 bits, incluindo Arch Linux ARM64. Para
-construir no Windows ou em um PC x86, o Docker precisa de suporte a build multiplataforma;
-também é possível construir diretamente na Pi. Um sistema operacional de 32 bits não é
-contemplado por essas imagens.
+Esse exemplo usa a URL fictícia do arquivo de exemplo. Para validar o modo USB, sobreponha
+a fonte no comando, sem colocar credenciais reais na linha de comando:
 
-Compatibilidade de arquitetura não comprova que o tempo de inferência atende à frequência
-de captura do projeto. A RaiarNet foi medida a cerca de 3,5 quadros por segundo na CPU dos
-testes documentados, que não é a Raspberry Pi 4. Meça tempo por quadro, CPU, memória e
-temperatura na placa real antes de definir o intervalo de processamento em produção.
+```bash
+RAIAR_CAMERA_SOURCE=/dev/video0 docker compose --env-file .env.exemplo -f compose.yaml -f compose.usb.yaml config -q
+```
+
+Para construir em um computador x86 e levar uma imagem ARM64 à Raspberry Pi, use Buildx
+com a arquitetura indicada, uma tag explícita e depois envie o arquivo comprimido por SSH:
+
+```bash
+docker buildx build --platform linux/arm64 --build-arg MODELO=coco -f sprint-3/docker/chicken-yolo/Dockerfile -t raiar/vision:0.1.0 --load .
+docker save raiar/vision:0.1.0 | gzip | ssh raiar@IP_DA_RASPBERRY 'gunzip | docker load'
+```
+
+Na Raspberry Pi, defina a mesma `RAIAR_TAG` no `.env` e execute `docker compose up -d`.
+Para revisar os limites de CPU e memória durante a operação, use `docker stats`.
+
+### Estado da captura
+
+O Compose já injeta `RAIAR_CAMERA_SOURCE`, `RAIAR_CAMERA_ID` e as opções FFmpeg sem
+reconstruir a imagem. A implementação atual de `raiar-vision predict` ainda lê arquivos
+locais, não URLs RTSP nem `/dev/video0`. Portanto, a captura ao vivo e a gravação periódica
+em `/frames` dependem da próxima etapa de implementação; iniciar o serviço `vision` com
+essas fontes antes dela não processará a câmera. O serviço USB e as configurações podem
+ser validados pelo Compose, mas isso não valida acesso real à câmera.
+
+Os experimentos PIOFlow e YOLOPIO permanecem em notebooks e não fazem parte da imagem
+`raiar/vision`.
 
 ## Visualização com notebook
 
