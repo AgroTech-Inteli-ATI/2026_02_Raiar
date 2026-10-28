@@ -85,6 +85,159 @@ chicken-yolo prepare-model coco
 chicken-yolo predict --source data/raw/imagem.jpg --model coco
 ```
 
+## Execução dos modelos com Docker
+
+O Compose na raiz configura os serviços `vision` e `sync`. A imagem `raiar/vision` é
+construída a partir de `sprint-3/docker/chicken-yolo/Dockerfile`; o nome `raiar-vision`
+é usado como comando para evitar conflito com a CLI do Ultralytics. Os pesos do modelo
+selecionado por `MODELO` (por padrão, `coco`) são baixados durante o build e ficam na
+imagem, sem volume que os sobrescreva. O Dockerfile da RaiarNet em `sprint-3/docker/raiarnet/Dockerfile` produz uma imagem separada e não é um serviço do Compose atual. Seu checkpoint `best.pt` não está no Git nem é baixado durante o build.
+
+### Configuração local
+
+Copie `.env.exemplo` para `.env` e edite os valores. O arquivo `.env` contém a URL RTSP e
+o token de sincronização: mantenha-o local, fora do Git, e restrinja suas permissões:
+
+```bash
+cp .env.exemplo .env
+chmod 600 .env
+```
+
+Em produção, prepare os diretórios persistentes e pertencentes ao usuário `raiar` (UID
+1000) no host:
+
+```bash
+sudo install -d -o raiar -g raiar -m 0750 /opt/raiar/data /opt/raiar/models
+```
+
+Copie o `best.pt` recebido ou produzido para `/opt/raiar/models/best.pt` no nó. O container recebe essa
+pasta como `/opt/raiar/models`, somente para leitura. Os dados do SQLite e as saídas são
+gravados em `/opt/raiar/data`, que não é `tmpfs` e sobrevive à recriação do container.
+
+Para RTSP, `RAIAR_CAMERA_SOURCE` recebe a URL do DVR, por exemplo
+`rtsp://USUARIO:SENHA@IP_DO_DVR:554/caminho/stream`. Cada canal do DVR deve ter seu próprio
+`RAIAR_CAMERA_ID`. Prefira o substream em H.264 para reduzir o uso de CPU da Raspberry Pi;
+o transporte RTSP está configurado para TCP pelo FFmpeg incluído no OpenCV. Não compartilhe
+saídas de `docker compose config` sem remover as variáveis interpoladas, pois elas podem
+conter credenciais.
+
+### Build e execução
+
+Valide a configuração e construa a imagem na arquitetura da máquina atual:
+
+```bash
+docker compose --env-file .env.exemplo config -q
+docker compose build
+```
+
+O serviço `vision` fica no profile `captura` porque ainda não há captura ao vivo. Por padrão,
+suba apenas a sincronização:
+
+```bash
+docker compose up -d sync
+```
+
+Para conferir o comando inofensivo do serviço de visão, habilite o profile explicitamente:
+
+```bash
+docker compose --profile captura run --rm vision
+```
+
+Ele mostra a ajuda e termina; não inicia leitura RTSP nem abre `/dev/video0`. A variável
+`RAIAR_CAMERA_SOURCE` continua disponível no ambiente para a futura implementação. A URL não
+é colocada nos argumentos do processo; ela continua no ambiente do container e pode ser vista
+por quem tem acesso ao Docker no host. Não compartilhe `docker inspect` sem redigir esse valor.
+
+O build do `chicken_yolo` usa PyTorch 2.14.1 e torchvision 0.29.1 exclusivamente do índice
+CPU, sem consultar o PyPI para esses pacotes; o OpenCV da imagem é
+`opencv-python-headless`. A medição disponível antes da correção do cache do uv foi de 4,62 GB;
+ela não representa a imagem reconstruída com `UV_NO_CACHE=1`. O tamanho final após essa correção
+precisa ser medido com `docker images`; não foi possível medi-lo neste ambiente. O serviço
+`sync` envia os registros
+pendentes a cada 300 segundos, usando o comando existente `raiar-vision sync`; falhas de
+rede não encerram o loop. Defina uma versão em `RAIAR_TAG` para poder voltar a uma imagem
+anterior.
+
+`MODELO` seleciona os pesos embutidos durante o build. Se mudar o valor, reconstrua a imagem
+antes de executá-la. Use o mesmo valor em `--model` ao chamar `predict` manualmente; trocar
+somente o argumento de execução não baixa nem prepara pesos adicionais.
+
+Exemplo de inferência local com uma imagem montada somente para leitura (defina `MODELO` com
+o mesmo valor usado no build):
+
+```bash
+MODELO=coco
+docker run --rm \
+  -v "$PWD/data/raw:/inputs:ro" \
+  -v "$PWD/outputs:/app/outputs" \
+  raiar/vision:0.1.0 predict --source /inputs/imagem.jpg --model "$MODELO"
+```
+
+Depois do build, valide a imagem e o UID:
+
+```bash
+docker run --rm raiar/vision:0.1.0 --help
+docker run --rm --entrypoint id raiar/vision:0.1.0
+```
+
+Troque `0.1.0` pela tag configurada em `RAIAR_TAG` quando for diferente.
+
+Para a fonte USB, altere `RAIAR_CAMERA_SOURCE=/dev/video0` em `.env`, obtenha o GID do
+grupo `video` com `getent group video | cut -d: -f3`, defina `VIDEO_GID` e inicie com o
+override:
+
+```bash
+docker compose --profile captura -f compose.yaml -f compose.usb.yaml run --rm vision
+```
+
+O Compose principal não concede dispositivos. Somente o override USB concede acesso a
+`/dev/video0` e ao GID informado. Como a captura ao vivo ainda não foi implementada, esse
+comando apenas executa `--help`; ele não processa a câmera. Para conferir a configuração USB
+sem iniciar serviços:
+
+```bash
+docker compose --env-file .env.exemplo -f compose.yaml -f compose.usb.yaml config -q
+```
+
+Esse exemplo usa a URL fictícia do arquivo de exemplo. Para validar o modo USB, sobreponha
+a fonte no comando, sem colocar credenciais reais na linha de comando:
+
+```bash
+RAIAR_CAMERA_SOURCE=/dev/video0 docker compose --env-file .env.exemplo -f compose.yaml -f compose.usb.yaml config -q
+```
+
+Para construir em um computador x86 e levar uma imagem ARM64 à Raspberry Pi, use Buildx
+com a arquitetura indicada, uma tag explícita e depois envie o arquivo comprimido por SSH:
+
+```bash
+docker buildx build --platform linux/arm64 --build-arg MODELO=coco -f sprint-3/docker/chicken-yolo/Dockerfile -t raiar/vision:0.1.0 --load .
+docker save raiar/vision:0.1.0 | gzip | ssh raiar@IP_DA_RASPBERRY 'gunzip | docker load'
+```
+
+Na Raspberry Pi, defina a mesma `RAIAR_TAG` no `.env` e execute `docker compose up -d`.
+Para revisar os limites de CPU e memória durante a operação, use `docker stats`.
+
+### Estado da captura
+
+O Compose já injeta `RAIAR_CAMERA_SOURCE`, `RAIAR_CAMERA_ID` e as opções FFmpeg sem
+reconstruir a imagem. A implementação atual de `raiar-vision predict` ainda lê arquivos
+locais, não URLs RTSP nem `/dev/video0`. Portanto, a captura ao vivo e a gravação periódica
+em `/frames` dependem da próxima etapa de implementação. O serviço `vision` está no profile
+`captura`, usa `--help` e `restart: "no"` até essa implementação para evitar ciclos de falha
+e gravação excessiva de logs. O serviço `sync` permanece disponível por padrão.
+
+### Estado dos testes desta entrega
+
+Foi executado `git diff --check`. O ambiente de desenvolvimento usado para esta entrega não
+tem Docker nem uv disponíveis, então não foi possível validar o Compose, construir ou medir a
+imagem, conferir `torch.__version__`/`torch.version.cuda`, verificar a ausência do pacote
+`nvidia`, nem executar os containers. Também não foram testados Raspberry Pi/ARM64, DVR,
+câmera USB, inferência RaiarNet ou sincronização com backend real. A configuração de
+healthcheck do `sync` permanece como pendência.
+
+Os experimentos PIOFlow e YOLOPIO permanecem em notebooks e não fazem parte da imagem
+`raiar/vision`.
+
 ## Visualização com notebook
 
 O [notebook de visualização](src/chicken_yolo/notebooks/visualizar-deteccoes.ipynb) permite escolher
