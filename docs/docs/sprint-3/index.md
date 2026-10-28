@@ -11,7 +11,7 @@ Na Sprint 3, preparei o nó de borda que executará os modelos no aviário e o m
 
 | Entrega | O que contém |
 | --- | --- |
-| [Nó de borda no Raspberry Pi](./provisionamento-raspberry-pi.md) | Arch Linux ARM `aarch64` ultra-leve por boot USB, otimização de RAM, Docker e captura de câmera. |
+| [Nó de borda no Raspberry Pi](./provisionamento-raspberry-pi.md) | Arch Linux ARM `aarch64` ultra-leve no cartão SD, otimização de RAM, Docker e captura de câmera. |
 | [Containers no nó de borda](./integracao-containers-no-no-de-borda.md) | Arquitetura, orçamento de recursos, entrega e validação dos containers. |
 | [Exemplo de containers](./exemplo-containers/index.md) | Guia de Docker, exercícios e os exemplos executáveis para o colega. |
 

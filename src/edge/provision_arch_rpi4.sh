@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
-# Provisiona um Pen Drive USB (ou SD Card) com Arch Linux ARM aarch64 ultra-leve
-# para os nós de borda (Edge Computing) do aviário: Raspberry Pi 4 Model B,
-# headless, com boot por USB (USB-MSD) e o máximo de RAM livre para os containers
-# de identificação e contagem de aves.
+# Provisiona um cartão SD com Arch Linux ARM aarch64 ultra-leve para os nós de
+# borda (Edge Computing) do aviário: Raspberry Pi 4 Model B, headless, com todo o
+# armazenamento no cartão SD e o máximo de RAM livre para os containers de
+# identificação e contagem de aves.
 #
 # Uso (como root, a partir do notebook de desenvolvimento):
-#   sudo src/edge/provision_arch_rpi4.sh /dev/sdX
+#   sudo src/edge/provision_arch_rpi4.sh /dev/mmcblk0   # leitor de cartão interno
+#   sudo src/edge/provision_arch_rpi4.sh /dev/sdX       # leitor USB
 #   sudo src/edge/provision_arch_rpi4.sh /dev/sdX --yes-erase=/dev/sdX   # sem pergunta
 #
 # Variáveis de ambiente opcionais:
 #   WIFI_SSID / WIFI_PSK  Rede Wi-Fi do nó. Se omitidas, usa a conexão Wi-Fi ativa
-#                         do notebook (NetworkManager). A senha fica só no Pen Drive.
+#                         do notebook (NetworkManager). A senha fica só no cartão SD.
 #   NODE_HOSTNAME         Nome do nó (padrão: raiar-edge-01).
 #   CACHE_DIR             Onde guardar o tarball baixado (padrão: ~/.cache/raiar-edge).
 #   TARBALL               Caminho de um tarball já baixado (pula o download).
@@ -36,7 +37,7 @@ CONFIRM_FLAG=""
 for arg in "$@"; do
   case "$arg" in
     --yes-erase=*) CONFIRM_FLAG="${arg#--yes-erase=}" ;;
-    -h|--help)     sed -n '2,22p' "$0"; exit 0 ;;
+    -h|--help)     sed -n '2,20p' "$0"; exit 0 ;;
     /dev/*)        DEVICE="$arg" ;;
     *)             die "argumento desconhecido: $arg" ;;
   esac
@@ -49,14 +50,22 @@ for cmd in lsblk parted wipefs mkfs.vfat mkfs.ext4 bsdtar curl md5sum partprobe 
 done
 
 # ------------------------------------------------- proteção do disco do host
-# 1. Tem de ser um disco inteiro (não partição), removível e conectado por USB.
+# 1. Tem de ser um disco inteiro (não partição): um cartão SD no leitor interno
+#    (mmcblk*, que costuma constar como não removível) ou um disco removível em USB
+#    (leitor de cartão externo).
 [[ -b "$DEVICE" ]] || die "$DEVICE não é um dispositivo de bloco."
 [[ "$(lsblk -dno TYPE "$DEVICE")" == "disk" ]] || die "$DEVICE não é um disco inteiro."
 DEV_NAME="$(basename "$DEVICE")"
 REMOVABLE="$(cat "/sys/block/$DEV_NAME/removable" 2>/dev/null || echo 0)"
 TRAN="$(lsblk -dno TRAN "$DEVICE" | tr -d ' ')"
-[[ "$REMOVABLE" == "1" ]] || die "$DEVICE não é removível (RM=0). Recusado."
-[[ "$TRAN" == "usb" ]]    || die "$DEVICE não está em barramento USB (TRAN=$TRAN). Recusado."
+if [[ "$DEV_NAME" != mmcblk* ]]; then
+  [[ "$REMOVABLE" == "1" ]] || die "$DEVICE não é removível (RM=0). Recusado."
+  [[ "$TRAN" == "usb" ]]    || die "$DEVICE não está em barramento USB (TRAN=$TRAN). Recusado."
+fi
+# Nunca o disco que sustenta o sistema em execução.
+HOST_SRC="$(findmnt -no SOURCE / || true)"
+HOST_DISK="$(lsblk -no PKNAME "$HOST_SRC" 2>/dev/null | head -n1 || true)"
+[[ -z "$HOST_DISK" || "/dev/$HOST_DISK" != "$DEVICE" ]] || die "$DEVICE é o disco do sistema do notebook. Recusado."
 
 # 2. Nenhuma parte dele pode sustentar /, /home, /boot ou /var do notebook.
 while read -r mp; do
@@ -131,7 +140,7 @@ fi
 log "Desmontando partições de $DEVICE..."
 for p in $(lsblk -nro PATH "$DEVICE" | tail -n +2); do
   if findmnt -rn -S "$p" >/dev/null; then
-    umount "$p" || die "não consegui desmontar $p. Feche janelas do gerenciador de arquivos que mostrem o pen drive e tente de novo (veja: fuser -vm \$(findmnt -rn -o TARGET -S $p))."
+    umount "$p" || die "não consegui desmontar $p. Feche janelas do gerenciador de arquivos que mostrem o cartão e tente de novo (veja: fuser -vm \$(findmnt -rn -o TARGET -S $p))."
   fi
 done
 
@@ -158,11 +167,11 @@ sync
 mv "$ROOT_MNT"/boot/* "$BOOT_MNT"/
 sync
 
-# ------------------------------------------ 3. adaptação para boot por USB
+# ------------------------------------------ 3. adaptação do boot (cartão SD)
 # O tarball rpi-aarch64 usa o U-Boot como kernel8.img e não tem cmdline.txt:
 # os argumentos do kernel vêm do boot.scr (compilado de boot.txt), que já usa
 # "root=PARTUUID=<partição 2 do dispositivo de boot> rw rootwait". Assim o sistema
-# monta a raiz no pen drive, em qualquer porta, sem depender de /dev/mmcblk0p2.
+# monta a raiz no mesmo dispositivo de onde o kernel foi carregado: o cartão SD.
 # Mantemos essa linha, porque trocar por root=LABEL=ROOT exigiria recompilar o
 # boot.scr com mkimage (pacote uboot-tools). Só validamos que o rootwait existe.
 log "Adaptando fstab e verificando o boot por PARTUUID..."
@@ -175,6 +184,7 @@ cat > "$ROOT_MNT/etc/fstab" <<'EOF'
 # See fstab(5) for details.
 
 # <file system> <dir> <type> <options> <dump> <pass>
+LABEL=ROOT  /      ext4  defaults,noatime  0  1
 LABEL=BOOT  /boot  vfat  defaults,noatime  0  0
 EOF
 
@@ -258,7 +268,9 @@ EDGE_DIR="$(dirname "$(readlink -f "$0")")"
 install -m 755 "$EDGE_DIR/setup_raiar_node.sh" "$ROOT_MNT/root/setup_raiar_node.sh"
 install -m 755 "$EDGE_DIR/slim_arch_rpi4.sh" "$ROOT_MNT/root/slim_arch_rpi4.sh"
 
-# Clonador para o cartão SD (para quem não tem leitor de cartão no notebook).
+# Clonador para o cartão SD. Só serve ao caminho alternativo de quem não tem leitor
+# de cartão: nele, este script grava um pen drive de partida e o clonador copia o
+# sistema dele para o SD. Com o SD gravado direto, não é necessário.
 install -m 755 "$EDGE_DIR/clone_to_sd.sh" "$ROOT_MNT/root/clone_to_sd.sh"
 
 # ------------------------------------------------------------------- final
@@ -266,5 +278,5 @@ log "Sincronizando e desmontando..."
 sync
 umount "$BOOT_MNT" "$ROOT_MNT"
 trap - EXIT
-log "Pronto! Espete o pen drive no Raspberry Pi 4 (sem cartão SD) e ligue."
+log "Pronto! Coloque o cartão SD no Raspberry Pi 4 e ligue."
 log "Acesso: ssh alarm@$NODE_HOSTNAME (senha padrão: alarm). No nó, como root (senha padrão: root), rode: /root/setup_raiar_node.sh"

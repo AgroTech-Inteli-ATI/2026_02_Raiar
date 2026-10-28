@@ -2,7 +2,7 @@
 title: Provisionamento do nó de borda com Arch Linux ARM no Raspberry Pi 4
 sidebar_label: Nó de borda no Raspberry Pi
 sidebar_position: 2
-description: Preparação de um Pen Drive USB com Arch Linux ARM aarch64 ultra-leve para o Raspberry Pi 4, com Docker e captura de câmera por DVR (RTSP) ou USB.
+description: Preparação de um cartão SD com Arch Linux ARM aarch64 ultra-leve para o Raspberry Pi 4, com Docker e captura de câmera por DVR (RTSP) ou USB.
 ---
 
 # Provisionamento do nó de borda com Arch Linux ARM no Raspberry Pi 4
@@ -20,14 +20,14 @@ Um sistema com interface gráfica, Bluetooth, áudio e logs em disco gasta cente
 | Decisão | O que escolhi | Por quê |
 | --- | --- | --- |
 | Sistema | Arch Linux ARM `aarch64`, sem interface gráfica (*headless*) | Instalação mínima, 64 bits, pacotes atuais e nenhum serviço que eu não habilite |
-| Armazenamento | Pen Drive USB com boot direto (`USB-MSD`) | O Raspberry Pi 4 consegue iniciar por USB, e dispensa o cartão SD como único ponto de falha [1][2] |
+| Armazenamento | Cartão SD de 32 GB, com sistema, Docker, imagens e dados no mesmo cartão | É o boot padrão do Raspberry Pi 4, dispensa outro dispositivo no case e simplifica a instalação em campo [1][2] |
 | Bootloader | U-Boot, que já vem no tarball oficial | Não precisei trocar o bootloader; ele lê o `boot.scr` da partição de boot [1] |
 | Rede | `wpa_supplicant` com `systemd-networkd` | São os componentes que o tarball já inclui; não precisei de pacotes extras para o Wi-Fi subir sozinho [1] |
 | Contêineres | Docker e Docker Compose, instalados no primeiro boot | Mantém o sistema base pequeno e deixa a pilha dos modelos isolada [3] |
 
 ## Layout do armazenamento
 
-O script cria uma tabela de partições `msdos` com duas partições.
+O script cria no cartão SD uma tabela de partições `msdos` com duas partições.
 
 | Partição | Tipo | Tamanho | Rótulo | Uso |
 | --- | --- | --- | --- | --- |
@@ -36,13 +36,14 @@ O script cria uma tabela de partições `msdos` com duas partições.
 
 Baixo o tarball `ArchLinuxARM-rpi-aarch64-latest.tar.gz` de `os.archlinuxarm.org` e confiro o md5 publicado junto com ele antes de gravar [1]. Depois extraio o arquivo com `bsdtar -xpf`, que preserva permissões, e movo o conteúdo de `/boot` para a partição `BOOT`.
 
-### Boot sem cartão SD
+### Boot pelo cartão SD
 
-Esperava encontrar um `cmdline.txt` apontando para `/dev/mmcblk0p2`, mas o tarball atual não o tem. O arquivo `kernel8.img` é o U-Boot, e os argumentos do kernel vêm do `boot.scr`, compilado a partir do `boot.txt`. Nesse arquivo, a raiz já é definida como `root=PARTUUID=<partição 2 do dispositivo de boot> rw rootwait`. Assim, o sistema monta a raiz no mesmo dispositivo de onde o U-Boot carregou o kernel, seja USB ou SD, e o `rootwait` dá tempo para a controladora USB 3.0 responder.
+Esperava encontrar um `cmdline.txt` apontando para `/dev/mmcblk0p2`, mas o tarball atual não o tem. O arquivo `kernel8.img` é o U-Boot, e os argumentos do kernel vêm do `boot.scr`, compilado a partir do `boot.txt`. Nesse arquivo, a raiz já é definida como `root=PARTUUID=<partição 2 do dispositivo de boot> rw rootwait`. Assim, o sistema monta a raiz no mesmo dispositivo de onde o U-Boot carregou o kernel, que aqui é o cartão SD, e o `rootwait` espera o dispositivo responder.
 
-Por isso mantive essa linha e não a troquei por `root=LABEL=ROOT`, o que exigiria recompilar o `boot.scr` com `mkimage`. O que mudei foi o `/etc/fstab`, que originalmente apontava para `/dev/mmcblk0p1`:
+Por isso mantive essa linha e não a troquei por `root=LABEL=ROOT`, o que exigiria recompilar o `boot.scr` com `mkimage`. O que mudei foi o `/etc/fstab`, que originalmente apontava para `/dev/mmcblk0p1`. Ele passa a usar rótulos e a montar a raiz com `noatime`, para que a leitura de um arquivo não gere uma escrita no cartão:
 
 ```text
+LABEL=ROOT  /      ext4  defaults,noatime  0  1
 LABEL=BOOT  /boot  vfat  defaults,noatime  0  0
 ```
 
@@ -56,7 +57,7 @@ Esse ajuste importa também depois: uma atualização de kernel com `pacman -Syu
 | `dtoverlay=disable-bt` | `config.txt` | Desliga o Bluetooth |
 | `dtparam=audio=off` | `config.txt` | Desliga o áudio |
 | Módulos de Bluetooth e áudio na lista de bloqueio | `/etc/modprobe.d/raiar-lowram.conf` | Impede que o kernel carregue esses módulos |
-| `Storage=volatile` e `SystemMaxUse=30M` | `/etc/systemd/journald.conf` | Mantém o log na memória, limitado a 30 MB, e poupa escrita no pen drive [4] |
+| `Storage=volatile` e `SystemMaxUse=30M` | `/etc/systemd/journald.conf` | Mantém o log na memória, limitado a 30 MB, e poupa escrita no cartão SD [4] |
 | `vm.swappiness=10` | `/etc/sysctl.d/99-raiar-performance.conf` | Faz o kernel evitar o swap, se houver [5] |
 
 Há duas ressalvas. Primeiro, como o U-Boot carrega o dtb da pasta `dtbs` por conta própria, o kernel provavelmente ignora os overlays do `config.txt`. Mantive as linhas pedidas e adicionei o bloqueio dos módulos, que age no próprio kernel. Segundo, a imagem não define swap, então o `vm.swappiness` só passa a valer quando eu habilitar um.
@@ -67,11 +68,11 @@ O script lê a conexão Wi-Fi ativa do notebook pelo `nmcli`. Com `wpa_passphras
 
 Para usar o nó em outras redes, `src/edge/add_wifi.sh` acrescenta uma rede ao mesmo arquivo, sem apagar as anteriores, e aceita uma prioridade. O Raspberry Pi entra na rede conhecida de maior prioridade que estiver ao alcance. O exemplo é `/root/add_wifi.sh "NOME_DA_REDE" "SENHA" 5`, e `--list` mostra as redes gravadas. O firmware do Wi-Fi do Raspberry Pi (`linux-firmware-broadcom`) é preservado no enxugamento justamente para isso.
 
-O pen drive guarda a credencial do Wi-Fi. Quem o tiver nas mãos pode lê-la como root, então trato o dispositivo como sensível. As senhas padrão do Arch Linux ARM (`root` e `alarm`) devem ser trocadas com `passwd` no primeiro acesso.
+O cartão SD guarda a credencial do Wi-Fi. Quem o tiver nas mãos pode lê-la como root, então trato o cartão como sensível. As senhas padrão do Arch Linux ARM (`root` e `alarm`) devem ser trocadas com `passwd` no primeiro acesso.
 
 ## Primeiro boot: Docker e câmera
 
-Dentro do pen drive deixo `/root/setup_raiar_node.sh`, que executa, como root:
+No cartão deixo `/root/setup_raiar_node.sh`, que executa, como root:
 
 1. confere se `/boot` está montado, para o kernel novo não cair no lugar errado;
 2. liga a sincronização de horário e espera por ela, porque o Raspberry Pi não tem relógio de hardware e um horário errado quebra a verificação do `pacman`;
@@ -109,15 +110,31 @@ Também desabilito o `systemd-networkd-wait-online`, que pode atrasar o boot em 
 
 O Docker mantém dois processos residentes (`dockerd` e `containerd`) e consome memória mesmo sem containers. Mantive o Docker porque a equipe containeriza com ele, mas medirei esse custo no nó antes de decidir por uma alternativa sem *daemon*, como o Podman.
 
+## Desgaste do cartão SD
+
+Com todo o armazenamento no cartão, o desgaste das escritas passa a ser o principal risco de longo prazo. Reduzi o que o nó escreve, e a lista abaixo resume as medidas.
+
+| Medida | Efeito |
+| --- | --- |
+| `Storage=volatile` no `journald` | Os logs do sistema ficam na memória e não gastam o cartão |
+| `noatime` na raiz e em `/boot` | Ler um arquivo não gera escrita |
+| `zram` no lugar de swap em disco | Os picos de memória não escrevem no cartão |
+| Log dos containers limitado a 3 arquivos de 10 MB | O log dos containers não cresce sem limite |
+| `/tmp` e `/frames` em `tmpfs` nos containers | Os quadros capturados não passam pelo cartão |
+| Apenas o SQLite em `/opt/raiar/data` | A única escrita contínua são os resultados, que são pequenos |
+
+Recomendo um cartão de **alta resistência** (*high endurance*), de marca conhecida, e não um cartão comum. Também guardo uma cópia do cartão pronto (uma imagem com `dd`), de modo que trocar um cartão defeituoso seja regravar essa imagem, e não reinstalar tudo. **Ainda não medi** o volume de escrita real do nó em operação nem a vida útil do cartão. Isso será acompanhado nos testes de 24 horas, olhando, por exemplo, o total de bytes escritos no dispositivo.
+
 ## Reprodução com o script do repositório
 
-O procedimento está em `src/edge/provision_arch_rpi4.sh`, que também grava em `/root` os scripts `setup_raiar_node.sh`, `slim_arch_rpi4.sh` e `clone_to_sd.sh`. Ele roda como root no notebook de desenvolvimento e recebe o dispositivo de destino:
+O procedimento está em `src/edge/provision_arch_rpi4.sh`, que também grava em `/root` os scripts `setup_raiar_node.sh` e `slim_arch_rpi4.sh` (e o `clone_to_sd.sh`, usado só no caminho alternativo). Ele roda como root no notebook de desenvolvimento e recebe o cartão SD como destino:
 
 ```bash
-sudo src/edge/provision_arch_rpi4.sh /dev/sdX
+sudo src/edge/provision_arch_rpi4.sh /dev/mmcblk0   # leitor de cartão interno
+sudo src/edge/provision_arch_rpi4.sh /dev/sdX       # leitor de cartão USB
 ```
 
-Antes de apagar, o script recusa qualquer dispositivo que não seja um disco inteiro, removível e em barramento USB, ou que contenha `/`, `/home` ou `/boot` do notebook. Em seguida mostra o dispositivo e pede duas confirmações. As variáveis de ambiente opcionais são:
+Antes de apagar, o script recusa qualquer dispositivo que não seja um disco inteiro, que seja o disco do sistema do notebook ou que contenha `/`, `/home` ou `/boot`. Um dispositivo `sdX` precisa ser removível e estar em barramento USB, como um leitor externo; o `mmcblk*` do leitor interno é aceito mesmo constando como não removível. Em seguida o script mostra o dispositivo e pede duas confirmações. As variáveis de ambiente opcionais são:
 
 | Variável | Função |
 | --- | --- |
@@ -126,26 +143,28 @@ Antes de apagar, o script recusa qualquer dispositivo que não seja um disco int
 | `SSH_PUBKEY_FILE` | Chave pública instalada para o usuário `alarm`; por padrão procura `~/.ssh/id_ed25519.pub` ou `id_rsa.pub` |
 | `TARBALL` | Caminho de um tarball já baixado |
 
-### Clonagem para um cartão SD
-
-Meu notebook não tem leitor de cartão. Por isso criei `src/edge/clone_to_sd.sh`, que o script principal grava em `/root` do pen drive. Com o Raspberry Pi ligado pelo pen drive, e sem SD, encaixo o cartão e o script o particiona com o mesmo layout e copia `/boot` e a raiz. Isso funciona sem reescrever nada porque a raiz é identificada pelo `PARTUUID` do dispositivo de boot e o `fstab` usa rótulos. Depois só preciso tirar o pen drive. A imagem base não traz `parted` nem `dosfstools`, então antes da clonagem instalo os dois com `pacman -Syu` e reinicio o Raspberry Pi, para o kernel atualizado e seus módulos coincidirem.
-
 ## Roteiro completo
 
-Este é o caminho que segui, na ordem em que deve ser repetido. As etapas 1 a 3 acontecem no notebook, e as demais, no próprio nó.
+Este é o caminho recomendado, na ordem em que deve ser repetido. As etapas 1 e 2 acontecem no notebook, e as demais, no próprio nó.
 
-1. Identifico o pen drive com `lsblk` e confirmo que é removível e USB. Se algum gerenciador de arquivos mantiver a pasta aberta, fecho a janela antes de gravar.
-2. Rodo `provision_arch_rpi4.sh` com o dispositivo e a confirmação `--yes-erase`. A gravação de 2 GB num pen drive lento é demorada, e a maior parte do tempo fica no `sync` final.
-3. Espeto o pen drive numa porta USB 3.0 do Raspberry Pi 4, sem cartão SD, e ligo. O Raspberry Pi não tem botão de ligar: ele liga quando recebe energia, e `poweroff` seguido da luz verde parada é o desligamento seguro.
-4. Se o cartão SD tiver outro sistema, o Raspberry Pi inicia por ele. Nesse caso, mudo a ordem de boot para USB primeiro, em `raspi-config`, na opção de ordem de boot, e reinicio com os dois conectados.
-5. Entro como `root` e ajusto o teclado com `loadkeys br-abnt2`. Esse ajuste se perde a cada reinício.
-6. Instalo `parted` e `dosfstools` com `pacman -Syu`, depois de `timedatectl set-ntp true` e `pacman-key --init`, e reinicio.
-7. Rodo `clone_to_sd.sh` para copiar o sistema para o cartão SD, e depois desligo e tiro o pen drive.
-8. Rodo `slim_arch_rpi4.sh`, que mostra a lista de remoção e pede confirmação.
-9. Rodo `RAIAR_USER=raiar ZRAM=1 setup_raiar_node.sh`, reinicio e confiro Wi-Fi, Docker e `zram`.
-10. Troco as senhas padrão com `passwd`.
+1. Identifico o cartão SD com `lsblk` e confiro o dispositivo (`mmcblk0` ou `sdX`). Se algum gerenciador de arquivos mantiver o cartão aberto, fecho a janela antes de gravar.
+2. Rodo `provision_arch_rpi4.sh` com o dispositivo e a confirmação `--yes-erase`. A gravação de 2 GB num cartão lento é demorada, e a maior parte do tempo fica no `sync` final.
+3. Coloco o cartão no Raspberry Pi 4 e ligo. O Raspberry Pi não tem botão de ligar: ele liga quando recebe energia, e `poweroff` seguido da luz verde parada é o desligamento seguro. O cartão SD é o boot padrão, então não é preciso alterar a ordem de boot da EEPROM.
+4. Entro como `root` e ajusto o teclado com `loadkeys br-abnt2`. Esse ajuste se perde a cada reinício.
+5. Instalo o que falta e rodo `slim_arch_rpi4.sh`, que mostra a lista de remoção e pede confirmação.
+6. Rodo `RAIAR_USER=raiar ZRAM=1 setup_raiar_node.sh`, reinicio e confiro Wi-Fi, Docker e `zram`.
+7. Troco as senhas padrão com `passwd`.
+8. Com o nó configurado, gero a imagem de reserva do cartão para recuperação.
 
-As etapas 6 e 7 só existem porque meu notebook não tem leitor de cartão. Quem tiver um leitor pode gravar direto no SD com `provision_arch_rpi4.sh`, por exemplo `/dev/sdX`, sem passar pelo pen drive.
+### Caminho alternativo: notebook sem leitor de cartão
+
+Meu notebook não tem leitor de cartão, então segui por este caminho. O destino final continua sendo o cartão SD; o pen drive é só um veículo de partida e não faz parte do nó.
+
+1. Gravo um pen drive USB com o mesmo `provision_arch_rpi4.sh` (`/dev/sdX`), que também grava o `clone_to_sd.sh` em `/root`.
+2. Ligo o Raspberry Pi pelo pen drive, **sem** cartão SD encaixado. Se o cartão tiver outro sistema, o Raspberry Pi inicia por ele; nesse caso, ponho o USB primeiro em `raspi-config`, na ordem de boot.
+3. Instalo `parted` e `dosfstools` com `pacman -Syu`, depois de `timedatectl set-ntp true` e `pacman-key --init`, e reinicio, para o kernel atualizado e seus módulos coincidirem.
+4. Encaixo o cartão com o Raspberry Pi ligado e rodo `clone_to_sd.sh`, que particiona o cartão com o mesmo layout e copia `/boot` e a raiz. Isso funciona sem reescrever nada porque a raiz é identificada pelo `PARTUUID` do dispositivo de boot e o `fstab` usa rótulos.
+5. Desligo, tiro o pen drive e ligo de novo: o nó inicia só pelo cartão. A partir daqui, o roteiro segue da etapa 4 acima.
 
 ### Acesso ao nó
 
@@ -155,8 +174,8 @@ O `root` não entra por SSH com senha, que é o padrão do OpenSSH atual. Para o
 
 | Sintoma | Causa | Solução |
 | --- | --- | --- |
-| `wipefs` informa dispositivo ocupado | O Nautilus mantinha o pen drive aberto | Fechar a janela; o script agora falha com mensagem clara |
-| O Raspberry Pi abre o Raspberry Pi OS | O cartão SD tem prioridade sobre o USB no boot | Colocar USB primeiro em `raspi-config` |
+| `wipefs` informa dispositivo ocupado | O gerenciador de arquivos mantinha o dispositivo aberto | Fechar a janela; o script agora falha com mensagem clara |
+| O Raspberry Pi abre o Raspberry Pi OS | No caminho alternativo, o cartão tinha outro sistema e prioridade sobre o USB | Colocar USB primeiro em `raspi-config` ou usar um cartão vazio |
 | `comando ausente: parted` | A imagem não traz `parted` nem `dosfstools` | Instalar os dois e reiniciar |
 | Erro de leitura e escrita em `mmcblk0` | Provavelmente o cartão encaixado com o Pi ligado; com ele presente desde o boot, a cópia funcionou | Manter o SD encaixado antes de ligar |
 | `command not found` para `hostname` | O sistema enxuto não instala o programa | Usar `cat /etc/hostname` |
@@ -166,7 +185,7 @@ O `root` não entra por SSH com senha, que é o padrão do OpenSSH atual. Para o
 
 ## Situação atual e limites
 
-Gravei o pen drive, iniciei o Raspberry Pi 4 por ele e copiei o sistema para um cartão SD de 32 GB, de onde o nó já inicia sozinho. Depois apliquei o enxugamento e o primeiro boot no próprio nó, e medi os valores abaixo.
+O nó atual roda inteiramente num cartão SD de 32 GB, sem pen drive: como meu notebook não tem leitor, gravei antes um pen drive de partida e copiei o sistema dele para o cartão, de onde o nó já inicia sozinho. Depois apliquei o enxugamento e o primeiro boot no próprio nó, e medi os valores abaixo.
 
 | Medida | Antes | Depois |
 | --- | --- | --- |

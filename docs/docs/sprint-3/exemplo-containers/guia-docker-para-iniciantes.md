@@ -808,7 +808,7 @@ O nó já está pronto: Arch Linux ARM enxuto, Docker 29 e Compose instalados, s
 | --- | --- |
 | Sistema do nó | Arch Linux ARM `aarch64` (os containers usam Debian por dentro, e isso não é problema) |
 | RAM | 3.815 MB totais; cerca de 3.570 MB disponíveis sem containers |
-| Disco | 29 GB, com 27 GB livres |
+| Disco | Cartão SD de 32 GB (29 GB úteis, 27 GB livres) |
 | Usuário | `raiar` (uid 1000), nos grupos `docker` e `video` |
 | Dados | `/opt/raiar/data` |
 | Rede | Só saída; nenhuma porta aberta pelos containers |

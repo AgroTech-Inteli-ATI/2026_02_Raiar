@@ -242,13 +242,13 @@ Os termos abaixo aparecem na página do [nó de borda no Raspberry Pi](../sprint
 
 **SSH:** protocolo de acesso remoto seguro a um terminal, usado para administrar o nó sem monitor.
 
-**Boot por USB (`USB-MSD`):** modo em que o Raspberry Pi inicia a partir de um dispositivo USB de armazenamento, sem cartão SD.
+**Cartão SD:** meio de armazenamento do nó. Guarda o sistema, o Docker, as imagens dos containers e os resultados. É o boot padrão do Raspberry Pi 4.
 
-**EEPROM e `BOOT_ORDER`:** memória interna do Raspberry Pi 4 que guarda a ordem em que ele tenta iniciar: cartão SD, USB e outras. O boot por USB exige que o USB esteja nessa ordem.
+**EEPROM e `BOOT_ORDER`:** memória interna do Raspberry Pi 4 que guarda a ordem em que ele tenta iniciar: cartão SD, USB e outras. Com o sistema no cartão SD não é preciso alterá-la; só o caminho alternativo, que parte de um pen drive, exige o USB antes de um cartão que já tenha outro sistema.
 
 **U-Boot:** programa que inicia o Raspberry Pi neste sistema e carrega o kernel a partir da partição de boot.
 
-**`PARTUUID`:** identificador único de uma partição. O boot o usa para achar a raiz do sistema no mesmo dispositivo de onde o kernel foi carregado, seja USB ou SD.
+**`PARTUUID`:** identificador único de uma partição. O boot o usa para achar a raiz do sistema no mesmo dispositivo de onde o kernel foi carregado, que aqui é o cartão SD.
 
 **`gpu_mem`:** parâmetro do `config.txt` que define quanta RAM é reservada à GPU. Em um nó sem monitor, o valor mínimo libera memória para os modelos.
 

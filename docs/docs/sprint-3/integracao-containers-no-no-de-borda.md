@@ -29,7 +29,7 @@ Medi o nó reiniciado, com o Docker ativo e nenhum container de modelo.
 | Recurso | Total | Em uso no nó | Disponível |
 | --- | --- | --- | --- |
 | RAM | 3.815 MB | 244 MB, dos quais cerca de 124 MB são `dockerd` e `containerd` | 3.571 MB |
-| Armazenamento da raiz | 29 GB | 1,1 GB | 27 GB |
+| Cartão SD (raiz) | 29 GB | 1,1 GB | 27 GB |
 | Swap comprimido (`zram`) | 1,9 GB | 0 | 1,9 GB |
 
 Medi também o pico de memória do detector ao processar um quadro de 640 x 480 pixels, em `x86_64`.
@@ -228,7 +228,7 @@ Este é o combinado mínimo entre as duas frentes.
 | Arquitetura da imagem | `linux/arm64` |
 | Usuário no nó | `raiar` (uid 1000), nos grupos `docker` e `video` |
 | Câmera | DVR por RTSP (principal), em `RAIAR_CAMERA_SOURCE`; `/dev/video0` por `compose.usb.yaml` (alternativa) |
-| Dados persistentes | `/opt/raiar/data`, montado em `/app/outputs` |
+| Dados persistentes | `/opt/raiar/data` no cartão SD, montado em `/app/outputs` |
 | Segredos | `/opt/raiar/.env`, permissão `600` |
 | Comandos usados | `raiar-vision predict`, `raiar-vision sync` (nunca `chicken-yolo`) |
 | Rede | Saída HTTPS ao backend e acesso ao DVR na rede local (RTSP, porta 554); nenhuma porta publicada pelos containers |

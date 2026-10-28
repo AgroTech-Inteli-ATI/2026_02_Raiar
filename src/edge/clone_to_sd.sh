@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Clona o sistema que está rodando no Raspberry Pi 4 (boot por Pen Drive USB) para
-# o cartão SD, mantendo o layout do provision_arch_rpi4.sh: BOOT (FAT32, 512 MiB)
-# e ROOT (ext4). Serve para quem não tem leitor de cartão no notebook.
+# CAMINHO ALTERNATIVO, só para quem NÃO tem leitor de cartão no notebook. O destino
+# final do nó é sempre o cartão SD; o pen drive é só o veículo de partida.
+# Clona o sistema que está rodando no Raspberry Pi 4 (iniciado por um Pen Drive USB
+# provisionado) para o cartão SD, mantendo o layout do provision_arch_rpi4.sh:
+# BOOT (FAT32, 512 MiB) e ROOT (ext4).
 #
 # Uso, no Raspberry Pi, como root:
 #   1. Ligue o Pi com o Pen Drive e SEM o cartão SD (se o SD tiver um sistema, o Pi
@@ -28,7 +30,7 @@ CONFIRM_FLAG=""
 for arg in "$@"; do
   case "$arg" in
     --yes-erase=*) CONFIRM_FLAG="${arg#--yes-erase=}" ;;
-    -h|--help)     sed -n '2,16p' "$0"; exit 0 ;;
+    -h|--help)     sed -n '2,17p' "$0"; exit 0 ;;
     /dev/*)        TARGET="$arg" ;;
     *)             die "argumento desconhecido: $arg" ;;
   esac
