@@ -1,5 +1,6 @@
 services:
   vision:
+    profiles: ["captura"]
     image: raiar/vision:${RAIAR_TAG:-0.1.0}
     build:
       context: .
@@ -11,25 +12,19 @@ services:
     cap_drop: [ALL]
     security_opt:
       - no-new-privileges:true
-    restart: unless-stopped
+    # A captura ao vivo ainda não existe; não reinicie um comando que não consome câmeras.
+    restart: "no"
     mem_limit: 2g
     cpus: 3.2
     environment:
       RAIAR_CAMERA_SOURCE: ${RAIAR_CAMERA_SOURCE:?Defina RAIAR_CAMERA_SOURCE no arquivo .env}
       RAIAR_CAMERA_ID: ${RAIAR_CAMERA_ID:-camera-1}
-      RAIAR_MODEL: ${MODELO:-coco}
       OPENCV_FFMPEG_CAPTURE_OPTIONS: rtsp_transport;tcp
       YOLO_CONFIG_DIR: /cache/ultralytics
       MPLCONFIGDIR: /cache/matplotlib
       TORCH_HOME: /cache/torch
-    command:
-      - predict
-      - --source
-      - ${RAIAR_CAMERA_SOURCE:?Defina RAIAR_CAMERA_SOURCE no arquivo .env}
-      - --camera-id
-      - ${RAIAR_CAMERA_ID:-camera-1}
-      - --model
-      - ${MODELO:-coco}
+    # A fonte fica em RAIAR_CAMERA_SOURCE no ambiente para a futura captura ao vivo.
+    command: ["--help"]
     volumes:
       - ${RAIAR_DATA:-/opt/raiar/data}:/app/outputs
       - /opt/raiar/models:/opt/raiar/models:ro

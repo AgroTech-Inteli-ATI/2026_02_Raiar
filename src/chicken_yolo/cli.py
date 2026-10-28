@@ -27,7 +27,7 @@ def configure_runtime(root: Path):
         ("MPLCONFIGDIR", "matplotlib"),
         ("TORCH_HOME", "torch"),
     ):
-        path = root / ".cache" / folder
+        path = Path(os.environ[key]) if key in os.environ else root / ".cache" / folder
         path.mkdir(parents=True, exist_ok=True)
         os.environ.setdefault(key, str(path))
 

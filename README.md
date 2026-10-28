@@ -130,11 +130,47 @@ docker compose --env-file .env.exemplo config -q
 docker compose build
 ```
 
-O build do `chicken_yolo` usa PyTorch 2.14.1 e torchvision 0.29.1 a partir do índice CPU;
-o OpenCV da imagem é `opencv-python-headless`. O serviço `sync` envia os registros
+O serviço `vision` fica no profile `captura` porque ainda não há captura ao vivo. Por padrão,
+suba apenas a sincronização:
+
+```bash
+docker compose up -d sync
+```
+
+Para conferir o comando inofensivo do serviço de visão, habilite o profile explicitamente:
+
+```bash
+docker compose --profile captura run --rm vision
+```
+
+Ele mostra a ajuda e termina; não inicia leitura RTSP nem abre `/dev/video0`. A variável
+`RAIAR_CAMERA_SOURCE` continua disponível no ambiente para a futura implementação. A URL não
+é colocada nos argumentos do processo; ela continua no ambiente do container e pode ser vista
+por quem tem acesso ao Docker no host. Não compartilhe `docker inspect` sem redigir esse valor.
+
+O build do `chicken_yolo` usa PyTorch 2.14.1 e torchvision 0.29.1 exclusivamente do índice
+CPU, sem consultar o PyPI para esses pacotes; o OpenCV da imagem é
+`opencv-python-headless`. A estimativa para a imagem x86_64 após essa correção é de 2 a 3 GB,
+em comparação com os 6,79 GB observados na imagem anterior. É uma estimativa, não uma medição;
+confirme com `docker images` após o build. O serviço `sync` envia os registros
 pendentes a cada 300 segundos, usando o comando existente `raiar-vision sync`; falhas de
 rede não encerram o loop. Defina uma versão em `RAIAR_TAG` para poder voltar a uma imagem
 anterior.
+
+`MODELO` seleciona os pesos embutidos durante o build. Se mudar o valor, reconstrua a imagem
+antes de executá-la. Use o mesmo valor em `--model` ao chamar `predict` manualmente; trocar
+somente o argumento de execução não baixa nem prepara pesos adicionais.
+
+Exemplo de inferência local com uma imagem montada somente para leitura (defina `MODELO` com
+o mesmo valor usado no build):
+
+```bash
+MODELO=coco
+docker run --rm \
+  -v "$PWD/data/raw:/inputs:ro" \
+  -v "$PWD/outputs:/app/outputs" \
+  raiar/vision:0.1.0 predict --source /inputs/imagem.jpg --model "$MODELO"
+```
 
 Depois do build, valide a imagem e o UID:
 
@@ -150,11 +186,13 @@ grupo `video` com `getent group video | cut -d: -f3`, defina `VIDEO_GID` e inici
 override:
 
 ```bash
-docker compose -f compose.yaml -f compose.usb.yaml up -d
+docker compose --profile captura -f compose.yaml -f compose.usb.yaml run --rm vision
 ```
 
 O Compose principal não concede dispositivos. Somente o override USB concede acesso a
-`/dev/video0` e ao GID informado. Para conferir a configuração USB sem iniciar serviços:
+`/dev/video0` e ao GID informado. Como a captura ao vivo ainda não foi implementada, esse
+comando apenas executa `--help`; ele não processa a câmera. Para conferir a configuração USB
+sem iniciar serviços:
 
 ```bash
 docker compose --env-file .env.exemplo -f compose.yaml -f compose.usb.yaml config -q
@@ -183,9 +221,18 @@ Para revisar os limites de CPU e memória durante a operação, use `docker stat
 O Compose já injeta `RAIAR_CAMERA_SOURCE`, `RAIAR_CAMERA_ID` e as opções FFmpeg sem
 reconstruir a imagem. A implementação atual de `raiar-vision predict` ainda lê arquivos
 locais, não URLs RTSP nem `/dev/video0`. Portanto, a captura ao vivo e a gravação periódica
-em `/frames` dependem da próxima etapa de implementação; iniciar o serviço `vision` com
-essas fontes antes dela não processará a câmera. O serviço USB e as configurações podem
-ser validados pelo Compose, mas isso não valida acesso real à câmera.
+em `/frames` dependem da próxima etapa de implementação. O serviço `vision` está no profile
+`captura`, usa `--help` e `restart: "no"` até essa implementação para evitar ciclos de falha
+e gravação excessiva de logs. O serviço `sync` permanece disponível por padrão.
+
+### Estado dos testes desta entrega
+
+Foi executado `git diff --check`. O ambiente de desenvolvimento usado para esta entrega não
+tem Docker nem uv disponíveis, então não foi possível validar o Compose, construir ou medir a
+imagem, conferir `torch.__version__`/`torch.version.cuda`, verificar a ausência do pacote
+`nvidia`, nem executar os containers. Também não foram testados Raspberry Pi/ARM64, DVR,
+câmera USB, inferência RaiarNet ou sincronização com backend real. A configuração de
+healthcheck do `sync` permanece como pendência.
 
 Os experimentos PIOFlow e YOLOPIO permanecem em notebooks e não fazem parte da imagem
 `raiar/vision`.

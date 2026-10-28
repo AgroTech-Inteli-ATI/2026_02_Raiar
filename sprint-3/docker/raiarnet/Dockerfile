@@ -13,7 +13,7 @@ RUN apt-get update \
 
 COPY sprint-3/docker/raiarnet/requirements.txt /tmp/requirements.txt
 RUN pip install --index-url https://download.pytorch.org/whl/cpu \
-        --extra-index-url https://pypi.org/simple torch==2.14.1 \
+        torch==2.14.1 \
     && pip install -r /tmp/requirements.txt \
     && rm /tmp/requirements.txt \
     && useradd --uid 1000 --create-home raiar \

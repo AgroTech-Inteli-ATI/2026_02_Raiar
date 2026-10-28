@@ -45,7 +45,6 @@ RUN uv sync --frozen --no-dev \
         --no-install-package triton \
     && uv pip install --python /opt/venv/bin/python \
         --index-url https://download.pytorch.org/whl/cpu \
-        --extra-index-url https://pypi.org/simple \
         torch==2.14.1 torchvision==0.29.1 \
     && uv pip install --python /opt/venv/bin/python \
         --index-url https://pypi.org/simple opencv-python-headless==4.14.0.94
