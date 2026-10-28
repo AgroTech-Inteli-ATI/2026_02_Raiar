@@ -48,14 +48,14 @@ services:
       RAIAR_SYNC_TOKEN: ${RAIAR_SYNC_TOKEN:?Defina RAIAR_SYNC_TOKEN no arquivo .env}
     entrypoint: ["/bin/sh", "-c"]
     command:
-      - >-
-        while true; do
-          raiar-vision --root /app sync
-          --database /app/outputs/results.sqlite3
-          --url "$${RAIAR_SYNC_URL}"
-          --token-env RAIAR_SYNC_TOKEN
-          --batch-size 100 || true;
-          sleep 300;
+      - |
+        while true; do \
+          raiar-vision --root /app sync \
+            --database /app/outputs/results.sqlite3 \
+            --url "$${RAIAR_SYNC_URL}" \
+            --token-env RAIAR_SYNC_TOKEN \
+            --batch-size 100 || true
+          sleep 300
         done
     volumes:
       - ${RAIAR_DATA:-/opt/raiar/data}:/app/outputs

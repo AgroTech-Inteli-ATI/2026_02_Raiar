@@ -4,6 +4,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.8.22 /uv /uvx /bin/
 ENV PYTHONUNBUFFERED=1 \
     UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
+    UV_NO_CACHE=1 \
     UV_PROJECT_ENVIRONMENT=/opt/venv \
     YOLO_CONFIG_DIR=/cache/ultralytics \
     MPLCONFIGDIR=/cache/matplotlib \

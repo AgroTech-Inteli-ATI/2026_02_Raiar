@@ -150,9 +150,10 @@ por quem tem acesso ao Docker no host. Não compartilhe `docker inspect` sem red
 
 O build do `chicken_yolo` usa PyTorch 2.14.1 e torchvision 0.29.1 exclusivamente do índice
 CPU, sem consultar o PyPI para esses pacotes; o OpenCV da imagem é
-`opencv-python-headless`. A estimativa para a imagem x86_64 após essa correção é de 2 a 3 GB,
-em comparação com os 6,79 GB observados na imagem anterior. É uma estimativa, não uma medição;
-confirme com `docker images` após o build. O serviço `sync` envia os registros
+`opencv-python-headless`. A medição disponível antes da correção do cache do uv foi de 4,62 GB;
+ela não representa a imagem reconstruída com `UV_NO_CACHE=1`. O tamanho final após essa correção
+precisa ser medido com `docker images`; não foi possível medi-lo neste ambiente. O serviço
+`sync` envia os registros
 pendentes a cada 300 segundos, usando o comando existente `raiar-vision sync`; falhas de
 rede não encerram o loop. Defina uma versão em `RAIAR_TAG` para poder voltar a uma imagem
 anterior.
