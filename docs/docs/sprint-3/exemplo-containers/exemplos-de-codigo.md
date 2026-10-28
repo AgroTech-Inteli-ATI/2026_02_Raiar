@@ -157,8 +157,12 @@ services:
     <<: *comum
     # Laço de captura e inferência ao vivo: ainda não existe no código (a implementar).
     # Hoje, "raiar-vision predict --source ARQUIVO" processa imagens e vídeos locais.
-    devices: ["/dev/video0:/dev/video0"]
-    group_add: ["${VIDEO_GID:-983}"]
+    # Fonte: DVR por RTSP (padrão) ou /dev/video0. Para USB, some o compose.usb.yaml.
+    environment:
+      YOLO_CONFIG_DIR: /tmp/ultralytics
+      RAIAR_CAMERA_SOURCE: ${RAIAR_CAMERA_SOURCE:?defina RAIAR_CAMERA_SOURCE}
+      RAIAR_CAMERA_ID: ${RAIAR_CAMERA_ID:-camera-1}
+      OPENCV_FFMPEG_CAPTURE_OPTIONS: "rtsp_transport;tcp"
     mem_limit: 2g
     cpus: 3.2
     tmpfs:
@@ -182,6 +186,20 @@ services:
       RAIAR_SYNC_URL: ${RAIAR_SYNC_URL:?defina RAIAR_SYNC_URL}
     mem_limit: 128m
     cpus: 0.5
+```
+
+### `02-raiar-vision/compose.usb.yaml`
+
+Alternativa para câmera USB; o padrão é o DVR por RTSP.
+
+```yaml
+# Alternativa de câmera USB. Some ao compose.yaml:
+#   docker compose -f compose.yaml -f compose.usb.yaml up -d
+# No .env: RAIAR_CAMERA_SOURCE=/dev/video0 e VIDEO_GID=$(getent group video | cut -d: -f3)
+services:
+  vision:
+    devices: ["/dev/video0:/dev/video0"]
+    group_add: ["${VIDEO_GID:-983}"]
 ```
 
 ### `02-raiar-vision/.dockerignore`

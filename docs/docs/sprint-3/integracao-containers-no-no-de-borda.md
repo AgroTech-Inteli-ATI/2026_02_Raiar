@@ -11,11 +11,11 @@ Esta página propõe como os containers dos modelos devem rodar no nó de borda 
 
 ## Papel do nó e fluxo de dados
 
-O Raspberry Pi só executa containers que leem a câmera, contam as aves em cada nível e enviam o resultado ao backend. Ele não guarda interface, treino nem dados históricos de longo prazo. O fluxo tem quatro etapas, e cada uma atende a um requisito já definido.
+O Raspberry Pi só executa containers que leem as câmeras, contam as aves em cada nível e enviam o resultado ao backend. Ele não guarda interface, treino nem dados históricos de longo prazo. O fluxo tem quatro etapas, e cada uma atende a um requisito já definido.
 
 | Etapa | O que acontece | Requisito |
 | --- | --- | --- |
-| Captura | A câmera USB entrega quadros periódicos pela interface V4L2 | RF04 |
+| Captura | O nó lê quadros periódicos do servidor de câmeras (DVR) por RTSP (principal); alternativas: arquivos exportados pelo servidor ou câmera USB própria | RF04 |
 | Inferência | O modelo conta as aves em N0, N1 e N2 em cada quadro | RF05, RF06 |
 | Fila local | O resultado é gravado em SQLite no próprio nó, mesmo sem rede | RNF01, RNF10 |
 | Sincronização | Lotes de resultados vão ao backend por HTTPS, sem duplicar registros | RNF04 |
@@ -47,12 +47,12 @@ Proponho uma única imagem do projeto, usada por dois serviços do Docker Compos
 
 | Serviço | Função | Limite de memória inicial |
 | --- | --- | --- |
-| `vision` | Lê a câmera, executa o modelo e grava no SQLite | 2 GB |
+| `vision` | Lê as câmeras, executa o modelo e grava no SQLite | 2 GB |
 | `sync` | Executa `raiar-vision sync` em laço, a cada poucos minutos | 128 MB |
 
 Os dois serviços compartilham o volume `/opt/raiar/data`, onde fica o SQLite. Escolhi esta divisão pelos motivos abaixo.
 
-- Apenas um processo pode abrir a câmera por vez, e o modelo só deve existir uma vez na memória. Por isso captura e inferência ficam juntas no `vision`.
+- Apenas um processo deve abrir cada fonte de imagem por vez, e o modelo só deve existir uma vez na memória. Por isso captura e inferência ficam juntas no `vision`.
 - O `sync` usa apenas `json`, `sqlite3` e `requests`, e o `ultralytics` e o OpenCV são importados só dentro das funções que os usam. Assim, o `sync` roda da mesma imagem sem carregar o PyTorch na memória.
 - Falhas de rede não podem derrubar a inferência. Em serviços separados, o `sync` pode falhar e reiniciar sem tocar na captura.
 - O detector já abre o SQLite no modo WAL, que permite ler enquanto outro processo escreve, o que cobre este uso [2].
@@ -144,8 +144,12 @@ services:
   vision:
     <<: *comum
     # Laço de captura e inferência ao vivo: ainda não existe no código (a implementar).
-    devices: ["/dev/video0:/dev/video0"]
-    group_add: ["${VIDEO_GID:-983}"]
+    # Fonte padrão: DVR por RTSP. Para câmera USB, some o compose.usb.yaml (veja abaixo).
+    environment:
+      YOLO_CONFIG_DIR: /tmp/ultralytics
+      RAIAR_CAMERA_SOURCE: ${RAIAR_CAMERA_SOURCE:?defina RAIAR_CAMERA_SOURCE}
+      RAIAR_CAMERA_ID: ${RAIAR_CAMERA_ID:-camera-1}
+      OPENCV_FFMPEG_CAPTURE_OPTIONS: "rtsp_transport;tcp"
     mem_limit: 2g
     cpus: 3.2
     tmpfs:
@@ -171,12 +175,37 @@ services:
     cpus: 0.5
 ```
 
-Quatro pontos desse arquivo merecem explicação.
+Cinco pontos desse arquivo merecem explicação.
 
-- O container roda com o usuário `1000:1000`, que é o `raiar` do nó, sem capacidades extras e sem novos privilégios [7]. A câmera é liberada por `devices`, e não por `privileged`, e o grupo é passado pelo número em `VIDEO_GID`. Para gravá-lo, uso `echo "VIDEO_GID=$(getent group video | cut -d: -f3)" >> /opt/raiar/.env` no nó. A pasta de dados precisa pertencer ao uid 1000, ou o container sem privilégios recebe `Permission denied`.
+- O container roda com o usuário `1000:1000`, que é o `raiar` do nó, sem capacidades extras e sem novos privilégios [7]. A pasta de dados precisa pertencer ao uid 1000, ou o container sem privilégios recebe `Permission denied`.
 - O sistema de arquivos é somente leitura, com `/tmp` e `/frames` em memória, o que protege o cartão SD. A variável `YOLO_CONFIG_DIR` leva a configuração do `ultralytics` para `/tmp`, porque ele tenta gravar no diretório pessoal.
 - A URL e o token do backend ficam em um arquivo `.env` com permissão `600`, nas variáveis `RAIAR_SYNC_URL` e `RAIAR_SYNC_TOKEN`. Nenhuma credencial entra na imagem nem no repositório. O `sync` aceita apenas HTTPS, ou HTTP em `localhost` para testes.
+- A fonte das imagens vem de uma única variável, `RAIAR_CAMERA_SOURCE`. Com o DVR, ela recebe a URL `rtsp://usuario:senha@IP_DO_DVR:554/...`, que contém a senha e por isso fica só no `.env` com permissão `600`. O transporte `tcp` evita perda de pacotes em rede instável. Cada canal do DVR é uma câmera, com seu `RAIAR_CAMERA_ID`. O ideal é pedir ao DVR o *substream* (menor resolução) em H.264, porque decodificar H.265 em CPU pesa no orçamento do RNF12.
 - `cpus: 3.2` é 80% dos quatro núcleos e funciona como teto. O RNF12 trata da média em janelas de cinco minutos, então o teto não substitui a medição.
+
+### Alternativas se o DVR não puder ser usado
+
+A [arquitetura preliminar](../sprint-2/arquitetura-preliminar.md) registra que as câmeras da Raiar não têm USB e que o servidor de câmeras tem uma porta USB, sem demonstrar que ela entrega vídeo. Por isso, o plano B tem duas formas, e nenhuma delas exige mudar a imagem.
+
+**Arquivos exportados pelo servidor.** Se o servidor só exportar gravações pela porta USB, o nó processa pastas de vídeos com `raiar-vision predict --source PASTA`, que o código já suporta. Perde-se a captura contínua: o processamento passa a ser em lotes e depende de alguém levar os arquivos ao nó, o que enfraquece o RF04 e o RNF01. Os arquivos precisam preservar horário e identificação da câmera.
+
+**Câmera USB própria.** Se a Raiar aceitar instalar uma câmera nova, a mudança é só de configuração. Basta definir `RAIAR_CAMERA_SOURCE=/dev/video0` no `.env`, gravar o número do grupo com `echo "VIDEO_GID=$(getent group video | cut -d: -f3)" >> /opt/raiar/.env` e subir com um segundo arquivo que libera o dispositivo por `devices`, e não por `privileged`:
+
+```yaml
+# compose.usb.yaml
+services:
+  vision:
+    devices: ["/dev/video0:/dev/video0"]
+    group_add: ["${VIDEO_GID:-983}"]
+```
+
+```bash
+RAIAR_TAG=TAG docker compose -f compose.yaml -f compose.usb.yaml up -d
+```
+
+O restante (imagem, SQLite, `sync`, limites) é idêntico. O código de captura deve aceitar as duas formas: uma URL que começa com `rtsp://` e um caminho `/dev/videoN`. Se a Raiar validar o DVR, o `compose.usb.yaml` não é usado.
+
+Os motivos para abandonar o DVR são: RTSP desabilitado ou protegido sem credencial disponível; servidor em rede que o nó não alcança; só haver H.265 em alta resolução, que pesa na CPU; ou limite de conexões simultâneas do servidor.
 
 ## Entrega e atualização
 
@@ -198,18 +227,20 @@ Este é o combinado mínimo entre as duas frentes.
 | --- | --- |
 | Arquitetura da imagem | `linux/arm64` |
 | Usuário no nó | `raiar` (uid 1000), nos grupos `docker` e `video` |
-| Câmera | `/dev/video0`, por `devices` e o grupo `video` pelo número |
+| Câmera | DVR por RTSP (principal), em `RAIAR_CAMERA_SOURCE`; `/dev/video0` por `compose.usb.yaml` (alternativa) |
 | Dados persistentes | `/opt/raiar/data`, montado em `/app/outputs` |
 | Segredos | `/opt/raiar/.env`, permissão `600` |
 | Comandos usados | `raiar-vision predict`, `raiar-vision sync` (nunca `chicken-yolo`) |
-| Rede | Só saída HTTPS; nenhuma porta publicada pelos containers |
+| Rede | Saída HTTPS ao backend e acesso ao DVR na rede local (RTSP, porta 554); nenhuma porta publicada pelos containers |
 | Reinício | `restart: unless-stopped`, com o Docker habilitado no boot |
 
-Da minha parte, entrego o nó com Docker, Compose, `zram` e as ferramentas de câmera. Da parte da containerização, espero a imagem, o `compose.yaml` e um `.env` de exemplo, sem credenciais.
+Da minha parte, entrego o nó com Docker, Compose, `zram` e as ferramentas de câmera USB. Da parte da containerização, espero a imagem, o `compose.yaml` e um `.env` de exemplo, sem credenciais.
 
 ## Pontos que ainda dependem de código ou de hardware
 
 A captura ao vivo ainda não existe: hoje o `chicken_yolo` lê arquivos locais, e a integração com a câmera está prevista na documentação do detector. O serviço `vision` depende dessa captura e do laço periódico, que também deve registrar um sinal de funcionamento para um futuro `healthcheck`.
+
+O DVR é um ponto de falha novo: se ele cair, o stream cair ou a rede local falhar, o laço deve registrar o erro (data, hora, dispositivo e tipo, conforme o RNF10) e tentar de novo com espera crescente, sem encerrar o container. A internet instável afeta apenas o `sync`, porque o DVR fica na rede local e o SQLite guarda os resultados enquanto não há conexão. O cabo Ethernet é preferível ao Wi-Fi nos dois trechos.
 
 O Raspberry Pi não tem relógio de hardware. Depois de um reinício sem rede, o horário só se corrige quando o Wi-Fi volta, e um horário errado compromete a série temporal. Sugiro um módulo de relógio externo (RTC) no case e, no software, iniciar o Docker somente depois da sincronização de horário.
 
@@ -217,13 +248,14 @@ O Raspberry Pi não tem relógio de hardware. Depois de um reinício sem rede, o
 
 | Teste | Critério | Requisito |
 | --- | --- | --- |
-| Câmera visível no nó | `v4l2-ctl --list-devices` lista a câmera e o container abre `/dev/video0` | RF04 |
+| Fonte de imagem acessível | O nó alcança o servidor de câmeras (`nc -zv IP_DO_DVR 554`) e o container lê um quadro da URL RTSP; na alternativa USB, `v4l2-ctl --list-devices` lista a câmera e o container abre `/dev/video0` | RF04 |
 | Consumo de recursos | `docker stats` com o modelo carregado cabe nos limites propostos | RNF12 |
 | Tempo por quadro | Inferência em até 80% do intervalo em pelo menos 95% dos quadros | RNF11 |
 | Operação contínua | 24 horas com CPU média de até 80% e memória disponível de pelo menos 20% | RNF12 |
 | Sem rede | 24 horas sem Wi-Fi e envio único dos registros ao voltar | RNF01, RNF04 |
 | Queda de energia | Após desligar e ligar, o Docker e os containers voltam sozinhos | RNF01 |
-| Falhas registradas | Câmera desconectada ou rede fora gera registro, sem perda silenciosa | RNF10 |
+| Falhas registradas | DVR fora do ar, câmera desconectada ou rede fora gera registro, sem perda silenciosa | RNF10 |
+| Troca de fonte | Trocar `RAIAR_CAMERA_SOURCE` entre RTSP e USB funciona sem reconstruir a imagem | RF04 |
 
 ## Referências {#referencias}
 

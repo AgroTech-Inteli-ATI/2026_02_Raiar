@@ -1,0 +1,7 @@
+# Alternativa de câmera USB. Some ao compose.yaml:
+#   docker compose -f compose.yaml -f compose.usb.yaml up -d
+# No .env: RAIAR_CAMERA_SOURCE=/dev/video0 e VIDEO_GID=$(getent group video | cut -d: -f3)
+services:
+  vision:
+    devices: ["/dev/video0:/dev/video0"]
+    group_add: ["${VIDEO_GID:-983}"]

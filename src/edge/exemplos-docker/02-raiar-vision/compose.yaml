@@ -21,8 +21,12 @@ services:
     <<: *comum
     # Laço de captura e inferência ao vivo: ainda não existe no código (a implementar).
     # Hoje, "raiar-vision predict --source ARQUIVO" processa imagens e vídeos locais.
-    devices: ["/dev/video0:/dev/video0"]
-    group_add: ["${VIDEO_GID:-983}"]
+    # Fonte: DVR por RTSP (padrão) ou /dev/video0. Para USB, some o compose.usb.yaml.
+    environment:
+      YOLO_CONFIG_DIR: /tmp/ultralytics
+      RAIAR_CAMERA_SOURCE: ${RAIAR_CAMERA_SOURCE:?defina RAIAR_CAMERA_SOURCE}
+      RAIAR_CAMERA_ID: ${RAIAR_CAMERA_ID:-camera-1}
+      OPENCV_FFMPEG_CAPTURE_OPTIONS: "rtsp_transport;tcp"
     mem_limit: 2g
     cpus: 3.2
     tmpfs:

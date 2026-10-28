@@ -2,7 +2,7 @@
 title: Provisionamento do nó de borda com Arch Linux ARM no Raspberry Pi 4
 sidebar_label: Nó de borda no Raspberry Pi
 sidebar_position: 2
-description: Preparação de um Pen Drive USB com Arch Linux ARM aarch64 ultra-leve para o Raspberry Pi 4, com Docker e captura de câmera.
+description: Preparação de um Pen Drive USB com Arch Linux ARM aarch64 ultra-leve para o Raspberry Pi 4, com Docker e captura de câmera por DVR (RTSP) ou USB.
 ---
 
 # Provisionamento do nó de borda com Arch Linux ARM no Raspberry Pi 4
@@ -13,7 +13,7 @@ Esta página registra como eu preparei o sistema operacional do **nó de borda**
 
 Os modelos da Sprint 2 identificam e contam as aves nos níveis N0, N1 e N2, como descrevem [Níveis e regra de contagem](../sprint-2/visao-computacional/niveis-e-regra-de-contagem.md) e [Detecção de aves com YOLO](../sprint-2/deteccao-de-aves.md). Eles rodam em containers e disputam a memória do equipamento com o próprio sistema operacional. O requisito RNF12 exige que a memória disponível fique em pelo menos 20% da RAM reconhecida durante 24 horas de teste. Por isso, tudo o que o sistema consome sem necessidade é memória que falta para o modelo.
 
-Um sistema com interface gráfica, Bluetooth, áudio e logs em disco gasta centenas de megabytes e escreve o tempo todo no armazenamento. Eu quis o oposto: o menor sistema que ainda sobe a rede, aceita acesso remoto, executa Docker e lê a câmera.
+Um sistema com interface gráfica, Bluetooth, áudio e logs em disco gasta centenas de megabytes e escreve o tempo todo no armazenamento. Eu quis o oposto: o menor sistema que ainda sobe a rede, aceita acesso remoto, executa Docker e lê as imagens das câmeras.
 
 ## Escolhas
 
@@ -82,13 +82,15 @@ Dentro do pen drive deixo `/root/setup_raiar_node.sh`, que executa, como root:
 7. inclui o usuário `alarm` nos grupos `docker` e `video` e cria `/opt/raiar`;
 8. com `ZRAM=1`, habilita o swap comprimido na RAM (`zram`), que absorve picos de memória dos modelos sem desgastar o cartão SD [8].
 
-A câmera USB aparece como `/dev/video0` e é acessada pela interface **V4L2**, que o kernel expõe por arquivos de dispositivo [7]. Para conferir, uso `v4l2-ctl --list-devices`. Para passá-la a um container, uso:
+A fonte preferida das imagens é o **servidor de câmeras (DVR)** do aviário, que o nó lê pela rede por **RTSP**, sem ligar cada câmera ao Raspberry Pi. Isso segue a [arquitetura preliminar](../sprint-2/arquitetura-preliminar.md), que registra que as câmeras da Raiar não têm entrada USB e deixa em aberto o acesso por rede ou pela porta USB do servidor. O nó só precisa de um caminho de rede até o DVR, de preferência por cabo Ethernet, com endereço fixo ou reservado no roteador. Nenhuma configuração extra do sistema é necessária: o container abre a URL `rtsp://usuario:senha@IP_DO_DVR:554/...` com o OpenCV e o FFmpeg embutido. Para conferir o acesso a partir do nó, uso `nc -zv IP_DO_DVR 554`. O modelo do DVR, o RTSP habilitado, o codec e o número de canais ainda serão confirmados com a Raiar.
+
+Mantive uma alternativa técnica no nó: uma câmera USB própria, que seria instalada ao lado das existentes, já que as da Raiar não têm USB. Ela aparece como `/dev/video0` e é acessada pela interface **V4L2**, que o kernel expõe por arquivos de dispositivo [7]. Para conferir, uso `v4l2-ctl --list-devices`. Para passá-la a um container, uso:
 
 ```bash
 docker run --rm --device /dev/video0 --group-add "$(getent group video | cut -d: -f3)" <imagem>
 ```
 
-Uso o número do grupo `video` do sistema do nó, e não o nome. Dentro de uma imagem baseada em Debian o grupo `video` tem outro número, e o nome não corresponderia ao grupo dono do dispositivo, o que impediria um usuário sem privilégios de abrir a câmera. No nó, o grupo `video` é o 983.
+Uso o número do grupo `video` do sistema do nó, e não o nome. Dentro de uma imagem baseada em Debian o grupo `video` tem outro número, e o nome não corresponderia ao grupo dono do dispositivo, o que impediria um usuário sem privilégios de abrir a câmera. No nó, o grupo `video` é o 983. O `v4l-utils` e o grupo `video` continuam no nó para que essa alternativa funcione sem reconfigurar o sistema.
 
 ## Enxugamento do sistema
 
@@ -174,7 +176,7 @@ Gravei o pen drive, iniciei o Raspberry Pi 4 por ele e copiei o sistema para um 
 
 O `dockerd` ocupa cerca de 84 MB e o `containerd` cerca de 40 MB de memória residente, sem nenhum container em execução. É esse o custo fixo do Docker no nó. Com `zram`, o `vm.swappiness` passa a 100, e não mais a 10 como a configuração inicial, porque o swap comprimido deve ser preferido ao descarte de cache.
 
-O Docker executou o container `hello-world` com sucesso. **Ainda não testei** a captura pela câmera USB, porque nenhuma estava conectada, nem a estabilidade do nó em 24 horas, que é o que o RNF12 exige. Também falta medir a memória disponível com o modelo carregado.
+O Docker executou o container `hello-world` com sucesso. **Ainda não testei** a captura pelo DVR nem por câmera USB, porque nenhum estava disponível, nem a estabilidade do nó em 24 horas, que é o que o RNF12 exige. Também falta medir a memória disponível com o modelo carregado.
 
 ## Referências {#referencias}
 

@@ -262,6 +262,16 @@ Os termos abaixo aparecem na página do [nó de borda no Raspberry Pi](../sprint
 
 **V4L2:** interface do kernel Linux para câmeras. Uma câmera USB aparece como um arquivo como `/dev/video0`.
 
+**DVR (servidor de câmeras):** equipamento do aviário que recebe e grava as imagens das câmeras. É a fonte preferida das imagens do nó.
+
+**RTSP:** protocolo que entrega o vídeo de uma câmera ou DVR pela rede, em uma URL como `rtsp://IP:554/canal`. O nó o lê como uma câmera.
+
+**Substream:** segundo fluxo do DVR, de menor resolução, mais leve de decodificar. É o indicado para o nó.
+
+**H.264 e H.265:** formas de comprimir o vídeo. O H.265 comprime mais, mas pesa mais na CPU do Raspberry Pi.
+
+**Backoff:** espera crescente entre novas tentativas depois de uma falha, para não sobrecarregar a conexão.
+
 **Firmware:** programa gravado que um dispositivo de hardware precisa carregar para funcionar. No Linux, o pacote de firmware traz o de centenas de placas, e o nó mantém só o do Raspberry Pi.
 
 **`zram`:** área de swap que fica na própria RAM e guarda os dados comprimidos. Cobre picos de uso de memória sem escrever no cartão SD.

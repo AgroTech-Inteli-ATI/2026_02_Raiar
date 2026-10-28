@@ -834,13 +834,14 @@ mkdir -p /opt/raiar/data
 cat > /opt/raiar/.env <<EOF
 RAIAR_SYNC_URL=https://URL_DO_BACKEND/api/analyses
 RAIAR_SYNC_TOKEN=COLE_O_TOKEN_AQUI
-VIDEO_GID=$(getent group video | cut -d: -f3)
+RAIAR_CAMERA_SOURCE=rtsp://USUARIO:SENHA@IP_DO_DVR:554/CAMINHO_DO_SUBSTREAM
+RAIAR_CAMERA_ID=camera-1
 EOF
 chmod 600 /opt/raiar/.env
 exit
 
 # no notebook: levar o compose.yaml
-scp src/edge/exemplos-docker/02-raiar-vision/compose.yaml raiar@IP_DO_PI:/opt/raiar/
+scp src/edge/exemplos-docker/02-raiar-vision/compose.yaml src/edge/exemplos-docker/02-raiar-vision/compose.usb.yaml raiar@IP_DO_PI:/opt/raiar/
 
 # no Pi: subir
 ssh raiar@IP_DO_PI
@@ -854,7 +855,13 @@ docker compose logs -f
 
 ### A câmera
 
-Conecte a câmera USB e confira no Pi:
+A fonte principal é o **DVR** do aviário, lido por RTSP pela rede. Não há dispositivo para passar ao container: a URL fica em `RAIAR_CAMERA_SOURCE` no `.env`, e o Pi precisa alcançar o DVR (`nc -zv IP_DO_DVR 554`). Peça o *substream* em H.264 e use cabo de rede. A câmera USB continua como alternativa (veja abaixo) e se escolhe só por configuração.
+
+> **[não testado]:** nem o DVR nem a câmera USB foram exercitados com hardware.
+
+#### Alternativa: câmera USB
+
+Defina `RAIAR_CAMERA_SOURCE=/dev/video0` e `VIDEO_GID=$(getent group video | cut -d: -f3)` no `.env`, leve também o `compose.usb.yaml` e suba com `docker compose -f compose.yaml -f compose.usb.yaml up -d`. Conecte a câmera e confira no Pi:
 
 ```bash
 v4l2-ctl --list-devices
@@ -875,7 +882,7 @@ docker run --rm --device /dev/video0 --group-add "$(getent group video | cut -d:
 
 O código atual lê **arquivos** (imagem, vídeo, pasta). Falta o programa que fica **em laço**: ler um quadro da câmera a cada intervalo, guardar em `/frames` (memória), chamar a detecção e gravar no SQLite. A forma mais simples de começar é:
 
-1. Um script que abre `/dev/video0` com o OpenCV, salva um quadro por intervalo em `/frames` e dorme.
+1. Um script que abre `RAIAR_CAMERA_SOURCE` (URL RTSP ou `/dev/video0`) com o OpenCV, salva um quadro por intervalo em `/frames` e dorme.
 2. Para cada quadro salvo, chamar `raiar-vision predict --source ARQUIVO` e apagar o quadro.
 3. Quando funcionar, trocar a chamada por uso direto do detector, para não recarregar o modelo a cada quadro (carregar custa tempo e memória).
 
