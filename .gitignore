@@ -57,3 +57,5 @@ src/chicken_yolo/models/pretrained/*
 !src/chicken_yolo/models/pretrained/.gitkeep
 src/chicken_yolo/models/trained/*
 !src/chicken_yolo/models/trained/.gitkeep
+
+.teste/
