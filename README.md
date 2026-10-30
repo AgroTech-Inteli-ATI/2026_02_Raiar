@@ -17,7 +17,8 @@ Projeto da AgroTech Inteli com a Raiar Orgânicos para monitorar, por visão com
 │   │   ├── notebooks/      # Execução visual e comparação das detecções
 │   │   └── tests/          # Testes do pipeline e das regras dos dados
 │   ├── raiarnet/           # Modelo construído do zero, com contagem por nível
-│   └── modelos_PIO/        # Notebooks PIOFlow e YOLOPIO (base PIO)
+│   ├── modelos_PIO/        # Notebooks PIOFlow e YOLOPIO (base PIO)
+│   └── database/           # Esquema SQL inicial do banco de dados
 ├── data/                   # Dados do chicken_yolo, excluídos do Git
 ├── outputs/                # SQLite, CSV, JSON e imagens anotadas
 ├── runs/                   # Resultados dos treinamentos
@@ -27,6 +28,13 @@ Projeto da AgroTech Inteli com a Raiar Orgânicos para monitorar, por visão com
 ├── CONTRIBUTING.md         # Padrões de escrita e organização da documentação
 └── README.md
 ```
+
+## Banco de dados
+
+O arquivo [`schema.sql`](src/database/schema.sql) cria as tabelas `raspberry`,
+`lot`, `aviary`, `camera` e `alerts` em um banco PostgreSQL sem essas tabelas.
+O aviário guarda a referência ao lote atual em `current_lot_id`. Os campos e os
+limites desta versão estão na [documentação do banco](docs/docs/sprint-3/banco-de-dados.md).
 
 ## Documentação
 
