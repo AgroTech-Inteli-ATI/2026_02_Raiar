@@ -21,6 +21,7 @@ CREATE TABLE public.aviary (
   id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
   name character varying NOT NULL,
   number integer NOT NULL,
+  box_identifiers text[],
   type character varying NOT NULL
     CHECK (type IN ('rearing', 'normal')),
   registration_date date NOT NULL DEFAULT CURRENT_DATE,

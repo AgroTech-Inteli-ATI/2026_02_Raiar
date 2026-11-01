@@ -35,6 +35,8 @@ O arquivo [`schema.sql`](src/database/schema.sql) cria as tabelas `raspberry`,
 `lot`, `aviary`, `camera` e `alerts` em um banco PostgreSQL sem essas tabelas.
 O aviário guarda a referência ao lote atual em `current_lot_id`. Os campos e os
 limites desta versão estão na [documentação do banco](docs/docs/sprint-3/banco-de-dados.md).
+Os identificadores das divisões internas de cada aviário são armazenados na lista
+`aviary.box_identifiers`.
 
 ## Documentação
 

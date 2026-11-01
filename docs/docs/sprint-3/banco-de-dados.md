@@ -9,6 +9,8 @@ description: Estrutura inicial de lotes, aviários, dispositivos, câmeras e ale
 
 Esta página descreve a estrutura relacional definida para cadastrar **lotes**, **aviários**, **Raspberry Pis**, **câmeras** e **alertas**. O aviário é o espaço físico; o lote é o grupo de aves que o ocupa. Na Raiar, cada lote ocupa um aviário, mas a identificação do espaço precisa continuar estável quando o lote muda. A separação atende à distinção proposta no [dicionário de dados](../sprint-1/dicionario-de-dados.md) e ao cadastro previsto no requisito RF02 dos [requisitos](../sprint-1/requisitos.md).
 
+Cada aviário pode ser dividido em **boxes**, que são divisões internas do espaço. Seus identificadores ficam na coluna `aviary.box_identifiers`, como uma lista de nomes ou códigos. O termo também está definido no [glossário](../sprint-1/glossario.md).
+
 O código desta versão está em `src/database/schema.sql`. O script cria todas as tabelas em um banco PostgreSQL que ainda não as contenha. A presença do arquivo no repositório não comprova que ele já foi executado em um banco em operação.
 
 ## Entidades e relacionamentos
@@ -57,11 +59,16 @@ O lote não guarda o identificador de um aviário: a associação ativa fica em 
 | `id` | `integer` | Sim | Chave primária gerada automaticamente. Identifica o espaço físico e é o valor usado por `camera.aviary_id` e `alerts.aviary_id`. |
 | `name` | `character varying` | Sim | Nome operacional do aviário, usado para reconhecê-lo em cadastros e consultas. Não precisa ser único. |
 | `number` | `integer` | Sim | Número atribuído ao aviário. O banco exige seu preenchimento, mas permite números repetidos e não define faixa válida. |
+| `box_identifiers` | `text[]` | Não | Lista de identificadores dos boxes internos, por exemplo `ARRAY['B1', 'B2', 'B3']`. Cada item é um texto. Pode ser `null` enquanto a lista ainda não tiver sido cadastrada. |
 | `type` | `character varying` | Sim | Classifica o aviário como `rearing` (recria) ou `normal` (aves maduras destinadas à postura). Outros valores são rejeitados pelo `CHECK`. |
 | `registration_date` | `date` | Sim | Data de cadastro do aviário. Se omitida, recebe `CURRENT_DATE`; não representa a data de chegada nem a idade do lote atual. |
 | `current_lot_id` | `integer` | Não | Referência a `lot.id` para o lote que ocupa o aviário agora. Pode ser `null` quando não houver lote associado; `UNIQUE` impede o mesmo lote atual em dois aviários. |
 
 `id` identifica o local, enquanto `current_lot_id` identifica quem o ocupa neste momento. Alterar `current_lot_id` atualiza apenas essa associação atual; o esquema não registra a data dessa troca nem o lote anterior.
+
+`box_identifiers` descreve as divisões do aviário. Por exemplo, o aviário `7` pode ter os boxes `B1`, `B2` e `B3`, e outro aviário pode usar os mesmos códigos para suas próprias divisões. A identificação de um box depende, portanto, do aviário ao qual ele pertence. O tipo `text[]` armazena os nomes em uma única lista; a aplicação deverá padronizar esses nomes e evitar itens vazios ou repetidos, pois o esquema atual não impõe essas validações.
+
+Câmeras e alertas mantêm o vínculo com `aviary.id`. A lista de boxes é uma informação do cadastro do aviário e ainda não cria uma associação de câmera ou alerta com uma divisão específica.
 
 ### Raspberry Pi (`raspberry`)
 
@@ -103,6 +110,14 @@ O script cria `raspberry` e `lot` primeiro, depois `aviary`, `camera` e `alerts`
 
 Para associar um lote a um aviário, é necessário cadastrar o lote em `lot` e preencher `aviary.current_lot_id` com seu identificador. Um aviário recém-cadastrado pode ficar sem lote atual.
 
+Os identificadores dos boxes podem ser informados no cadastro do aviário ou atualizados depois. No exemplo fictício abaixo, o aviário `7` recebe uma lista com três boxes. O valor atribuído substitui a lista completa anteriormente cadastrada nesse campo:
+
+```sql
+UPDATE public.aviary
+SET box_identifiers = ARRAY['B1', 'B2', 'B3']::text[]
+WHERE id = 7;
+```
+
 ## Como consultar as relações
 
 Para localizar a câmera e o aviário de um alerta, `alerts.camera_id` aponta para `camera.id` e `alerts.aviary_id` aponta para `aviary.id`. A partir do aviário, `current_lot_id` permite consultar o lote **atual**. A consulta abaixo mostra esses vínculos para um alerta específico:
@@ -116,6 +131,7 @@ SELECT
   r.name AS raspberry_name,
   v.id AS aviary_id,
   v.name AS aviary_name,
+  v.box_identifiers,
   l.id AS current_lot_id,
   l.name AS current_lot_name
 FROM public.alerts AS a
