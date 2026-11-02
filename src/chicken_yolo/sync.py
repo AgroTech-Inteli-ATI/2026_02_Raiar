@@ -31,7 +31,7 @@ def sync_pending(
             WHERE s.analise_id IS NULL ORDER BY a.processado_em, a.analise_id LIMIT ?""",
             (batch_size,),
         ).fetchall()
-        accepted = []
+        accepted, rejected = [], []
         if rows:
             headers = {"Authorization": f"Bearer {token}"} if token else {}
             response = (post or requests.post)(
@@ -44,13 +44,15 @@ def sync_pending(
             response.raise_for_status()
             if not 200 <= response.status_code < 300:
                 raise ValueError("Sincronização requer resposta HTTP 2xx sem redirecionamento.")
-            accepted = response.json().get("accepted_analysis_ids")
+            body = response.json()
+            accepted = body.get("accepted_analysis_ids")
             sent = {row[0] for row in rows}
             if not isinstance(accepted, list) or any(
                 not isinstance(v, str) or v not in sent for v in accepted
             ):
                 raise ValueError("Servidor deve confirmar apenas IDs presentes no lote enviado.")
             accepted = sorted(set(accepted))
+            rejected = body.get("rejected") if isinstance(body.get("rejected"), list) else []
             connection.executemany(
                 "INSERT OR IGNORE INTO sync_receipts VALUES (?, ?)",
                 [(value, utc_now()) for value in accepted],
@@ -58,4 +60,10 @@ def sync_pending(
         pending = connection.execute("""SELECT count(*) FROM analyses a
             LEFT JOIN sync_receipts s ON a.analise_id = s.analise_id
             WHERE s.analise_id IS NULL""").fetchone()[0]
-    return {"sent": len(rows), "accepted": len(accepted), "pending": pending}
+    result = {"sent": len(rows), "accepted": len(accepted), "pending": pending}
+    if rejected:
+        # O servidor recusou itens (por exemplo, câmera não cadastrada); o motivo vem aqui
+        # porque o nó os mantém pendentes e só o servidor sabe por que recusou.
+        result["rejected_count"] = len(rejected)
+        result["rejected"] = rejected[:10]
+    return result
