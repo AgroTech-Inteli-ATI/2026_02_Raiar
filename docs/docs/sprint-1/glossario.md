@@ -319,3 +319,11 @@ Os termos abaixo aparecem na página do [nó de borda no Raspberry Pi](../sprint
 **Somente leitura (*read-only*):** modo em que o container não pode alterar seus próprios arquivos. Protege o sistema e o cartão SD, mas exige pastas separadas, gravadas em memória ou em volume, para o que o programa precisa escrever.
 
 **Healthcheck:** verificação automática que informa se um serviço continua funcionando. Ainda é uma melhoria prevista para o nó.
+
+**Supabase:** serviço que oferece um banco de dados PostgreSQL pela internet, com funções que rodam no servidor. É onde as análises enviadas pelos nós de borda são guardadas.
+
+**Edge Function:** pequeno programa que roda no servidor do Supabase e atende a um endereço da internet. Aqui, recebe os lotes do nó, confere o token e manda gravar no banco.
+
+**Idempotente:** operação que, repetida, produz o mesmo resultado que uma única execução. O envio de análises é assim: reenviar uma análise já gravada não a duplica.
+
+**DVR simulado:** servidor de vídeo de teste que publica um vídeo gravado em repetição, como se fosse uma câmera, para validar a captura sem o DVR real.

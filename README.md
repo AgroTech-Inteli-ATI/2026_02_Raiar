@@ -28,6 +28,13 @@ Projeto da AgroTech Inteli com a Raiar Orgânicos para monitorar, por visão com
 └── README.md
 ```
 
+## Captura contínua e simulação do DVR
+
+`chicken-yolo run` (ou `raiar-vision run`) lê câmeras RTSP, USB ou arquivos continuamente e grava
+uma análise por câmera a cada intervalo; o perfil `simulacao` do `compose.yaml` oferece um DVR de
+teste. O passo a passo, o mapa de falhas e a lista do que trocar do teste para a produção estão em
+[`docs/docs/sprint-3/`](docs/docs/sprint-3/dvr-simulado-e-teste-na-pratica.md).
+
 ## Documentação
 
 A documentação é publicada com [Docusaurus](https://docusaurus.io/). Requer Node.js 20 ou superior.

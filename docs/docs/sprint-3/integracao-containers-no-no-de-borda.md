@@ -15,7 +15,7 @@ O nó de borda é um pequeno computador instalado no aviário. Ele recebe as ima
 
 Para que o programa funcione igual em todos os nós, ele é empacotado num **container**. Um container é como uma marmita fechada: leva dentro o programa e tudo o que ele precisa, e funciona do mesmo jeito em qualquer computador que tenha Docker, a ferramenta que abre essas marmitas. Cada versão do pacote recebe uma etiqueta (*tag*), e voltar a uma versão anterior é só escolher a etiqueta antiga.
 
-A versão do Compose e dos Dockerfiles que a equipe usará no nó é a da containerização, mantida no repositório pelo responsável por ela e ainda em revisão. Os arquivos citados nesta página, em `src/edge/exemplos-docker/`, são o exemplo de referência do combinado.
+A versão do Compose e dos Dockerfiles que a equipe usa no nó é a da containerização, já integrada à `develop`: `compose.yaml`, `compose.usb.yaml` e `.env.exemplo` na raiz do repositório, e os Dockerfiles em `sprint-3/docker/`. Ela foi construída e validada no próprio Raspberry Pi, como registra a seção [Validação no nó](#validacao-no-no). Os arquivos citados no restante desta página, em `src/edge/exemplos-docker/`, são o exemplo de referência que originou o combinado e diferem em detalhes da versão final, como o uso do `uv` e do `prepare-model` no Dockerfile.
 
 ## Papel do nó e fluxo de dados
 
@@ -144,7 +144,7 @@ O `opencv-python` precisa das bibliotecas `libgl1` e `libglib2.0-0`, que arrasta
 
 ## Composição dos serviços
 
-O arquivo abaixo, em `src/edge/exemplos-docker/02-raiar-vision/compose.yaml`, descreve os dois serviços. O `sync` foi executado no notebook contra um servidor de testes, enviou a análise e usou cerca de 1 MB de memória enquanto esperava. O `vision` ainda depende da captura ao vivo, que não existe no código, e por isso não deve subir por padrão: sem captura, ele falharia e seria reiniciado sem parar, gastando CPU e escrevendo logs no cartão. Os valores de memória e CPU precisam ser confirmados no nó com o modelo carregado [6].
+O arquivo abaixo, em `src/edge/exemplos-docker/02-raiar-vision/compose.yaml`, descreve os dois serviços. O `sync` foi executado no notebook contra um servidor de testes, enviou a análise e usou cerca de 1 MB de memória enquanto esperava. Este exemplo é anterior ao comando `raiar-vision run`: nele o `vision` não tinha captura ao vivo e por isso não deveria subir por padrão. No `compose.yaml` da raiz, o `vision` já executa o `run` e reinicia sozinho. Os valores de memória e CPU precisam ser confirmados no nó com o modelo carregado [6].
 
 ```yaml
 name: raiar-edge
@@ -167,12 +167,12 @@ x-comum: &comum
 services:
   vision:
     <<: *comum
-    # Laço de captura e inferência ao vivo: ainda não existe no código (a implementar).
+    # Neste exemplo, o laço de captura ainda não existia; o compose.yaml final usa `run`.
     # Fonte padrão: DVR por RTSP. Para câmera USB, some o compose.usb.yaml (veja abaixo).
     environment:
       YOLO_CONFIG_DIR: /tmp/ultralytics
       RAIAR_CAMERA_SOURCE: ${RAIAR_CAMERA_SOURCE:?defina RAIAR_CAMERA_SOURCE}
-      RAIAR_CAMERA_ID: ${RAIAR_CAMERA_ID:-camera-1}
+      RAIAR_CAMERA_ID: ${RAIAR_CAMERA_ID:-1}
       OPENCV_FFMPEG_CAPTURE_OPTIONS: "rtsp_transport;tcp"
     mem_limit: 2g
     cpus: 3.2
@@ -204,7 +204,7 @@ Seis pontos desse arquivo merecem explicação.
 - O container roda com o usuário `1000:1000`, que é o `raiar` do nó, sem capacidades extras e sem novos privilégios [7]. Em termos simples, o programa roda sem poderes de administrador, para que uma falha nele não comprometa o nó. A pasta de dados precisa pertencer ao usuário 1000, ou o container recebe `Permission denied` (permissão negada).
 - O sistema de arquivos é somente leitura, com `/tmp` e `/frames` em memória, o que protege o cartão SD. A variável `YOLO_CONFIG_DIR` leva a configuração do `ultralytics` para `/tmp`, porque ele tenta gravar no diretório pessoal.
 - A URL e o token do backend ficam em um arquivo `.env`, com permissão `600` (só o dono lê), nas variáveis `RAIAR_SYNC_URL` e `RAIAR_SYNC_TOKEN`. O token é uma senha de acesso ao backend. Nenhuma credencial entra na imagem nem no repositório. O `sync` aceita apenas HTTPS, ou HTTP em `localhost` para testes.
-- A fonte das imagens vem de uma única variável, `RAIAR_CAMERA_SOURCE`. Com o DVR, ela recebe a URL `rtsp://usuario:senha@IP_DO_DVR:554/...`, que contém a senha e por isso fica só no `.env`, e não na linha de comando do container, onde outros programas poderiam lê-la. O transporte `tcp` evita perda de pacotes em rede instável. Cada canal do DVR é uma câmera, com seu `RAIAR_CAMERA_ID`. O ideal é pedir ao DVR o *substream* (um segundo fluxo, de menor resolução) em H.264, porque decodificar H.265 em CPU pesa no orçamento do RNF12.
+- A fonte das imagens vem de uma única variável, `RAIAR_CAMERA_SOURCE`. Com o DVR, ela recebe a URL `rtsp://usuario:senha@IP_DO_DVR:554/...`, que contém a senha e por isso fica só no `.env`, e não na linha de comando do container, onde outros programas poderiam lê-la. O transporte `tcp` evita perda de pacotes em rede instável. Cada canal do DVR é uma câmera, com seu `RAIAR_CAMERA_ID`, que deve ser o `camera.id` cadastrado no banco (um número), porque é por ele que o banco descobre o aviário da análise. O ideal é pedir ao DVR o *substream* (um segundo fluxo, de menor resolução) em H.264, porque decodificar H.265 em CPU pesa no orçamento do RNF12.
 - `cpus: 3.2` é 80% dos quatro núcleos e funciona como teto. O RNF12 trata da média em janelas de cinco minutos, então o teto não substitui a medição.
 - O `restart: unless-stopped` reinicia o container depois de uma falha ou de uma queda de energia, e só não o reinicia se alguém o parar de propósito.
 
@@ -238,6 +238,7 @@ Cada versão é uma imagem com *tag* única, como o hash curto do commit (um có
 
 1. No notebook, uma única vez, instalar `qemu-user-static` e `qemu-user-static-binfmt`, que permitem emular `arm64`.
 2. Construir a imagem com `docker buildx build --platform linux/arm64 -t raiar-vision:TAG --load .` [8].
+   Se o notebook não tiver o `qemu-user-static` e não for possível instalá-lo, a alternativa usada na validação é construir direto no Raspberry Pi, que já é `arm64`: envia-se o contexto com `tar czf - ... | ssh raiar@IP_DO_NO 'tar xzf - -C /opt/raiar/src'` e roda-se `docker build -f sprint-3/docker/chicken-yolo/Dockerfile -t raiar/vision:0.1.0 .` no nó. Levou menos de 15 minutos na validação e dispensa a emulação, mas ocupa a CPU e o disco do nó durante o build, então convém fazê-lo antes de colocar os modelos para trabalhar.
 3. Enviar ao nó por `docker save raiar-vision:TAG | gzip | ssh raiar@IP_DO_NO 'gunzip | docker load'`. Se a equipe adotar um registro de imagens, este passo vira `docker pull`.
 4. No nó, atualizar com `RAIAR_TAG=TAG docker compose up -d` e observar `docker compose logs`.
 5. Se algo falhar, repetir o passo 4 com a *tag* anterior.
@@ -256,7 +257,7 @@ Este é o combinado mínimo entre as duas frentes.
 | Câmera | DVR por RTSP (principal), em `RAIAR_CAMERA_SOURCE`; `/dev/video0` por `compose.usb.yaml` (alternativa) |
 | Dados persistentes | `/opt/raiar/data` no cartão SD, montado em `/app/outputs` |
 | Segredos | `/opt/raiar/.env`, permissão `600` |
-| Comandos usados | `raiar-vision predict`, `raiar-vision sync` (nunca `chicken-yolo`) |
+| Comandos usados | `raiar-vision run`, `raiar-vision predict`, `raiar-vision sync` (nunca `chicken-yolo`) |
 | Rede | Saída HTTPS ao backend e acesso ao DVR na rede local (RTSP, porta 554); nenhuma porta publicada pelos containers |
 | Reinício | `restart: unless-stopped`, com o Docker habilitado no boot |
 
@@ -264,11 +265,95 @@ O nó entrega Docker, Compose, `zram` e as ferramentas de câmera USB. A contain
 
 ## Pontos que ainda dependem de código ou de hardware
 
-A captura ao vivo ainda não existe: hoje o `chicken_yolo` lê arquivos locais, e a integração com a câmera está prevista na documentação do detector. O serviço `vision` depende dessa captura e do laço periódico, que também deve registrar um sinal de funcionamento para um futuro `healthcheck`, uma verificação automática de que o serviço continua vivo.
+O comando `raiar-vision run` implementa o laço de captura: ele lê uma ou mais câmeras (RTSP, USB ou arquivo), guarda só o quadro mais recente de cada uma, processa um quadro por câmera a cada intervalo (mínimo de 5 s, o que o nó aguenta, segundo a [validação](#validacao-no-no)) e reconecta com espera crescente quando o stream cai. As quedas de stream aparecem nos logs e ficam registradas no histórico local como eventos `camera_queda` e `camera_recuperada`, com o motivo. Falta o sinal de funcionamento para um futuro `healthcheck`, uma verificação automática de que o serviço continua vivo.
 
 O DVR é um ponto de falha novo: se ele cair, o stream cair ou a rede local falhar, o laço deve registrar o erro (data, hora, dispositivo e tipo, conforme o RNF10) e tentar de novo com espera crescente (*backoff*), sem encerrar o container. A internet instável afeta apenas o `sync`, porque o DVR fica na rede local e o SQLite guarda os resultados enquanto não há conexão. O cabo Ethernet é preferível ao Wi-Fi nos dois trechos.
 
 O Raspberry Pi não tem relógio de hardware. Depois de um reinício sem rede, o horário só se corrige quando a conexão volta, e um horário errado compromete a série temporal. A sugestão é um módulo de relógio externo (RTC) no case e, no software, iniciar o Docker somente depois da sincronização de horário.
+
+## Validação no nó {#validacao-no-no}
+
+Em 28 de outubro de 2026, a imagem da `develop` foi construída e executada no Raspberry Pi 4 de 4 GB (Arch Linux ARM `aarch64`, 29 GB de cartão SD), com o modelo `coco` (YOLO11n) e as mesmas restrições do `compose.yaml`: sistema de arquivos somente leitura, usuário 1000, `cap_drop: ALL`, `no-new-privileges`, `tmpfs` em `/tmp`, 2 GB de memória e 3,2 CPUs. Os testes usaram um vídeo e uma foto de amostra do repositório, e não imagens do aviário.
+
+**Tabela 1 – Resultados medidos no nó**
+
+| Verificação | Resultado |
+| --- | --- |
+| Imagem `raiar/vision:0.1.0` | `aarch64`, 2,56 GB, PyTorch `2.14.1+cpu` e `torch.version.cuda` igual a `None`; não há a pasta `site-packages/nvidia` |
+| `predict` com a foto | 1 quadro válido, sem falha; cerca de 16 s no total, incluindo a partida do container |
+| Memória, pico do container | 321 MiB durante o `benchmark`; memória disponível do nó nunca ficou abaixo de 81,6% da RAM, bem acima dos 20% exigidos pelo RNF12 |
+| CPU média no `benchmark` | 40% com amostragem a cada 1 s; 20% a cada 5 s (limite do RNF12: 80%) |
+| Tempo de inferência (p95) | cerca de 2,7 s por quadro de 640 px |
+| `inference_within_80_percent_interval` | 0% com intervalo de 1 s; **94,1%** com intervalo de 5 s (16 de 17 quadros) |
+| Serviço `sync` pelo Compose | Sobe e fica ativo com cerca de 1 MiB de memória; sem backend real, só registra a falha de conexão |
+| `sync` contra um servidor de teste | Enviou 1 análise, aceitou 1 e, no segundo envio, não reenviou nada |
+| `sync` sem servidor | Falhou com erro de conexão sem perder dados; as 15 análises gravadas nesse período ficaram pendentes e foram entregues de uma vez quando o servidor voltou |
+| Token | Chegou ao servidor no cabeçalho `Authorization: Bearer ...`, e o arquivo `.env` ficou com permissão `600` |
+
+Fonte: elaborado pelos autores (2026), a partir da execução no nó `raiar-edge-01`. Os relatórios completos ficaram em `/opt/raiar/data/bench` e `/opt/raiar/data/bench5` no nó.
+
+O que esses números dizem:
+
+- **O intervalo entre quadros precisa ser de pelo menos 5 s.** Com 1 s, o nó não acompanha: perdeu 23 dos 40 intervalos. Com 5 s, perdeu um. Os 94,1% ficaram um pouco abaixo dos 95% do RNF11, mas a amostra tem só 17 quadros e o quadro fora do limite é provavelmente o primeiro, com o modelo ainda frio. O RNF11 só pode ser dado como cumprido com uma amostra maior, em imagens reais, no teste de 24 horas.
+- **O modelo `coco` é só para validar a infraestrutura.** Ele não conta galinhas com a precisão do `poultryvision`, que ocupa mais memória (cerca de 509 MiB em `x86_64`) e ainda precisa ser medido no nó.
+- O `benchmark` mede reprodução de arquivos locais, e não a captura ao vivo nem a rede.
+
+### Problemas encontrados na validação
+
+| Sintoma | Causa | Solução |
+| --- | --- | --- |
+| `Modelo não preparado. Execute: chicken-yolo prepare-model poultryvision` | O padrão do `predict` e do `benchmark` é o `poultryvision`, e a imagem foi construída com `coco` | Passar `--model coco`, ou construir a imagem com `--build-arg MODELO=poultryvision` |
+| `Read-only file system: '/app/reports'` no `benchmark` | Sem `--output`, ele grava em `reports/generated`, que não é gravável no container | Passar `--output /app/outputs/bench`, que fica no volume de dados |
+| `Read-only file system: '/cache/...'` no `sync` | O `sync` também cria pastas de cache e precisa do volume `/cache` | Montar `vision-cache:/cache`, como o `compose.yaml` já faz |
+| O `sync` não alcança `http://127.0.0.1` de dentro do Compose | O `localhost` do container não é o do nó, e o `sync` só aceita HTTP em `localhost` | Para testes, usar `--network host`; em produção, usar a URL HTTPS do backend |
+| `python3: command not found` no nó | O sistema enxuto não instala o Python | Rodar o Python dentro de um container da própria imagem, ou analisar os relatórios no notebook |
+| O notebook não consegue construir para `arm64` | Falta o `qemu-user-static`, e instalá-lo exige `sudo` | Construir no nó (ver [Entrega e atualização](#entrega-e-atualização)) |
+| O nó não tem `sudo`, e o `raiar` não consegue reiniciar o sistema | O sistema enxuto só tem o `root` com privilégios | Fazer o `reboot` como `root`, no teclado do nó |
+
+### Ainda não validado
+
+Itens que dependem de hardware, de tempo ou do backend, e por isso seguem abertos:
+
+- **Captura ao vivo pelo DVR real (RF04).** O laço de captura existe e foi validado contra um DVR simulado (ver [Captura simulada e envio ao banco](#captura-simulada)), mas não contra o equipamento da Raiar. Falta confirmar com a Raiar o modelo do DVR, o RTSP habilitado, o codec e as credenciais.
+- **Teste de 24 horas (RNF12) e 24 horas sem rede (RNF01, RNF04).** O procedimento está na tabela abaixo; falta rodá-lo com imagens reais.
+- **Reinício após queda de energia (RNF01).** O Docker está habilitado no boot (`systemctl is-enabled docker` devolve `enabled`) e o `sync` tem `restart: unless-stopped`, e após um `reboot` o nó voltou sozinho, com SSH, Docker, `zram` e a imagem intactos. Falta confirmar o retorno de um container em execução, porque o `sync` de teste havia sido parado antes do reinício, e testar um corte de energia real.
+- **Temperatura e redução de frequência sob carga.** Em repouso o nó marcava 40 °C; a medição sob carga contínua fica para o teste de 24 horas.
+- **Modelo `poultryvision` no nó**, com tempo por quadro e memória.
+- **Banco de dados real.** O envio foi validado contra um Postgres local, mas a extensão do esquema (`src/database/migrations/002_analises.sql`) e a Edge Function ainda não foram aplicadas nem publicadas no Supabase da equipe. A [página de integração com o banco](./integracao-no-banco.md) traz o passo a passo; o endereço e o token reais vão em `/opt/raiar/.env`.
+
+### Captura simulada e envio ao banco {#captura-simulada}
+
+Sem acesso ao DVR, o perfil `simulacao` do `compose.yaml` faz o papel dele: o serviço `dvr-sim` é um servidor RTSP (MediaMTX) e o `dvr-sim-feed` publica nele, em repetição, um vídeo de amostra do repositório, sem recodificá-lo. O `vision` lê `rtsp://dvr-sim:8554/camera1` pelo mesmo caminho que usaria com o DVR. Em 3 de novembro de 2026, o conjunto foi executado no notebook (`x86_64`, não no Raspberry Pi) com o modelo `coco`.
+
+**Tabela 2 – Resultados da captura simulada**
+
+| Verificação | Resultado |
+| --- | --- |
+| Captura pelo RTSP simulado | Um quadro a cada 5 s por câmera, com `status` válido e a URL gravada sem usuário nem senha |
+| Queda do DVR simulado por 25 s | O `vision` registrou a falha de resolução do servidor nos logs, não gravou análises repetidas e voltou a capturar sozinho quando o DVR voltou |
+| `sync` até o Postgres | 12 análises enviadas e 12 aceitas; no segundo envio, nada foi reenviado |
+| Registro no banco | As análises ficaram ligadas à câmera 1, ao aviário e ao lote atual dele |
+| Três câmeras ao mesmo tempo (uma sem cadastro no banco e uma com URL errada) | As duas câmeras boas seguiram gravando; a de URL errada gerou uma mensagem de queda por tentativa, sem a senha, e um evento no histórico; o `sync` aceitou só a câmera cadastrada e listou as demais como `camera_nao_cadastrada` |
+
+Fonte: elaborado pelos autores (2026), a partir da execução local com um Postgres em container.
+
+Para repetir o teste e para entender o que ele significa em linguagem simples, veja [DVR simulado e teste na prática](./dvr-simulado-e-teste-na-pratica.md). Dois limites desse teste: o `sync` falou com um servidor de teste que repete o contrato da Edge Function e chama a mesma função SQL, e não com a Edge Function publicada; e, como o vídeo de amostra não tem zonas calibradas, as contagens por nível saíram vazias e o modelo `coco` não detectou aves nele. O teste valida o caminho dos dados, e não a qualidade da contagem.
+
+### Limitações do `raiarnet`
+
+O `raiarnet`, o modelo construído do zero pela equipe, ficou de fora desta integração. Não foi construído nem executado no nó: os motivos abaixo vêm da leitura do código e da imagem em `sprint-3/docker/raiarnet/`, e a equipe ainda decide se tentará incluí-lo mais adiante.
+
+**Tabela 3 – Fatores que impedem a inclusão do `raiarnet`**
+
+| Fator | Situação no repositório |
+| --- | --- |
+| Sem pesos | O `predict.py` exige `--weights runs/raiarnet/final/best.pt`, mas o `.gitignore` exclui `*.pt` e `runs/*`, e a pasta `src/raiarnet/runs/` está vazia. A imagem subiria sem modelo. |
+| Saída incompatível com o banco | Ele grava `contagens.csv`, `resumo.json` e vídeo anotado, e não o histórico SQLite com `analise_id` que o `sync` e o banco esperam. |
+| Só lê arquivos | Aceita imagem ou `.mp4`; não lê RTSP nem tem laço de captura. |
+| Fora do `raiar-vision` | Tem entrada própria (`python -m models.predict`), sem registro de modelo e sem integração com o `sync`. |
+| Custo no nó não medido | Usa PyTorch com fusão de detecção e densidade e filtro de Kalman. A memória e o tempo por quadro em `arm64` são desconhecidos, então o RNF11 e o RNF12 não foram verificados. |
+
+Fonte: elaborado pelos autores (2026), a partir de `src/raiarnet/models/predict.py`, `.gitignore` e `sprint-3/docker/raiarnet/`.
 
 ## Validação antes de homologar
 
