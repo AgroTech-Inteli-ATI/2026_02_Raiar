@@ -178,6 +178,12 @@ O notebook usado não tem leitor de cartão, então o nó atual foi preparado po
 
 O `root` não entra por SSH com senha, que é o padrão do OpenSSH atual. Para operar sem teclado e monitor, define-se a senha do usuário `raiar` e envia-se a chave pública com `ssh-copy-id`, o que dispensa digitar a senha a cada acesso. Desta forma, o `root` só é usado localmente. Para copiar arquivos antes de ter SSH, sobe-se no notebook um servidor temporário com `python3 -m http.server 8000 --directory src/edge` e baixam-se os scripts no nó com `curl`.
 
+Foi assim que o acesso por chave foi instalado no nó atual: um script curto, servido pelo notebook, ligou o `sshd` e gravou a chave pública em `/home/raiar/.ssh/authorized_keys` com permissões `700` e `600`. O comando digitado no nó foi só `curl -s IP_DO_NOTEBOOK:8000/s | sh`. Três cuidados saíram dessa experiência.
+
+- O nó e o notebook precisam estar na **mesma rede, sem isolamento de clientes**. Em redes institucionais, o roteador pode deixar o notebook alcançar o nó, mas não o contrário, e então o `curl` do nó fica parado sem erro. Um roteador próprio ou o *hotspot* do celular resolve.
+- O endereço do nó **muda a cada rede**. Para achá-lo, procura-se na sub-rede a porta 22 aberta e confere-se o prefixo do endereço físico (MAC) `b8:27:eb` ou `dc:a6:32`, que identifica um Raspberry Pi.
+- O nó **não tem `sudo`** e o `raiar` não reinicia o sistema. Tudo o que é feito por SSH usa o grupo `docker`; instalar pacotes, reiniciar e mexer no sistema exigem o `root`, no teclado do nó.
+
 ### Problemas encontrados
 
 | Sintoma | Causa | Solução |
@@ -201,11 +207,11 @@ O nó atual roda inteiramente num cartão SD, sem pen drive: como o notebook nã
 | RAM em uso, sem containers | 177 MB de 3.815 MB | 220 MB, já com o Docker ativo |
 | Swap | nenhum | `zram` de 1,9 GB, com prioridade 100 |
 
-A capacidade total do cartão e o espaço livre devem ser conferidos no nó com `df -h /` e `lsblk`, porque uma medição anterior registrou cerca de 29 GB e o cartão em uso mostra menos. Esse dado define quanto sobra para as imagens dos containers.
+O cartão em uso tem 29 GB (`df -h /`). Em 28 de outubro de 2026, depois de construir a imagem dos containers no próprio nó, a raiz tinha 4,8 GB usados e 23 GB livres, e a imagem `raiar/vision:0.1.0` ocupa 2,56 GB. Isso deixa folga para algumas versões da imagem, o que importa para voltar a uma *tag* anterior.
 
 O `dockerd` ocupa cerca de 84 MB e o `containerd` cerca de 40 MB de memória residente, sem nenhum container em execução. É esse o custo fixo do Docker no nó. Com `zram`, o `vm.swappiness` passa a 100, e não mais a 10 como a configuração inicial, porque o swap comprimido deve ser preferido ao descarte de cache.
 
-O Docker executou o container `hello-world` com sucesso. A captura pelo DVR ou por câmera USB, a estabilidade do nó em 24 horas (exigida pelo RNF12), a memória disponível com o modelo carregado e a imagem do container em `arm64` serão verificadas na etapa de validação descrita em [Containers no nó de borda](./integracao-containers-no-no-de-borda.md).
+O Docker executou o container `hello-world` com sucesso e, depois, a imagem dos modelos em `arm64`, com a memória disponível e o tempo por quadro medidos, como mostra a seção [Validação no nó](./integracao-containers-no-no-de-borda.md#validacao-no-no). A captura pelo DVR ou por câmera USB, a estabilidade do nó em 24 horas (exigida pelo RNF12) e o reinício após queda de energia continuam por verificar, e estão listados lá.
 
 ## Referências {#referencias}
 
