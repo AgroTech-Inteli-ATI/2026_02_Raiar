@@ -2,7 +2,7 @@
   "label": "Sprint 3",
   "position": 4,
   "link": {
-    "type": "generated-index",
-    "description": "Documentação do banco de dados desenvolvida na Sprint 3."
+    "type": "doc",
+    "id": "sprint-3/index"
   }
 }

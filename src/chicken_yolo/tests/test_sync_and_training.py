@@ -55,6 +55,24 @@ def test_only_server_acknowledged_records_leave_pending_queue(tmp_path, frame):
     )
 
 
+def test_server_rejections_are_reported_and_stay_pending(tmp_path, frame):
+    database, rows = store_frames(tmp_path, frame)
+
+    def post(url, **kwargs):
+        return SimpleNamespace(
+            status_code=200,
+            raise_for_status=lambda: None,
+            json=lambda: {
+                "accepted_analysis_ids": [rows[0]["analise_id"]],
+                "rejected": [{"id": rows[1]["analise_id"], "reason": "camera_nao_cadastrada"}],
+            },
+        )
+
+    result = sync_pending(database, "http://127.0.0.1/results", post=post)
+    assert result["pending"] == 1 and result["rejected_count"] == 1
+    assert result["rejected"][0]["reason"] == "camera_nao_cadastrada"
+
+
 def test_offline_failure_preserves_pending_records(tmp_path, frame):
     database, _ = store_frames(tmp_path, frame)
 

@@ -1,0 +1,9 @@
+.git
+.venv
+**/__pycache__
+data
+outputs
+docs
+src/raiarnet
+src/modelos_PIO
+**/*.ipynb

@@ -227,3 +227,105 @@ Os termos abaixo aparecem nas páginas do [modelo de visão computacional](../sp
 **TTA:** inferência com variações da imagem, como o espelhamento horizontal, cujas saídas são combinadas.
 
 **Chicken-YOLO:** detector de galinhas baseado no YOLO11n, publicado em 2025, que será usado como referência de comparação na próxima etapa.
+
+## Nó de borda e Raspberry Pi
+
+Os termos abaixo aparecem na página do [nó de borda no Raspberry Pi](../sprint-3/provisionamento-raspberry-pi.md).
+
+**Nó de borda (*Edge Computing*):** computador instalado no próprio aviário que processa as imagens no local, sem enviá-las antes a um servidor remoto.
+
+**Raspberry Pi 4 Model B:** computador de placa única que serve de nó de borda neste projeto, na versão de 4 GB de RAM.
+
+**Arch Linux ARM:** versão do Arch Linux para processadores ARM, usada aqui como sistema operacional do nó.
+
+**`aarch64`:** nome da arquitetura ARM de 64 bits, que o Raspberry Pi 4 executa.
+
+**Headless:** modo de operação sem monitor, teclado ou interface gráfica; o acesso é remoto, por SSH.
+
+**SSH:** protocolo de acesso remoto seguro a um terminal, usado para administrar o nó sem monitor.
+
+**Cartão SD:** meio de armazenamento do nó. Guarda o sistema, o Docker, as imagens dos containers e os resultados. É o boot padrão do Raspberry Pi 4.
+
+**EEPROM e `BOOT_ORDER`:** memória interna do Raspberry Pi 4 que guarda a ordem em que ele tenta iniciar: cartão SD, USB e outras. Com o sistema no cartão SD não é preciso alterá-la; só o caminho alternativo, que parte de um pen drive, exige o USB antes de um cartão que já tenha outro sistema.
+
+**U-Boot:** programa que inicia o Raspberry Pi neste sistema e carrega o kernel a partir da partição de boot.
+
+**`PARTUUID`:** identificador único de uma partição. O boot o usa para achar a raiz do sistema no mesmo dispositivo de onde o kernel foi carregado, que aqui é o cartão SD.
+
+**`gpu_mem`:** parâmetro do `config.txt` que define quanta RAM é reservada à GPU. Em um nó sem monitor, o valor mínimo libera memória para os modelos.
+
+**`journald`:** serviço de logs do sistema. Em modo volátil, guarda os registros na memória e os perde no desligamento.
+
+**`swappiness`:** parâmetro do kernel (`vm.swappiness`) que define o quanto ele prefere mover dados da RAM para o swap. Valores baixos evitam essa troca.
+
+**`wpa_supplicant`:** programa que conecta o Raspberry Pi a uma rede Wi-Fi protegida por senha.
+
+**Docker:** ferramenta que executa programas em **containers**, ambientes isolados com tudo o que cada programa precisa. Mantém a pilha dos modelos separada do sistema.
+
+**V4L2:** interface do kernel Linux para câmeras. Uma câmera USB aparece como um arquivo como `/dev/video0`.
+
+**DVR (servidor de câmeras):** equipamento do aviário que recebe e grava as imagens das câmeras. É a fonte preferida das imagens do nó.
+
+**RTSP:** protocolo que entrega o vídeo de uma câmera ou DVR pela rede, em uma URL como `rtsp://IP:554/canal`. O nó o lê como uma câmera.
+
+**Substream:** segundo fluxo do DVR, de menor resolução, mais leve de decodificar. É o indicado para o nó.
+
+**H.264 e H.265:** formas de comprimir o vídeo. O H.265 comprime mais, mas pesa mais na CPU do Raspberry Pi.
+
+**Backoff:** espera crescente entre novas tentativas depois de uma falha, para não sobrecarregar a conexão.
+
+**Firmware:** programa gravado que um dispositivo de hardware precisa carregar para funcionar. No Linux, o pacote de firmware traz o de centenas de placas, e o nó mantém só o do Raspberry Pi.
+
+**`zram`:** área de swap que fica na própria RAM e guarda os dados comprimidos. Cobre picos de uso de memória sem escrever no cartão SD.
+
+**`NoExtract`:** opção do `pacman.conf` que impede a gravação de certos arquivos, como manuais e traduções, nas instalações de pacotes.
+
+**Imagem de container:** pacote imutável com o programa e tudo o que ele precisa para rodar. O container é uma execução dessa imagem.
+
+**Docker Compose:** ferramenta que descreve, em um único arquivo, vários containers e a forma como eles se conectam, e os sobe com um comando.
+
+**Volume:** pasta do nó ligada a um container, onde os dados sobrevivem quando o container é recriado. Aqui guarda o banco SQLite dos resultados.
+
+**`tmpfs`:** pasta mantida na memória RAM e não no cartão SD. Serve para arquivos temporários, como os quadros capturados, sem desgastar o cartão.
+
+**Build multiplataforma (`buildx`):** construção de uma imagem para outra arquitetura de processador. Permite gerar no notebook uma imagem `arm64` para o Raspberry Pi.
+
+**Modo WAL:** forma de o SQLite gravar alterações em um registro à parte, que permite um processo ler o banco enquanto outro escreve.
+
+**RTC (relógio de tempo real):** módulo com bateria que mantém a hora quando o aparelho está desligado. O Raspberry Pi não tem um, então depende da internet para acertar o relógio.
+
+**RAM:** memória de trabalho do computador, onde ficam os programas em execução. É mais rápida que o armazenamento e se esvazia quando o equipamento desliga.
+
+**CPU:** processador, a parte do computador que executa os cálculos. O Raspberry Pi 4 tem quatro núcleos, e os requisitos limitam o uso médio a 80%.
+
+**Pacote compactado (*tarball*):** arquivo único (`.tar.gz`) que reúne vários arquivos compactados. O sistema Arch Linux ARM é distribuído assim.
+
+**md5:** código curto calculado a partir de um arquivo. Se o código do arquivo baixado coincide com o publicado, o arquivo não veio corrompido.
+
+**Espelho (*mirror*):** servidor que mantém uma cópia dos arquivos de download. Trocar de espelho pode acelerar uma transferência lenta.
+
+**DHCP:** serviço da rede que atribui um endereço ao equipamento automaticamente, sem configuração manual.
+
+**Ethernet:** conexão de rede por cabo. É mais estável que o Wi-Fi e preferível entre o nó e o DVR.
+
+**PSK:** forma embaralhada da senha do Wi-Fi. Guardá-la no lugar da senha em texto evita expor a senha original.
+
+**CUDA:** tecnologia das placas de vídeo NVIDIA para acelerar cálculos. O Raspberry Pi não tem essa placa, então as bibliotecas CUDA só ocupam espaço na imagem.
+
+**Tag (versão da imagem):** etiqueta que identifica uma versão da imagem de container, como `0.1.0`. Voltar a uma versão anterior é escolher a etiqueta antiga.
+
+**Token:** senha de acesso que identifica o nó perante o backend. Fica em um arquivo `.env` protegido e nunca no repositório.
+
+**HTTPS:** forma protegida de transmitir dados pela internet, com criptografia. O envio ao backend só aceita essa forma.
+
+**Somente leitura (*read-only*):** modo em que o container não pode alterar seus próprios arquivos. Protege o sistema e o cartão SD, mas exige pastas separadas, gravadas em memória ou em volume, para o que o programa precisa escrever.
+
+**Healthcheck:** verificação automática que informa se um serviço continua funcionando. Ainda é uma melhoria prevista para o nó.
+
+**Supabase:** serviço que oferece um banco de dados PostgreSQL pela internet, com funções que rodam no servidor. É onde as análises enviadas pelos nós de borda são guardadas.
+
+**Edge Function:** pequeno programa que roda no servidor do Supabase e atende a um endereço da internet. Aqui, recebe os lotes do nó, confere o token e manda gravar no banco.
+
+**Idempotente:** operação que, repetida, produz o mesmo resultado que uma única execução. O envio de análises é assim: reenviar uma análise já gravada não a duplica.
+
+**DVR simulado:** servidor de vídeo de teste que publica um vídeo gravado em repetição, como se fosse uma câmera, para validar a captura sem o DVR real.
