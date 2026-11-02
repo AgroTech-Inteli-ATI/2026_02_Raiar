@@ -7,7 +7,7 @@ description: Como as análises do Raspberry Pi chegam ao Supabase, o contrato do
 
 # Integração do nó de borda com o banco de dados
 
-Esta página descreve o caminho que uma análise percorre desde o quadro capturado no Raspberry Pi até uma linha no banco de dados, e o que foi acrescentado ao esquema inicial do banco (`src/database/schema.sql`, em revisão no pull request #25) para recebê-la. O nó guarda cada análise primeiro em um histórico local e só depois a envia, de modo que uma queda de rede não perde resultados, como pede o RNF04. Os termos técnicos estão no [glossário](../sprint-1/glossario.md).
+Esta página descreve o caminho que uma análise percorre desde o quadro capturado no Raspberry Pi até uma linha no banco de dados, e o que foi acrescentado ao esquema inicial do banco (`src/database/schema.sql`, descrito em [Banco de dados: primeira versão](./banco-de-dados.md)) para recebê-la. O nó guarda cada análise primeiro em um histórico local e só depois a envia, de modo que uma queda de rede não perde resultados, como pede o RNF04. Os termos técnicos estão no [glossário](../sprint-1/glossario.md).
 
 ## Caminho dos dados
 
@@ -67,7 +67,7 @@ Fonte: elaborado pelos autores (2026), a partir de `supabase/functions/ingest-an
 
 ## Extensão do esquema
 
-O esquema inicial não tem onde guardar as análises, apenas os alertas. A proposta está em `src/database/migrations/002_analises.sql` e deve ser revisada junto com o `schema.sql`. Ela acrescenta duas tabelas e a função de ingestão.
+O esquema inicial não tem onde guardar as análises, apenas os alertas. A proposta está em `src/database/migrations/002_analises.sql` e precisa de revisão do responsável pelo banco antes de ir para produção. Ela acrescenta duas tabelas e a função de ingestão.
 
 **Tabela 2 – Tabelas acrescentadas**
 
