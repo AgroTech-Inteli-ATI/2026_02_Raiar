@@ -10,13 +10,9 @@ A análise financeira estima os recursos necessários para validar a solução d
 
 **Planilha de referência:** [Raiar — Análise financeira: PoC e implementação](https://docs.google.com/spreadsheets/d/19NS9ZBeKlsNQt2Qj5Ss9R78Q0CK5ok3N-m-VpRwFQYQ/edit).
 
-A planilha foi simplificada em **01/11/2026** e agora tem três abas: **Resumo**, **Premissas** e **Custos e fontes**. Os preços de equipamentos e serviços foram preservados da pesquisa de **19/10/2026**. A referência de preço dos ovos foi consultada em **01/11/2026**. Os números desta página representam essa versão; alterações posteriores na planilha não atualizam automaticamente esta documentação.
+## Como usar a planilha
 
-> **Estimativa inicial, não resultado real da Raiar.** O retorno usa uma média de duas ofertas de varejo de ovos orgânicos Raiar, combinada com hipóteses ilustrativas de recuperação e valor líquido. Não há redução de perdas comprovada pela aplicação. Licenças ainda não cotadas ficam excluídas e sinalizadas.
-
-## Como ler a nova planilha
-
-A revisão substituiu duas abas extensas, com 169 e 185 linhas, por uma visão comparativa e duas áreas de apoio. Os resultados deixaram de competir com campos de preenchimento e detalhes técnicos. Foram retiradas da visão principal as versões repetidas de ROI/payback com e sem licença; agora existe um único cálculo, que incorpora os valores de licença informados e avisa quando algum ainda não foi cotado.
+A planilha reúne os cenários, as premissas e as fontes utilizadas na análise.
 
 | Aba | O que encontrar | Como usar |
 | --- | --- | --- |
@@ -26,7 +22,7 @@ A revisão substituiu duas abas extensas, com 169 e 185 linhas, por uma visão c
 
 Em **Premissas**, B/E preservam as referências; C/F recebem os valores próprios; D/G mostram o que o cálculo usa. **Campo vazio mantém a referência; zero informado substitui a referência por zero.** As referências podem ser preços pesquisados, hipóteses de orçamento ou hipóteses ilustrativas de benefício, conforme a explicação de cada linha.
 
-No **Resumo**, valores entre parênteses são negativos e o traço representa zero. O marcador `n.a.` indica resultado indisponível ou payback sem prazo finito, conforme a explicação ao lado. Os cenários continuam separados no cálculo, embora agora sejam apresentados juntos.
+No **Resumo**, parênteses indicam valores negativos, o traço representa zero e `n.a.` indica um resultado indisponível ou um payback sem prazo finito.
 
 ## Objetivo e construção da análise
 
@@ -39,7 +35,7 @@ O trabalho foi organizado da seguinte forma:
 3. Dimensionar quantidades, horas de trabalho, consumo elétrico e serviços de nuvem.
 4. Separar CAPEX físico, gastos iniciais adicionais, contingência e OPEX mensal.
 5. Relacionar o retorno a ovos orgânicos que deixam de ser perdidos, distinguindo preços pesquisados de hipóteses de ganho ainda não medido.
-6. Reorganizar a apresentação e testar o recálculo com zero informado, campos incompletos, produção e taxas de perda, atraso do benefício e licenças. Os dados temporários dos testes foram removidos; permanece apenas a simulação explicitamente aprovada.
+6. Calcular o retorno considerando o prazo, as licenças e o início dos benefícios.
 
 Foram utilizadas referências de fornecedores como RoboCore, Portwell, Intelbras e seus revendedores, além das tabelas da DigitalOcean. As fontes de cada item permanecem na planilha. Cabos, fixação, adequações, horas de trabalho e outros valores sem proposta comercial foram identificados como estimativas. Os preços não representam pedidos de compra ou orçamento aprovado; alguns anúncios estavam sem estoque ou sujeitos a consulta.
 
@@ -142,7 +138,7 @@ Somam-se aos materiais **R$ 942,87 de frete**, **R$ 58,29 de reserva de tributos
 
 Desenvolvimento e dados abrangem captura e integração, painel, histórico, anotação de imagens, validação e documentação. A implementação acrescenta adaptação para falhas e operação offline, novas anotações e homologação em campo. As estimativas consideram R$ 100,00 por hora de desenvolvimento e validação e R$ 35,00 por hora de anotação. Na PoC, esse bloco tem custo integral de **R$ 27.800,00**, embora não haja desembolso previsto.
 
-A implementação parte de um orçamento completo de construção da solução. A planilha também apresenta **R$ 56.003,27 como investimento adicional após a PoC**, sob a hipótese de reaproveitar integralmente o núcleo inicial de captura, painel, anotação e validação. Esse valor é uma alternativa ao orçamento inicial completo, não uma parcela a somar a ele. O reaproveitamento depende de validação técnica e não foi utilizado para reduzir os indicadores-base apresentados nesta página.
+O orçamento completo considera a construção da solução. A planilha também apresenta um investimento adicional de **R$ 56.003,27 após a PoC**, considerando o reaproveitamento do trabalho inicial. Essa alternativa depende de validação técnica e não foi usada nos indicadores da tabela principal.
 
 ## OPEX: custos de operação
 
@@ -167,9 +163,9 @@ O **OPEX** representa os recursos necessários para manter a aplicação funcion
 
 Os serviços em dólar utilizam a referência cambial de **R$ 5,0564 por USD**, registrada na pesquisa de 19/10/2026, acrescida de 10% de reserva. A energia utiliza a hipótese de **R$ 1,00/kWh**, com dispositivos energizados 24 horas por dia e mês de 30 dias. Esses parâmetros devem ser substituídos pelas condições efetivas de contratação e consumo.
 
-O custo adicional de internet está zerado porque a base pressupõe rede existente. Os excedentes de nuvem também ficam zerados porque os volumes estimados cabem nas franquias do pacote. Isso não significa que esses serviços terão custo zero em qualquer escala.
+O orçamento considera o uso da rede existente e que os volumes estimados cabem nas franquias de nuvem.
 
-A manutenção considera reserva anual de 5% do valor integral do hardware da PoC e 8% na implementação, excluindo o nobreak. Para sua bateria, o preço de **R$ 127,74** foi dividido por um intervalo estimado de **24 meses**. A reserva mensal de R$ 5,32 substitui o lançamento isolado de uma troca no mês 24 da versão anterior; não existe cobrança dupla. O orçamento normalizado de 36 meses acumula reserva para um ciclo e meio de reposição, e não apenas uma compra.
+A manutenção considera uma reserva anual de 5% do hardware da PoC e 8% na implementação, excluindo o nobreak. Para a bateria do nobreak, o preço de **R$ 127,74** foi distribuído ao longo de **24 meses**, resultando em uma reserva mensal de R$ 5,32.
 
 ## Benefício escolhido: evitar perdas de ovos orgânicos
 
@@ -202,7 +198,7 @@ A planilha calcula a média em **Custos e fontes!D9**, a partir dos preços e qu
 | Primeiro mês com benefício | 1 | Hipótese imediata; ajustar se o efeito ocorrer após a recria |
 | Ovos preservados por mês na PoC | 0 | Não se assume retorno comercial durante a validação |
 
-Os **3.000 ovos/mês e os 50% não têm fonte de mercado**: são hipóteses explícitas de simulação. Somente o preço de varejo vem das ofertas pesquisadas. A parcela de 50% representa uma aproximação ilustrativa da diferença entre varejo e valor líquido recuperável; não substitui a margem incremental real.
+Os **3.000 ovos por mês e a parcela líquida de 50%** são hipóteses usadas na simulação. O valor líquido real deve ser informado pela Raiar.
 
 O volume refere-se ao escopo atendido pelo projeto. Aumentar aviários ou câmeras recalcula os custos, mas **não multiplica automaticamente os ovos preservados**. O benefício exige uma estimativa própria, sem extrapolar a eficácia para toda a propriedade.
 
@@ -309,7 +305,5 @@ Esses limites representam equilíbrio financeiro do orçamento adotado, não pre
 - **Escopo e tempo:** a solução atua na recria. É necessário medir a relação entre os indicadores, as decisões de manejo e as perdas posteriores, considerando lotes e períodos comparáveis e evitando dupla contagem.
 - **Custos constantes:** não foram incluídos inflação, financiamento, desconto financeiro, tributação do resultado, depreciação ou valor residual. Obras civis, novas rotas de fibra, GPU dedicada e integrações corporativas continuam fora do orçamento.
 - **Leitura gerencial:** reservas para manutenção e contingência são provisões orçamentárias. Não equivalem a desembolsos efetivos em cada mês.
-
-Na revisão de 01/11/2026, os valores numéricos dos materiais, gastos e parâmetros preservados foram reconciliados com a versão anterior, sem diferenças. As fórmulas foram verificadas no Google Sheets com volume zero, licenças zeradas, dados de perdas incompletos e um cenário de produção com benefício atrasado e licenças pagas. Os campos temporários foram limpos, restaurando a simulação descrita nesta página.
 
 Antes de uma decisão de implantação, devem ser confirmados inventário, cotações, capacidade de processamento, consumo, licenças e valor líquido por ovo. A medição da redução de perdas permitirá substituir a hipótese ilustrativa por evidência do cliente.
