@@ -3,7 +3,9 @@
 import argparse
 import json
 import os
+import signal
 import sys
+import threading
 import uuid
 from dataclasses import replace
 from pathlib import Path
@@ -14,6 +16,7 @@ from .config import load_inference, resolve_path
 from .dataset import export_crops, extract_frames, prepare_dataset
 from .detector import YOLODetector, prepare_model
 from .evaluation import evaluate_dataset
+from .live import cameras_from_env, load_cameras, run_cameras
 from .pipeline import Pipeline, annotate
 from .storage import ResultStore
 from .sync import sync_pending
@@ -27,7 +30,7 @@ def configure_runtime(root: Path):
         ("MPLCONFIGDIR", "matplotlib"),
         ("TORCH_HOME", "torch"),
     ):
-        path = root / ".cache" / folder
+        path = Path(os.environ[key]) if key in os.environ else root / ".cache" / folder
         path.mkdir(parents=True, exist_ok=True)
         os.environ.setdefault(key, str(path))
 
@@ -65,6 +68,7 @@ def build_parser() -> argparse.ArgumentParser:
         predict,
         commands.add_parser("evaluate", help="Avaliar usando referências revisadas."),
         commands.add_parser("benchmark", help="Medir tempo e recursos com entrada local."),
+        commands.add_parser("run", help="Capturar câmeras continuamente (RTSP, USB ou arquivo)."),
     ):
         sub.add_argument("--config", type=Path, default=Path("src/chicken_yolo/configs/inference.yaml"))
         sub.add_argument("--weights", help="Checkpoint próprio ou artefato exportado.")
@@ -80,6 +84,13 @@ def build_parser() -> argparse.ArgumentParser:
     bench.add_argument("--interval-seconds", type=float)
     bench.add_argument("--camera-id")
     bench.add_argument("--lote-id")
+    live = commands.choices["run"]
+    live.add_argument(
+        "--cameras",
+        type=Path,
+        help="YAML com a lista de câmeras; sem ele, usa RAIAR_CAMERA_SOURCE e RAIAR_CAMERA_ID.",
+    )
+    live.add_argument("--max-frames", type=int, help="Encerra após N quadros (testes).")
     sync = commands.add_parser("sync", help="Enviar resultados pendentes ao backend configurado.")
     sync.add_argument("--database", type=Path, default=Path("outputs/results.sqlite3"))
     sync.add_argument("--url", required=True)
@@ -207,6 +218,8 @@ def run(args) -> tuple[dict, int]:
         return {"report": str(output / "report.json"), **report}, int(
             report["coverage"]["falha_processamento"] > 0
         )
+    if args.command == "run":
+        return run_live(args, root, config, detector, zones)
     output = (
         resolve_path(root, args.output)
         if args.output
@@ -249,6 +262,62 @@ def run(args) -> tuple[dict, int]:
                     annotate(frame.image, result, zones),
                 )
     return {"output": str(output), "frames": sum(counts.values()), **counts}, int(
+        counts["falha_processamento"] > 0
+    )
+
+
+def run_live(args, root: Path, config, detector, zones) -> tuple[dict, int]:
+    default_file = root / "config" / "cameras.yaml"
+    if args.cameras:
+        cameras = load_cameras(resolve_path(root, args.cameras))
+    elif default_file.is_file():
+        cameras = load_cameras(default_file)
+    else:
+        cameras = cameras_from_env()
+    output = (
+        resolve_path(root, args.output)
+        if args.output
+        else resolve_path(root, config.output_dir) / "live"
+    )
+    stop = threading.Event()
+    for name in (signal.SIGINT, signal.SIGTERM):
+        signal.signal(name, lambda *_: stop.set())
+    # Cada câmera pode ter suas próprias zonas, porque o arquivo de zonas vale para uma só câmera.
+    pipelines = {
+        c.id: Pipeline(
+            config, detector, load_zones(resolve_path(root, c.zones)) if c.zones else zones
+        )
+        for c in cameras
+        if c.enabled
+    }
+    counts = {"valido": 0, "imagem_inadequada": 0, "falha_processamento": 0}
+    with ResultStore(resolve_path(root, config.database), output) as store:
+        store.record_event("captura_iniciada", {"cameras": list(pipelines)})
+
+        def process(frame):
+            result = pipelines[frame.metadata["camera_id"]].process(frame)
+            store.save(result)
+            counts[result["status"]] += 1
+            print(
+                f"camera={result['camera_id']} status={result['status']} "
+                f"aves={result['quantidade_aves_visiveis']} niveis={result['contagens_por_nivel']}",
+                file=sys.stderr,
+                flush=True,
+            )
+
+        def on_error(camera, exc):
+            store.record_event("falha_captura", {"camera_id": camera.id, "error": str(exc)})
+            print(f"camera={camera.id} erro={exc}", file=sys.stderr, flush=True)
+
+        def on_status(camera, event, detail):
+            store.record_event(f"camera_{event}", {"camera_id": camera.id, "detail": detail})
+            print(f"camera={camera.id} {event}: {detail}", file=sys.stderr, flush=True)
+
+        frames = run_cameras(
+            cameras, process, stop, args.max_frames, on_error=on_error, on_status=on_status
+        )
+        store.record_event("captura_encerrada", {"frames": frames})
+    return {"output": str(output), "frames": frames, **counts}, int(
         counts["falha_processamento"] > 0
     )
 

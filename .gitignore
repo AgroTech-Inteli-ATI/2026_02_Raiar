@@ -13,6 +13,7 @@ node_modules/
 .tmp/
 .env
 .env.*
+!.env.exemplo
 
 # Dados, pesos e artefatos de execução
 data/raw/*
@@ -57,3 +58,4 @@ src/chicken_yolo/models/pretrained/*
 !src/chicken_yolo/models/pretrained/.gitkeep
 src/chicken_yolo/models/trained/*
 !src/chicken_yolo/models/trained/.gitkeep
+

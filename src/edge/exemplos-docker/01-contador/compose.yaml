@@ -1,0 +1,44 @@
+name: contador
+
+services:
+  escritor:
+    image: contador:2
+    user: "1000:1000"
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 64m
+    cpus: 0.5
+    environment:
+      INTERVALO: "2"
+    tmpfs:
+      - /tmp:size=8m
+    volumes:
+      - dados:/dados
+    command:
+      - python
+      - -c
+      - |
+        import os, time, pathlib
+        p = pathlib.Path("/dados/saida.txt")
+        i = 0
+        while True:
+            i += 1
+            p.open("a").write(f"linha {i}\n")
+            print(f"escrevi a linha {i}", flush=True)
+            time.sleep(int(os.environ["INTERVALO"]))
+
+  leitor:
+    image: contador:2
+    user: "1000:1000"
+    restart: unless-stopped
+    read_only: true
+    mem_limit: 64m
+    depends_on: [escritor]
+    volumes:
+      - dados:/dados:ro
+    command: ["sh", "-c", "while true; do sleep 5; echo \"total de linhas: $(wc -l < /dados/saida.txt)\"; done"]
+
+volumes:
+  dados:

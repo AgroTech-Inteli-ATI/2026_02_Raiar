@@ -7,9 +7,35 @@ from conftest import FakeDetector
 
 from chicken_yolo.benchmark import benchmark
 from chicken_yolo.capture import write_image
-from chicken_yolo.cli import main
+from chicken_yolo.cli import configure_runtime, main
 from chicken_yolo.config import InferenceConfig
 from chicken_yolo.pipeline import Pipeline
+
+
+def test_configure_runtime_uses_configured_cache_paths(tmp_path, monkeypatch):
+    root = tmp_path / "read-only-root"
+    configured = {
+        "YOLO_CONFIG_DIR": tmp_path / "ultralytics-cache",
+        "MPLCONFIGDIR": tmp_path / "matplotlib-cache",
+        "TORCH_HOME": tmp_path / "torch-cache",
+    }
+    for key, path in configured.items():
+        monkeypatch.setenv(key, str(path))
+
+    configure_runtime(root)
+
+    assert all(path.is_dir() for path in configured.values())
+    assert not (root / ".cache").exists()
+
+
+def test_configure_runtime_defaults_to_project_cache(tmp_path, monkeypatch):
+    for key in ("YOLO_CONFIG_DIR", "MPLCONFIGDIR", "TORCH_HOME"):
+        monkeypatch.delenv(key, raising=False)
+
+    configure_runtime(tmp_path)
+
+    for folder in ("ultralytics", "matplotlib", "torch"):
+        assert (tmp_path / ".cache" / folder).is_dir()
 
 
 @pytest.mark.parametrize("arguments,expected", [([], "poultryvision"), (["coco"], "coco")])
