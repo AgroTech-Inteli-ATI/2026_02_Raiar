@@ -11,6 +11,7 @@ Projeto da AgroTech Inteli com a Raiar Orgânicos para monitorar, por visão com
 │   ├── src/css/            # Estilos globais (paleta Raiar e formatação ABNT)
 │   └── static/img/         # Imagens usadas nas páginas
 ├── src/
+│   ├── backend/            # API HTTP, cadastros e conexão com PostgreSQL
 │   ├── chicken_yolo/       # Detector YOLO pré-treinado: inferência, dataset, treino e avaliação
 │   │   ├── configs/        # Configurações de inferência, treino e câmeras
 │   │   ├── models/         # Registro dos modelos e pesos locais
