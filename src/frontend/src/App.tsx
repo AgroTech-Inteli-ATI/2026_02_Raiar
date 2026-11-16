@@ -31,6 +31,38 @@ function WarningIcon() {
   );
 }
 
+function ExampleFrame({alt}: {alt: string}) {
+  return (
+    <svg
+      className={styles.exampleFrame}
+      viewBox="0 0 640 360"
+      role="img"
+      aria-label={alt}
+      focusable="false"
+    >
+      <rect width="640" height="360" className={styles.exampleBackdrop} />
+      <path d="M0 250H640v110H0z" className={styles.exampleFloor} />
+      <path d="M48 42h544v270H48z" className={styles.exampleGrid} />
+      <path d="M48 132h544M48 222h544M229 42v270M411 42v270" className={styles.exampleGrid} />
+      <g className={styles.exampleBird}>
+        <ellipse cx="257" cy="198" rx="34" ry="22" />
+        <circle cx="282" cy="182" r="15" />
+        <path d="m295 182 15 6-15 5z" />
+      </g>
+      <g className={styles.exampleBird}>
+        <ellipse cx="322" cy="211" rx="37" ry="23" />
+        <circle cx="350" cy="193" r="15" />
+        <path d="m363 193 15 6-15 5z" />
+      </g>
+      <g className={styles.exampleBird}>
+        <ellipse cx="376" cy="228" rx="31" ry="20" />
+        <circle cx="400" cy="212" r="13" />
+        <path d="m412 212 13 5-13 5z" />
+      </g>
+    </svg>
+  );
+}
+
 function AlertImage({alert}: {alert: AlertRecord}) {
   if (!alert.image) return null;
   const {url, alt, box} = alert.image;
@@ -38,7 +70,11 @@ function AlertImage({alert}: {alert: AlertRecord}) {
   return (
     <figure className={styles.alertImage}>
       <div className={styles.imageFrame}>
-        <img src={url} alt={alt} />
+        {alert.image.illustration ? (
+          <ExampleFrame alt={alt} />
+        ) : (
+          <img src={url} alt={alt} />
+        )}
         <span
           className={styles.boundingBox}
           aria-label="Região identificada pelo modelo"
@@ -50,7 +86,9 @@ function AlertImage({alert}: {alert: AlertRecord}) {
           }}
         />
       </div>
-      <figcaption>Imagem associada ao alerta</figcaption>
+      <figcaption>
+        {alert.image.illustration ? 'Ilustração de exemplo, sem imagem real.' : 'Imagem associada ao alerta'}
+      </figcaption>
     </figure>
   );
 }

@@ -15,6 +15,7 @@ export type AlertRecord = {
     url: string;
     alt: string;
     box: BoundingBox;
+    illustration?: boolean;
   };
 };
 
@@ -28,22 +29,28 @@ const demoAlerts: AlertRecord[] = [
     id: 1,
     camera_id: 1,
     aviary_id: 1,
-    datetime: '2026-11-12T09:42:00-03:00',
-    alarm_type: 'Exemplo de tipo de alarme',
+    datetime: '2026-11-15T09:42:00-03:00',
+    alarm_type: 'Possível amontoamento',
+    image: {
+      url: 'demo-frame',
+      alt: 'Ilustração de exemplo de quadro de câmera com região destacada.',
+      illustration: true,
+      box: {x: 0.43, y: 0.27, width: 0.28, height: 0.46},
+    },
   },
   {
     id: 2,
     camera_id: 2,
     aviary_id: 1,
-    datetime: '2026-11-12T08:15:00-03:00',
-    alarm_type: 'Exemplo de tipo de alarme',
+    datetime: '2026-11-15T08:15:00-03:00',
+    alarm_type: 'Aves sobrepostas',
   },
   {
     id: 3,
-    camera_id: 1,
+    camera_id: 3,
     aviary_id: 1,
-    datetime: '2026-11-11T17:05:00-03:00',
-    alarm_type: 'Exemplo de tipo de alarme',
+    datetime: '2026-11-14T17:05:00-03:00',
+    alarm_type: 'Possível amontoamento',
   },
 ];
 

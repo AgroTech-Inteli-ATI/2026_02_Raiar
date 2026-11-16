@@ -359,6 +359,32 @@
   height: auto;
 }
 
+.exampleFrame {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.exampleBackdrop {
+  fill: var(--dashboard-brand-cream);
+}
+
+.exampleFloor {
+  fill: var(--dashboard-soft-blue);
+}
+
+.exampleGrid {
+  fill: none;
+  stroke: var(--dashboard-border);
+  stroke-width: 2;
+}
+
+.exampleBird {
+  fill: var(--dashboard-brand-sky);
+  stroke: var(--dashboard-brand-blue);
+  stroke-width: 3;
+}
+
 .boundingBox {
   position: absolute;
   border: 3px solid var(--dashboard-brand-yellow);
