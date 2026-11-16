@@ -1,4 +1,4 @@
-import { Pool, types, type PoolClient } from 'pg';
+import { Pool, types, type PoolClient, type PoolConfig } from 'pg';
 
 // Datas civis nao devem ser convertidas para o fuso do processo Node.
 types.setTypeParser(1082, (value: string) => value);
@@ -21,21 +21,28 @@ function clientDatabase(client: PoolClient): Database {
   };
 }
 
-export function createDatabase(connectionString: string, ssl: boolean): Database {
+export function databasePoolConfig(connectionString: string, ssl: boolean): PoolConfig {
   const url = new URL(connectionString);
-  if (['sslmode', 'sslcert', 'sslkey', 'sslrootcert'].some((key) => url.searchParams.has(key))) {
-    throw new Error('Configure TLS com DATABASE_SSL e remova parametros SSL de DATABASE_URL.');
+  // pg interpreta a URL depois das opcoes do pool. Remover todos os parametros TLS
+  // impede que ssl=0, ssl=no-verify ou aliases substituam DATABASE_SSL.
+  for (const key of [...url.searchParams.keys()]) {
+    if (key.toLowerCase().startsWith('ssl') || key.toLowerCase() === 'uselibpqcompat') {
+      url.searchParams.delete(key);
+    }
   }
-  const pool = new Pool({
-    connectionString,
+  return {
+    connectionString: url.toString(),
     ssl: ssl ? { rejectUnauthorized: true } : false,
     max: 10,
     connectionTimeoutMillis: 5000,
     idleTimeoutMillis: 30000,
     statement_timeout: 15000,
     application_name: 'raiar-backend',
-  });
-  return databaseFromPool(pool);
+  };
+}
+
+export function createDatabase(connectionString: string, ssl: boolean): Database {
+  return databaseFromPool(new Pool(databasePoolConfig(connectionString, ssl)));
 }
 
 export function databaseFromPool(pool: Pool): Database {
