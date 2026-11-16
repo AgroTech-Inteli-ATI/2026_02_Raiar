@@ -18,7 +18,7 @@ O painel é um site de frontend próprio em `src/frontend/`, separado deste site
 
 ```powershell
 cd src/frontend
-Copy-Item .env.example .env.local
+if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }
 npm install
 npm run dev
 ```

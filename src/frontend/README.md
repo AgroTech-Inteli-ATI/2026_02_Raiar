@@ -18,7 +18,7 @@ docker compose up -d database
 No mesmo terminal, crie a configuração local do backend e edite os valores. O arquivo `.env` é ignorado pelo Git:
 
 ```powershell
-Copy-Item .env.exemplo .env
+if (-not (Test-Path .env)) { Copy-Item .env.exemplo .env }
 notepad .env
 npm install
 ```
@@ -34,7 +34,7 @@ Em outro terminal, configure e inicie o frontend:
 
 ```powershell
 cd src/frontend
-Copy-Item .env.example .env.local
+if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }
 notepad .env.local
 npm install
 npm run dev
