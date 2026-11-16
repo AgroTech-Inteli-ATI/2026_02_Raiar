@@ -19,9 +19,9 @@ O esquema não guarda coordenadas, setor nem posição de câmera na planta. As 
 
 `src/backend/src/distributionMap.ts` contém um plugin Fastify isolado para uma futura rota `GET /distribution/cameras` e a função de resumo por câmera. O cálculo considera somente análises com `status = 'valido'` e `visible_birds` disponível. Por câmera, retorna a média de aves visíveis por análise, a quantidade de análises válidas, o horário da análise mais recente e a classe de concentração.
 
-A janela de tempo deve ser aplicada pela consulta, com `from` inclusivo e `to` exclusivo sobre `captured_at`. A paginação limita os resumos por câmera. Sem limites configurados, o plugin responde `503 distribution_not_configured`. O plugin ainda não foi registrado em `src/backend/src/app.ts`, respeitando o limite de não alterar o arquivo de integração mantido pelo Cauê.
+A janela de tempo deve ser aplicada pela consulta, com `from` inclusivo e `to` exclusivo sobre `captured_at`. A paginação limita os resumos por câmera. Sem limites configurados, o plugin responde `503 distribution_not_configured`. O plugin ainda não foi registrado em `src/backend/src/app.ts`; a integração exige uma alteração no arquivo de registro de rotas do backend.
 
-Para integrar, o Cauê precisa importar `distributionMapRoutes` e `readProvisionalThresholds` de `./distributionMap.js` e adicionar dentro de `buildApp`, antes de `return app`, esta chamada:
+O registro do plugin exige importar `distributionMapRoutes` e `readProvisionalThresholds` de `./distributionMap.js` no arquivo de rotas do backend e adicionar dentro de `buildApp`, antes de `return app`, esta chamada:
 
 ```ts
 app.register(distributionMapRoutes, {
@@ -39,14 +39,14 @@ A média de aves visíveis não considera área, distância ou campo de visão d
 
 Também é necessário confirmar se a primeira versão será uma lista/grade esquemática ou se há uma planta e posições de câmeras que podem ser usadas. Sem coordenadas, não se deve apresentar os resultados como um mapa físico.
 
-Perguntas para fechar a proposta:
+Pontos a definir na proposta:
 
 1. A média de aves visíveis por análise é uma medida aceitável para representar concentração por câmera?
-2. Quais limites provisórios separam baixa, média e alta e quem da Raiar os valida?
+2. Quais limites provisórios separam baixa, média e alta e como validar esses limites com dados operacionais?
 3. Qual intervalo de tempo deve representar o estado mostrado?
 4. O que mostrar para câmeras sem análise válida no período?
-5. A Raiar pode fornecer uma planta e a posição aproximada de cada câmera ou a primeira versão será somente uma grade?
-6. O Cauê pode registrar o plugin em `app.ts` e confirmar o contrato de resposta da rota?
+5. Há uma planta e posições aproximadas das câmeras disponíveis para uso, ou a primeira versão será somente uma grade?
+6. Ponto a definir: registrar o plugin em `app.ts` e confirmar o contrato de resposta da rota.
 
 Os testes do módulo ficam em `src/backend/tests/distribution-map.test.ts`. A regra e os limites devem continuar identificados como provisórios até validação operacional.
 

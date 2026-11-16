@@ -51,9 +51,9 @@ A tela possui um componente opcional para imagem com uma região destacada. Nem 
 
 ## Autenticação e origem
 
-Todas as rotas exceto `GET /health` exigem bearer token. O backend aceita a credencial de serviço `RAIAR_API_TOKEN` ou, quando configurado, JWT de usuário do Supabase Auth cujo `app_metadata.role` seja `gestor` ou `operador`. A credencial de serviço e a chave de sincronização nunca podem ser colocadas em `VITE_*` ou no bundle do navegador. Para o painel, combinar um fluxo de login de usuário do Supabase ou um proxy de mesma origem que encaminhe uma sessão de usuário. O frontend atual não implementa login nem envia bearer token.
+Todas as rotas exceto `GET /health` exigem bearer token. O backend aceita a credencial de serviço `RAIAR_API_TOKEN` ou, quando configurado, JWT de usuário do Supabase Auth cujo `app_metadata.role` seja `gestor` ou `operador`. A credencial de serviço e a chave de sincronização nunca podem ser colocadas em `VITE_*` ou no bundle do navegador. O acesso do painel requer definir um fluxo de login de usuário do Supabase ou um proxy de mesma origem que encaminhe uma sessão de usuário. O frontend atual não implementa login nem envia bearer token.
 
-O backend não configura CORS. O README recomenda publicar com HTTPS e mesma origem/reverse proxy. Em desenvolvimento, o responsável pelo backend e pelo frontend precisa combinar um proxy local ou uma lista explícita de origens permitidas para `http://localhost:5173` e `http://127.0.0.1:5173`; não se deve habilitar CORS irrestrito.
+O backend não configura CORS. O README recomenda publicar com HTTPS e mesma origem/reverse proxy. Em desenvolvimento, é preciso definir um proxy local ou uma lista explícita de origens permitidas para `http://localhost:5173` e `http://127.0.0.1:5173`; não se deve habilitar CORS irrestrito.
 
 ## Comportamento da demonstração
 
