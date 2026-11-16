@@ -7,7 +7,9 @@ import type { Database } from './database.js';
 // O caminho do SQL tambem precisa funcionar no JavaScript compilado em src/backend/dist/src/.
 const sqlRoot = fileURLToPath(new URL(import.meta.url.includes('/dist/')
   ? '../../../database/' : '../../database/', import.meta.url));
-export const migrationFiles = ['002_analises.sql', '003_dados_cadastro.sql', '004_ingestao_backend.sql'];
+export const migrationFiles = [
+  '002_analises.sql', '003_dados_cadastro.sql', '004_ingestao_backend.sql', '005_historico_ocupacao.sql',
+];
 export const transactionBody = (sql: string) => sql.replace(/^BEGIN;\s*$/m, '').replace(/^COMMIT;\s*$/m, '');
 
 export async function migrate(db: Database, root = sqlRoot) {

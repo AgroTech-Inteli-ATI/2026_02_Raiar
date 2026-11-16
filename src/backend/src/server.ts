@@ -16,6 +16,8 @@ async function start() {
       l.age_reference_date, l.age_reference_source, l.archived_at
       FROM public.camera c JOIN public.raspberry r ON r.id = c.raspberry_id
       JOIN public.aviary a ON a.id = c.aviary_id LEFT JOIN public.lot l ON l.id = a.current_lot_id LIMIT 0`);
+    await db.query('SELECT lot_assignment_id, lot_association_status FROM public.analysis LIMIT 0');
+    await db.query('SELECT id FROM public.aviary_lot_assignment LIMIT 0');
     await app.listen({ port: config.PORT, host: config.HOST });
   } catch {
     await app.close();

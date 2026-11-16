@@ -59,11 +59,13 @@ export const resources = [
 }));
 
 export const pathId = z.object({ id: queryId });
+export const lotAssignment = z.strictObject({ lot_id: id.nullable(), effective_at: instant });
 export const analysisFilter = z.strictObject({
   limit: z.coerce.number().int().min(1).max(100).default(50),
   offset: z.coerce.number().int().min(0).max(1000000).default(0),
   camera_id: queryId.optional(), aviary_id: queryId.optional(), lot_id: queryId.optional(),
   status: z.enum(['valido', 'imagem_inadequada', 'falha_processamento']).optional(),
+  lot_association_status: z.enum(['matched', 'no_capture_time', 'no_occupancy', 'legacy_unverified']).optional(),
   from: instant.optional(), to: instant.optional(),
 }).refine((filter) => !filter.from || !filter.to || Date.parse(filter.from) <= Date.parse(filter.to),
   'O inicio deve anteceder o fim.');

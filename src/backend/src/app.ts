@@ -3,7 +3,7 @@ import { z, ZodError } from 'zod';
 import type { Database } from './database.js';
 import { ApiError } from './errors.js';
 import { tokensEqual, type UserVerifier, type Principal } from './auth.js';
-import { resources, pathId, analysisFilter, analysisItem, batchSchema } from './schemas.js';
+import { resources, pathId, analysisFilter, analysisItem, batchSchema, lotAssignment } from './schemas.js';
 
 export interface AppOptions {
   db: Database;
@@ -33,6 +33,8 @@ export function buildApp(options: AppOptions) {
     const databaseErrors: Record<string, [number, string, string]> = {
       '23505': [409, 'duplicate_record', 'Registro ou associacao ja existente.'],
       '23503': [409, 'invalid_reference', 'Cadastro relacionado inexistente ou em uso.'],
+      '23P01': [409, 'overlapping_occupancy', 'Ocupacao sobreposta para o aviario ou lote.'],
+      'P0002': [404, 'not_found', 'Aviario nao encontrado.'],
       '23514': [422, 'invalid_data', 'Dados violam uma regra do cadastro.'],
       '23502': [422, 'invalid_data', 'Campo obrigatorio ausente.'],
       '22007': [422, 'invalid_data', 'Data ou horario invalido.'],
@@ -131,6 +133,26 @@ export function buildApp(options: AppOptions) {
     });
   }
 
+  app.get('/aviaries/:id/lot-assignments', async (request) => {
+    const { id } = pathId.parse(request.params);
+    const aviary = await db.query('SELECT id FROM public.aviary WHERE id = $1', [id]);
+    if (!aviary.rows[0]) throw new ApiError(404, 'not_found', 'Aviario nao encontrado.');
+    const { rows } = await db.query(`SELECT id, aviary_id, lot_id, started_at, ended_at, recorded_at, origin
+      FROM public.aviary_lot_assignment WHERE aviary_id = $1 ORDER BY started_at, id`, [id]);
+    return { data: rows };
+  });
+
+  app.post('/aviaries/:id/lot-assignments', async (request) => {
+    if (identities.get(request)?.role !== 'gestor') {
+      throw new ApiError(403, 'forbidden', 'Seu perfil nao permite alterar a ocupacao.');
+    }
+    const { id } = pathId.parse(request.params);
+    const input = lotAssignment.parse(request.body);
+    const { rows } = await db.query('SELECT * FROM public.assign_aviary_lot($1, $2, $3::timestamptz)',
+      [id, input.lot_id, input.effective_at]);
+    return rows[0];
+  });
+
   app.post('/ingest-analyses', async (request) => {
     const batch = batchSchema.parse(request.body);
     const analyses: unknown[] = [];
@@ -164,7 +186,8 @@ export function buildApp(options: AppOptions) {
       }
     }
     values.push(limit + 1, offset);
-    const result = await db.query(`SELECT a.id, a.camera_id, a.aviary_id, a.lot_id, a.frame_id,
+    const result = await db.query(`SELECT a.id, a.camera_id, a.aviary_id, a.lot_id,
+      a.lot_assignment_id, a.lot_association_status, a.frame_id,
       a.captured_at, a.processed_at, a.received_at, a.status, a.status_reason,
       a.visible_birds, a.assigned_total, a.unassigned_birds, a.model_version,
       COALESCE((SELECT jsonb_agg(jsonb_build_object('level_id', l.level_id,

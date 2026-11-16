@@ -47,13 +47,16 @@ export async function chain(app: App) {
   const lot = await app.inject({ method: 'POST', url: '/lots', headers,
     payload: { name: 'Lote 1', age_days_reference: 10, age_reference_date: '2026-11-01', age_reference_source: 'Raiar' } });
   const aviary = await app.inject({ method: 'POST', url: '/aviaries', headers,
-    payload: { name: 'Aviario 1', number: 1, type: 'rearing', current_lot_id: lot.json().id } });
+    payload: { name: 'Aviario 1', number: 1, type: 'rearing' } });
+  const occupied = await app.inject({ method: 'POST', url: `/aviaries/${aviary.json().id}/lot-assignments`, headers,
+    payload: { lot_id: lot.json().id, effective_at: '2026-11-01T00:00:00Z' } });
   const camera = await app.inject({ method: 'POST', url: '/cameras', headers,
     payload: { name: 'Camera norte', raspberry_id: raspberry.json().id, aviary_id: aviary.json().id } });
   for (const response of [raspberry, lot, aviary, camera]) {
     if (response.statusCode !== 201) throw new Error(response.body);
   }
-  return { raspberry: raspberry.json(), lot: lot.json(), aviary: aviary.json(), camera: camera.json() };
+  if (occupied.statusCode !== 200) throw new Error(occupied.body);
+  return { raspberry: raspberry.json(), lot: lot.json(), aviary: occupied.json(), camera: camera.json() };
 }
 
 export function analysis(id = '11111111-1111-4111-8111-111111111111', camera = '1') {
