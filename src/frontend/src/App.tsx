@@ -3,6 +3,8 @@ import {
   AlertRecord,
   listAlerts,
 } from './services/alertsRepository';
+import {isApiConfigured} from './services/apiClient';
+import {AviaryRecord, CameraRecord, checkApiHealth, listAviaries, listCameras} from './services/dashboardRepository';
 import styles from './styles/dashboard.module.css';
 
 type TabName = 'alerts' | 'configuration' | 'map';
@@ -12,6 +14,8 @@ const tabs: {id: TabName; label: string}[] = [
   {id: 'configuration', label: 'Configuração'},
   {id: 'map', label: 'Mapa do aviário'},
 ];
+
+const exampleCameras: CameraRecord[] = [1, 2, 3].map((id) => ({id, name: null, aviary_id: 1}));
 
 function WarningIcon() {
   return (
@@ -96,36 +100,70 @@ function formatDate(value: string) {
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<TabName>('alerts');
   const [alerts, setAlerts] = useState<AlertRecord[]>([]);
-  const [isDemoData, setIsDemoData] = useState(!import.meta.env.VITE_API_BASE_URL?.trim());
+  const [isDemoData, setIsDemoData] = useState(true);
+  const [demoNotice, setDemoNotice] = useState<string | undefined>();
+  const [cameras, setCameras] = useState<CameraRecord[]>(exampleCameras);
+  const [aviaries, setAviaries] = useState<AviaryRecord[]>([]);
+  const [cameraLoadError, setCameraLoadError] = useState<string | undefined>();
+  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'offline' | 'unconfigured'>(
+    isApiConfigured ? 'checking' : 'unconfigured',
+  );
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [cameraFilter, setCameraFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
     let mounted = true;
-    listAlerts()
-      .then((result) => {
-        if (mounted) {
-          setAlerts(result.alerts);
-          setIsDemoData(result.source === 'demo');
-        }
-      })
-      .catch(() => {
-        if (mounted) setError(true);
-      })
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
+    setLoading(true);
+    setErrorMessage(undefined);
+
+    async function loadDashboard() {
+      const [alertsResult, camerasResult, aviariesResult, healthResult] = await Promise.allSettled([
+        listAlerts(),
+        isApiConfigured ? listCameras() : Promise.resolve(exampleCameras),
+        isApiConfigured ? listAviaries() : Promise.resolve([] as AviaryRecord[]),
+        isApiConfigured ? checkApiHealth() : Promise.resolve(false),
+      ]);
+
+      if (!mounted) return;
+      if (alertsResult.status === 'fulfilled') {
+        setAlerts(alertsResult.value.alerts);
+        setIsDemoData(alertsResult.value.source === 'demo');
+        setDemoNotice(alertsResult.value.notice);
+      } else {
+        setErrorMessage(alertsResult.reason instanceof Error
+          ? alertsResult.reason.message
+          : 'Não foi possível carregar os avisos. Tente novamente em instantes.');
+      }
+
+      if (camerasResult.status === 'fulfilled') {
+        setCameras(camerasResult.value);
+        setCameraLoadError(undefined);
+      } else {
+        setCameras(exampleCameras);
+        setCameraLoadError(camerasResult.reason instanceof Error
+          ? camerasResult.reason.message
+          : 'Não foi possível carregar as câmeras.');
+      }
+
+      setAviaries(aviariesResult.status === 'fulfilled' ? aviariesResult.value : []);
+      setConnectionStatus(!isApiConfigured ? 'unconfigured'
+        : healthResult.status === 'fulfilled' && healthResult.value ? 'connected' : 'offline');
+      setLoading(false);
+    }
+
+    void loadDashboard();
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [reloadKey]);
 
-  const cameras = useMemo(
-    () => [...new Set(alerts.map((alert) => alert.camera_id))].sort((a, b) => a - b),
-    [alerts],
+  const aviaryLabels = useMemo(
+    () => new Map(aviaries.map((aviary) => [aviary.id, aviary.name || `Aviário ${aviary.number}`])),
+    [aviaries],
   );
 
   const visibleAlerts = useMemo(
@@ -158,7 +196,16 @@ export default function DashboardPage() {
           <a className={styles.wordmark} href="#inicio" aria-label="Raiar Orgânicos, início">
             <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="Raiar" />
           </a>
-          <span className={styles.topbarLabel}>Monitoramento do aviário</span>
+          <div className={styles.topbarMeta}>
+            <span className={styles.topbarLabel}>Monitoramento do aviário</span>
+            <span className={styles.connectionStatus} role="status" aria-live="polite">
+              <span className={`${styles.statusDot} ${connectionStatus === 'connected' ? styles.statusConnected : ''}`} aria-hidden="true" />
+              {connectionStatus === 'checking' ? 'Verificando monitoramento'
+                : connectionStatus === 'connected' ? 'Conectado ao monitoramento'
+                  : connectionStatus === 'offline' ? 'Sem conexão com o monitoramento'
+                    : 'Demonstração sem API configurada'}
+            </span>
+          </div>
         </header>
 
         <section className={styles.content} id="inicio">
@@ -207,7 +254,7 @@ export default function DashboardPage() {
                   <h2>Alertas</h2>
                   <p>Registros recebidos do monitoramento.</p>
                 </div>
-                {!loading && !error && (
+                {!loading && !errorMessage && (
                   <span className={styles.resultCount}>
                     {visibleAlerts.length} {visibleAlerts.length === 1 ? 'registro' : 'registros'}
                   </span>
@@ -217,7 +264,7 @@ export default function DashboardPage() {
               {isDemoData && (
                 <div className={styles.demoNotice} role="note">
                   <span className={styles.noticeDot} aria-hidden="true" />
-                  <span>Visualização demonstrativa. Os registros abaixo são exemplos.</span>
+                  <span>{demoNotice ? `${demoNotice} Os registros abaixo são exemplos.` : 'Visualização demonstrativa. Os registros abaixo são exemplos.'}</span>
                 </div>
               )}
 
@@ -231,8 +278,8 @@ export default function DashboardPage() {
                   >
                     <option value="all">Todas as câmeras</option>
                     {cameras.map((camera) => (
-                      <option key={camera} value={camera}>
-                        Câmera {camera}
+                      <option key={camera.id} value={camera.id}>
+                        {camera.name?.trim() || `Câmera ${camera.id}`}
                       </option>
                     ))}
                   </select>
@@ -260,29 +307,23 @@ export default function DashboardPage() {
                 )}
               </div>
 
+              {cameraLoadError && (
+                <p className={styles.dataHint} role="status">{cameraLoadError} Os filtros de exemplo estão disponíveis.</p>
+              )}
+
               {loading ? (
                 <div className={styles.stateCard} role="status" aria-live="polite">
                   <span className={styles.spinner} aria-hidden="true" />
                   <p>Carregando os registros…</p>
                 </div>
-              ) : error ? (
+              ) : errorMessage ? (
                 <div className={styles.stateCard} role="alert">
-                  <h3>Não foi possível carregar os registros</h3>
-                  <p>Tente novamente em instantes.</p>
+                  <h3>Não foi possível carregar os avisos</h3>
+                  <p>{errorMessage}</p>
                   <button
                     className={styles.secondaryButton}
                     type="button"
-                    onClick={() => {
-                      setLoading(true);
-                      setError(false);
-                      listAlerts()
-                        .then((result) => {
-                          setAlerts(result.alerts);
-                          setIsDemoData(result.source === 'demo');
-                        })
-                        .catch(() => setError(true))
-                        .finally(() => setLoading(false));
-                    }}
+                    onClick={() => setReloadKey((current) => current + 1)}
                   >
                     Tentar novamente
                   </button>
@@ -305,9 +346,9 @@ export default function DashboardPage() {
                           <time dateTime={alert.datetime}>{formatDate(alert.datetime)}</time>
                         </div>
                         <p>
-                          <span>Câmera {alert.camera_id}</span>
+                          <span>{cameras.find((camera) => camera.id === alert.camera_id)?.name?.trim() || `Câmera ${alert.camera_id}`}</span>
                           <span className={styles.detailSeparator} aria-hidden="true">·</span>
-                          <span>Aviário {alert.aviary_id}</span>
+                          <span>{aviaryLabels.get(alert.aviary_id) || `Aviário ${alert.aviary_id}`}</span>
                         </p>
                         <AlertImage alert={alert} />
                       </div>

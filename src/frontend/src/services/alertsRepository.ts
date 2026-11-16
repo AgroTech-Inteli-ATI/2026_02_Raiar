@@ -1,7 +1,8 @@
+import {ApiRequestError, getJson, isApiConfigured} from './apiClient';
+
 /**
  * Camada de dados da aba de alertas.
- * Sem VITE_API_BASE_URL, retorna exemplos locais. Com a variável definida,
- * consulta a API pública. Credenciais de serviço nunca devem ficar no navegador.
+ * Sem API configurada ou sem rota de alertas, retorna exemplos locais.
  */
 export type BoundingBox = {x: number; y: number; width: number; height: number};
 
@@ -22,6 +23,7 @@ export type AlertRecord = {
 export type AlertsResult = {
   alerts: AlertRecord[];
   source: 'demo' | 'api';
+  notice?: string;
 };
 
 const demoAlerts: AlertRecord[] = [
@@ -55,28 +57,24 @@ const demoAlerts: AlertRecord[] = [
 ];
 
 export async function listAlerts(): Promise<AlertsResult> {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
-
-  if (!baseUrl) {
+  if (!isApiConfigured) {
     return {alerts: demoAlerts, source: 'demo'};
   }
 
-  const endpoint = new URL('alerts', `${baseUrl.replace(/\/+$/, '')}/`);
-  const response = await fetch(endpoint);
-
-  if (!response.ok) {
-    throw new Error(`A API de alertas respondeu com HTTP ${response.status}.`);
+  try {
+    const payload = await getJson<{alerts?: unknown}>('/alerts');
+    if (!payload || !Array.isArray(payload.alerts)) {
+      throw new ApiRequestError('O serviço enviou uma lista de avisos em formato inesperado.', 'request');
+    }
+    return {alerts: payload.alerts as AlertRecord[], source: 'api'};
+  } catch (error) {
+    if (error instanceof ApiRequestError && error.kind === 'not-found') {
+      return {
+        alerts: demoAlerts,
+        source: 'demo',
+        notice: 'Os avisos ainda não estão disponíveis neste ambiente.',
+      };
+    }
+    throw error;
   }
-
-  const payload: unknown = await response.json();
-  if (
-    !payload ||
-    typeof payload !== 'object' ||
-    !('alerts' in payload) ||
-    !Array.isArray(payload.alerts)
-  ) {
-    throw new Error('A resposta da API não contém a lista de alertas esperada.');
-  }
-
-  return {alerts: payload.alerts as AlertRecord[], source: 'api'};
 }

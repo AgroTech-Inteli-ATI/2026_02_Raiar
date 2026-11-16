@@ -49,6 +49,32 @@
   font-weight: 600;
 }
 
+.topbarMeta {
+  display: grid;
+  justify-items: end;
+  gap: var(--dashboard-space-tight);
+}
+
+.connectionStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dashboard-space-tight);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.statusDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--dashboard-brand-peach);
+}
+
+.statusConnected {
+  background: var(--dashboard-brand-yellow);
+}
+
 .content {
   width: min(100% - var(--dashboard-space-page-gutter), 1160px);
   margin: 0 auto;
@@ -203,6 +229,12 @@
   color: var(--dashboard-ink);
   background: var(--dashboard-yellow-tint);
   font-size: 0.9rem;
+}
+
+.dataHint {
+  margin: 0 0 var(--dashboard-space-3);
+  color: var(--dashboard-ink);
+  font-size: 0.875rem;
 }
 
 .noticeDot {
@@ -458,6 +490,12 @@
 
   .topbarLabel {
     font-size: 0.72rem;
+  }
+
+  .connectionStatus {
+    max-width: 12rem;
+    font-size: 0.65rem;
+    text-align: right;
   }
 
   .wordmark {
