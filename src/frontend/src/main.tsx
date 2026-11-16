@@ -1,4 +1,5 @@
 import {createRoot} from 'react-dom/client';
+import './styles/dashboard-tokens.css';
 
 function FrontendShell() {
   return (

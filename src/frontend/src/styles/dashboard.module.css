@@ -1,0 +1,486 @@
+.dashboard {
+  min-height: calc(100vh - var(--ifm-navbar-height) - var(--ifm-footer-padding-vertical) * 2);
+  background: var(--dashboard-brand-cream);
+  color: var(--dashboard-ink);
+  font-family: var(--dashboard-font);
+}
+
+.topbar {
+  display: flex;
+  min-height: 4.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 max(var(--dashboard-space-wide-control), calc((100vw - 1160px) / 2));
+  border-bottom: 1px solid var(--dashboard-cream-tint);
+  background: var(--dashboard-brand-blue);
+  color: var(--dashboard-brand-cream);
+}
+
+.wordmark {
+  color: var(--dashboard-brand-cream);
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  text-decoration: none;
+}
+
+.wordmark:hover {
+  color: var(--dashboard-brand-yellow);
+  text-decoration: none;
+}
+
+.wordmark small {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.topbarLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.content {
+  width: min(100% - var(--dashboard-space-page-gutter), 1160px);
+  margin: 0 auto;
+  padding: var(--dashboard-space-6) 0 var(--dashboard-space-5);
+}
+
+.pageIntro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dashboard-space-4);
+  margin-bottom: var(--dashboard-space-5);
+}
+
+.eyebrow {
+  margin: 0 0 var(--dashboard-space-1);
+  color: var(--dashboard-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.pageIntro h1 {
+  margin: 0;
+  color: var(--dashboard-brand-blue);
+  font-size: clamp(1.8rem, 4vw, 2.55rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+}
+
+.introCopy {
+  margin: var(--dashboard-space-2) 0 0;
+  color: var(--dashboard-muted);
+  font-size: 1.05rem;
+}
+
+.cameraMark,
+.alertMarker,
+.emptyIcon,
+.reservedMark {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--dashboard-brand-blue);
+  background: var(--dashboard-brand-yellow);
+  border-radius: var(--dashboard-radius-pill);
+}
+
+.cameraMark {
+  width: 4rem;
+  height: 4rem;
+}
+
+.cameraMark svg,
+.alertMarker svg,
+.emptyIcon svg,
+.reservedMark svg {
+  width: 1.55rem;
+  height: 1.55rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.tabs {
+  display: flex;
+  gap: var(--dashboard-space-tight);
+  overflow-x: auto;
+  border-bottom: 2px solid var(--dashboard-border);
+}
+
+.tab {
+  position: relative;
+  flex: 0 0 auto;
+  padding: var(--dashboard-space-copy) var(--dashboard-space-3) var(--dashboard-space-3);
+  border: 0;
+  border-radius: var(--dashboard-radius-small) var(--dashboard-radius-small) 0 0;
+  color: var(--dashboard-muted);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.tab:hover {
+  background: var(--dashboard-blue-hover);
+  color: var(--dashboard-brand-blue);
+}
+
+.tabActive {
+  color: var(--dashboard-brand-blue);
+  background: var(--dashboard-yellow-tint-strong);
+}
+
+.tabActive::after {
+  position: absolute;
+  right: var(--dashboard-space-tab-inset);
+  bottom: -2px;
+  left: var(--dashboard-space-tab-inset);
+  height: 3px;
+  border-radius: var(--dashboard-radius-pill);
+  background: var(--dashboard-brand-blue);
+  content: '';
+}
+
+.tab:focus-visible,
+.clearFilters:focus-visible,
+.secondaryButton:focus-visible,
+.filters input:focus-visible,
+.filters select:focus-visible {
+  outline: 3px solid var(--dashboard-brand-blue);
+  outline-offset: 3px;
+}
+
+.panel {
+  padding: var(--dashboard-space-5) 0;
+}
+
+.panelHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--dashboard-space-3);
+  margin-bottom: var(--dashboard-space-3);
+}
+
+.panelHeading h2,
+.reservedPanel h2 {
+  margin: 0;
+  color: var(--dashboard-brand-blue);
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.panelHeading p {
+  margin: var(--dashboard-space-caption) 0 0;
+  color: var(--dashboard-muted);
+}
+
+.resultCount {
+  padding: var(--dashboard-space-badge) var(--dashboard-space-2);
+  border-radius: var(--dashboard-radius-pill);
+  color: var(--dashboard-brand-blue);
+  background: var(--dashboard-sky-tint);
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.demoNotice {
+  display: flex;
+  align-items: center;
+  gap: var(--dashboard-space-inline);
+  margin: 0 0 var(--dashboard-space-4);
+  padding: var(--dashboard-space-notice) var(--dashboard-space-3);
+  border: 1px solid var(--dashboard-border);
+  border-radius: var(--dashboard-radius-small);
+  color: var(--dashboard-ink);
+  background: var(--dashboard-yellow-tint);
+  font-size: 0.9rem;
+}
+
+.noticeDot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: var(--dashboard-radius-pill);
+  background: var(--dashboard-brand-blue);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--dashboard-space-3);
+  margin-bottom: var(--dashboard-space-4);
+}
+
+.filters label {
+  display: grid;
+  gap: var(--dashboard-space-caption);
+  min-width: 12rem;
+  color: var(--dashboard-muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.filters input,
+.filters select {
+  min-height: 2.75rem;
+  padding: var(--dashboard-space-control) var(--dashboard-space-2);
+  border: 1px solid var(--dashboard-border);
+  border-radius: var(--dashboard-radius-small);
+  color: var(--dashboard-ink);
+  background: var(--dashboard-white);
+  font: inherit;
+  font-size: 0.92rem;
+}
+
+.clearFilters,
+.secondaryButton {
+  min-height: 2.75rem;
+  padding: var(--dashboard-space-control) var(--dashboard-space-copy);
+  border: 1px solid var(--dashboard-brand-blue);
+  border-radius: var(--dashboard-radius-pill);
+  color: var(--dashboard-brand-blue);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.clearFilters:hover,
+.secondaryButton:hover {
+  background: var(--dashboard-blue-hover-strong);
+}
+
+.alertList {
+  display: grid;
+  gap: var(--dashboard-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alertCard {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--dashboard-space-3);
+  padding: var(--dashboard-space-4);
+  border: 1px solid var(--dashboard-border);
+  border-radius: var(--dashboard-radius-card);
+  background: var(--dashboard-white);
+  box-shadow: var(--dashboard-shadow-card);
+}
+
+.alertMarker {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.alertMarker svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.alertDetails {
+  min-width: 0;
+  flex: 1;
+}
+
+.alertTitleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--dashboard-space-tight) var(--dashboard-space-3);
+}
+
+.alertTitleRow h3 {
+  margin: 0;
+  color: var(--dashboard-brand-blue);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.alertTitleRow time,
+.alertDetails > p {
+  color: var(--dashboard-muted);
+  font-size: 0.9rem;
+}
+
+.alertDetails > p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--dashboard-space-control);
+  margin: var(--dashboard-space-1) 0 0;
+}
+
+.detailSeparator {
+  color: var(--dashboard-brand-sky);
+  font-weight: 900;
+}
+
+.alertImage {
+  width: min(100%, 30rem);
+  margin: var(--dashboard-space-3) 0 0;
+}
+
+.imageFrame {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--dashboard-radius-small);
+  background: var(--dashboard-soft-blue);
+}
+
+.imageFrame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.boundingBox {
+  position: absolute;
+  border: 3px solid var(--dashboard-brand-yellow);
+  border-radius: var(--dashboard-radius-caption);
+  box-shadow: 0 0 0 1px var(--dashboard-brand-blue);
+}
+
+.alertImage figcaption {
+  margin-top: var(--dashboard-space-caption);
+  color: var(--dashboard-muted);
+  font-size: 0.78rem;
+}
+
+.stateCard,
+.reservedPanel {
+  display: grid;
+  justify-items: center;
+  padding: var(--dashboard-space-6) var(--dashboard-space-4);
+  border: 1px dashed var(--dashboard-border);
+  border-radius: var(--dashboard-radius-card);
+  color: var(--dashboard-muted);
+  text-align: center;
+  background: var(--dashboard-white-tint);
+}
+
+.stateCard h3,
+.reservedPanel h2 {
+  margin: var(--dashboard-space-2) 0 0;
+}
+
+.stateCard p,
+.reservedPanel p {
+  margin: var(--dashboard-space-1) 0 0;
+}
+
+.stateCard .secondaryButton {
+  margin-top: var(--dashboard-space-3);
+}
+
+.emptyIcon,
+.reservedMark {
+  width: 3.5rem;
+  height: 3.5rem;
+  background: var(--dashboard-sky-tint-strong);
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--dashboard-border);
+  border-top-color: var(--dashboard-brand-blue);
+  border-radius: var(--dashboard-radius-pill);
+  animation: spin 0.8s linear infinite;
+}
+
+.reservedPanel {
+  min-height: 20rem;
+  margin-top: var(--dashboard-space-5);
+}
+
+.reservedPanel p {
+  max-width: 30rem;
+}
+
+.pageFooter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--dashboard-space-2);
+  margin-top: var(--dashboard-space-6);
+  padding-top: var(--dashboard-space-3);
+  border-top: 1px solid var(--dashboard-border);
+  color: var(--dashboard-muted);
+  font-size: 0.8rem;
+}
+
+.pageFooter span:first-child {
+  color: var(--dashboard-brand-blue);
+  font-weight: 800;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    min-height: 3.75rem;
+  }
+
+  .topbarLabel {
+    font-size: 0.78rem;
+  }
+
+  .content {
+    width: min(100% - var(--dashboard-space-4), 1160px);
+    padding-top: var(--dashboard-space-5);
+  }
+
+  .cameraMark {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .panel {
+    padding-top: var(--dashboard-space-4);
+  }
+
+  .panelHeading {
+    align-items: flex-start;
+  }
+
+  .alertCard {
+    gap: var(--dashboard-space-2);
+    padding: var(--dashboard-space-3);
+  }
+
+  .alertMarker {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+
+  .filters label {
+    flex: 1 1 100%;
+  }
+
+  .pageFooter {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2s;
+  }
+}
