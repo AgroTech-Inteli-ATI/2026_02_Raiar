@@ -14,7 +14,7 @@ export type AlertRecord = {
   image?: {
     url: string;
     alt: string;
-    box?: BoundingBox;
+    box: BoundingBox;
   };
 };
 

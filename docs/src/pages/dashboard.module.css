@@ -155,7 +155,7 @@
 .secondaryButton:focus-visible,
 .filters input:focus-visible,
 .filters select:focus-visible {
-  outline: 3px solid var(--dashboard-brand-sky);
+  outline: 3px solid var(--dashboard-brand-blue);
   outline-offset: 3px;
 }
 

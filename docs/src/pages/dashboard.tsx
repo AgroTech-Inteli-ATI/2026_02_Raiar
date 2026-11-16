@@ -32,18 +32,16 @@ function AlertImage({alert}: {alert: AlertRecord}) {
     <figure className={styles.alertImage}>
       <div className={styles.imageFrame}>
         <img src={url} alt={alt} />
-        {box && (
-          <span
-            className={styles.boundingBox}
-            aria-label="Região identificada pelo modelo"
-            style={{
-              left: `${box.x * 100}%`,
-              top: `${box.y * 100}%`,
-              width: `${box.width * 100}%`,
-              height: `${box.height * 100}%`,
-            }}
-          />
-        )}
+        <span
+          className={styles.boundingBox}
+          aria-label="Região identificada pelo modelo"
+          style={{
+            left: `${box.x * 100}%`,
+            top: `${box.y * 100}%`,
+            width: `${box.width * 100}%`,
+            height: `${box.height * 100}%`,
+          }}
+        />
       </div>
       <figcaption>Imagem associada ao alerta</figcaption>
     </figure>

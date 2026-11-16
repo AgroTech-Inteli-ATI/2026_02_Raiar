@@ -37,7 +37,7 @@ Os cinco campos correspondem à tabela atual. O backend pode incluir rótulos de
 
 ### Imagem associada
 
-A tela possui um componente opcional para imagem com uma região destacada. Nem a tabela de alertas atual nem o contrato encontrado no repositório definem imagem ou caixa delimitadora. Para habilitar esse recurso, o backend precisará informar uma URL acessível ao dashboard e, quando aplicável, uma caixa em coordenadas normalizadas entre `0` e `1` (`x`, `y`, `width`, `height`). A forma de armazenamento, retenção e autorização dessa imagem permanece em aberto.
+A tela possui um componente opcional para imagem com uma região destacada. Nem a tabela de alertas atual nem o contrato encontrado no repositório definem imagem ou caixa delimitadora. Para habilitar esse recurso, o backend precisará informar uma URL acessível ao dashboard, o texto alternativo e a caixa da região em coordenadas normalizadas entre `0` e `1` (`x`, `y`, `width`, `height`). A forma de armazenamento, retenção e autorização dessa imagem permanece em aberto.
 
 O navegador deve usar a autenticação de usuário prevista pelo backend. A chave de serviço do banco ou do Supabase nunca deve ser incluída no bundle do dashboard.
 
