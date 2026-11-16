@@ -32,8 +32,9 @@ Com um banco ja disponivel, pule o comando Docker.
 
 Para Supabase, use uma connection string PostgreSQL direta ou do pooler em modo session,
 com `DATABASE_SSL=true` e certificado confiavel. Nao use a URL HTTP de REST como `DATABASE_URL`.
-Configure TLS por `DATABASE_SSL`; remova parametros `sslmode`/`sslcert`/`sslkey`/`sslrootcert`
-da connection string para nao sobrescrever a verificacao de certificado do driver.
+`DATABASE_SSL` prevalece sobre a URL: parametros `ssl*` e `uselibpqcompat` sao removidos
+antes de entregar a connection string ao driver. Com `true`, TLS e verificacao de
+certificado permanecem obrigatorios, inclusive com `ssl=0` ou `ssl=no-verify` na URL.
 Se o provedor usar uma CA especifica, configure `NODE_EXTRA_CA_CERTS` antes de iniciar o Node.
 
 ## Migracoes e conexao
@@ -43,7 +44,7 @@ nas consultas e garante rollback e liberacao do cliente em transacoes.
 
 `npm run migrate` cria uma base vazia ou atualiza as tabelas existentes. Os SQLs canonicos
 continuam em `../database/`; nao ha uma segunda copia dentro do backend.
-O comando aplica `002`, `003` e `004` em ordem, com transacao, trava de migracao e checksums.
+O comando aplica `002` a `005` em ordem, com transacao, trava de migracao e checksums.
 Uma instalacao anterior completa de `002` e reconhecida sem recriar suas tabelas.
 Esquemas parciais ou migracoes registradas com checksum diferente interrompem a operacao.
 O controle fica em `backend_internal.migration`, fora das tabelas publicas da API.
@@ -88,8 +89,9 @@ Use HTTPS e mesma origem/reverse proxy na publicacao; o backend nao abre CORS ir
 | `/cameras` | GET com `raspberry_id`, `aviary_id`, `active`, `limit`, `offset`; POST |
 | `/lots` | GET com `archived`, `limit`, `offset`; POST |
 | Cada cadastro `/:id` | GET e PATCH; nao ha exclusao fisica |
+| `/aviaries/:id/lot-assignments` | GET do historico; POST da troca de lote com instante efetivo |
 | `/ingest-analyses` | POST no contrato `schema_version: 1` do sincronizador existente |
-| `/analyses` | GET com `camera_id`, `aviary_id`, `lot_id`, `status`, `from`, `to`, `limit`, `offset` |
+| `/analyses` | GET com `camera_id`, `aviary_id`, `lot_id`, `status`, `lot_association_status`, `from`, `to`, `limit`, `offset` |
 | `/analyses/:id` | GET da analise, contagens por nivel e payload completo |
 
 Listas retornam `{data: [...], pagination: {limit, offset, has_more}}`, ordenadas por ID nos
@@ -130,6 +132,54 @@ negativa sao recusadas. Respostas: 201 criacao; 200 consulta/atualizacao; 401 au
 403 perfil; 404 inexistente; 409 duplicidade/referencia; 422 validacao; 503 indisponibilidade.
 Erros usam `{error: {code, message, details?}}`, sem SQL ou credenciais.
 
+## Ocupacao do aviario e lote de cada captura
+
+`aviary_lot_assignment` guarda `aviary_id`, `lot_id`, `started_at`, `ended_at`,
+`recorded_at` e a origem do cadastro. Os intervalos incluem o inicio e excluem o fim:
+uma captura no instante exato da troca pertence ao lote novo. O banco impede sobreposicoes
+por aviario e por lote, inclusive em gravacoes concorrentes.
+
+Para registrar o inicio ou a troca com o horario real, envie como gestor:
+
+```http
+POST /aviaries/1/lot-assignments
+Authorization: Bearer TOKEN_DO_GESTOR
+Content-Type: application/json
+
+{"lot_id": 2, "effective_at": "2026-11-12T10:00:00-03:00"}
+```
+
+`lot_id: null` encerra a ocupacao sem iniciar outra. `effective_at` exige fuso e nao pode
+estar no futuro. A operacao fecha o intervalo anterior e atualiza `current_lot_id` na mesma
+transacao. Uma troca que reescreva periodos anteriores ou invalide analises ja associadas
+e recusada. Repetir a associacao ao mesmo lote preserva o intervalo existente.
+`GET /aviaries/1/lot-assignments` permite consultar os periodos e e acessivel ao operador.
+
+O POST do aviario com `current_lot_id` e o PATCH desse campo continuam disponiveis:
+um trigger registra a troca no instante do comando. Para informar um inicio passado no
+cadastro inicial, crie o aviario sem lote e use a rota acima com a data confirmada.
+Alteracoes por SQL ou pelo Supabase tambem passam pelo trigger. A funcao SQL
+`assign_aviary_lot(aviary_id, lot_id, effective_at)` oferece a mesma operacao transacional.
+
+A ingestao resolve o lote por `capturado_em`, independentemente da ordem e do atraso do envio.
+Se o no informar `lote_id`, ele precisa corresponder a ocupacao encontrada; divergencias
+retornam `lote_divergente`. Nao ha fallback para o lote atual do cadastro.
+As consultas retornam `lot_assignment_id` e `lot_association_status`:
+
+| Status | Significado |
+| --- | --- |
+| `matched` | Lote encontrado no historico para o instante de captura |
+| `no_capture_time` | Horario desconhecido; `lot_id` permanece nulo |
+| `no_occupancy` | Nao ha ocupacao conhecida nesse instante; `lot_id` permanece nulo |
+| `legacy_unverified` | Resultado existente antes da migracao, preservado para revisao |
+
+A migracao `005` inicia o historico do lote atual apenas no instante da migracao, com
+origem `migration_snapshot`. Ela nao infere datas pela idade do lote, pelo cadastro do
+aviario ou pelo recebimento de resultados antigos. Os resultados anteriores nao sao
+reescritos automaticamente. Para completar periodos anteriores, o responsavel pelo banco
+deve cadastrar intervalos confirmados em `aviary_lot_assignment`, respeitando os intervalos
+ja registrados, e revisar separadamente os resultados sem associacao ou legados.
+
 ## Conectar o no de borda
 
 Mantenha o pipeline existente e aponte `RAIAR_SYNC_URL` para
@@ -141,17 +191,19 @@ A resposta preserva `accepted_analysis_ids` e `rejected`. Itens invalidos sao is
 somente IDs persistidos sao confirmados. Reenvio identico nao duplica analise nem niveis;
 mesmo ID com outro conteudo retorna `analise_id_conflitante`. Novas analises de uma camera
 ou dispositivo desativado sao recusadas; reenvios identicos ja gravados continuam confirmados.
-Os motivos incluem `item_invalido`, `camera_nao_cadastrada`, `camera_inativa` e `dispositivo_inativo`.
+Os motivos incluem `item_invalido`, `camera_nao_cadastrada`, `camera_inativa`,
+`dispositivo_inativo`, `lote_divergente` e `capturado_em_invalido`.
 
 A Edge Function em `../../supabase/functions/` permanece como alternativa de entrada e usa
-a mesma funcao SQL atualizada por `004`. A validacao completa de coerencia dos resultados
+a mesma funcao SQL atualizada por `005`. O vinculo historico vale tambem nessa entrada.
+A validacao completa de coerencia dos resultados
 e feita nesta API; para utiliza-la, direcione o no ao backend.
 
 ## Limites desta entrega
 
 O token de sincronizacao ainda e compartilhado entre os nos, sem autorizacao por camera.
-A funcao SQL ainda associa ao lote atual no recebimento: antes de trocar lotes com fila
-pendente, implementar o historico de ocupacao ou esvaziar e conferir a fila.
+Historico anterior a `005` depende de datas de ocupacao confirmadas; a migracao preserva
+as evidencias existentes sem adivinhar o lote de capturas antigas.
 Esta entrega cobre os quatro cadastros aprovados, ingestao e consulta de resultados.
 Configuracao remota de coleta, agregacao historica, telemetria, geracao de alertas e
 retencao de imagens nao foram implementadas.
