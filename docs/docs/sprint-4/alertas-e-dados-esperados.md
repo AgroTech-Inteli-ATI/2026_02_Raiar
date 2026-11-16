@@ -23,7 +23,7 @@ Se a decisão for exibir análises em vez de alertas, isso exige uma mudança ex
 
 ## Cadastros que podem alimentar filtros
 
-`GET /cameras` retorna `{data, pagination}` com `id`, `name`, `raspberry_id`, `model`, `aviary_id` e `active`; permite filtros `raspberry_id`, `aviary_id`, `active`, `limit` e `offset`. `GET /aviaries` fornece os aviários cadastrados. Essas rotas podem fornecer nomes para filtros depois que o frontend tiver autenticação de usuário. Hoje o filtro de câmera é montado com os IDs presentes nos alertas carregados.
+`GET /cameras` retorna `{data, pagination}` com `id`, `name`, `raspberry_id`, `model`, `aviary_id` e `active`; permite filtros `raspberry_id`, `aviary_id`, `active`, `limit` e `offset`. `GET /aviaries` fornece os aviários cadastrados. Com a API local configurada, o frontend percorre todas as páginas e usa esses cadastros para os filtros e rótulos. Sem a API ou se a consulta falhar, os filtros de câmera usam valores demonstrativos.
 
 ## Contrato futuro sugerido para alertas
 
@@ -51,13 +51,13 @@ A tela possui um componente opcional para imagem com uma região destacada. Nem 
 
 ## Autenticação e origem
 
-Todas as rotas exceto `GET /health` exigem bearer token. O backend aceita a credencial de serviço `RAIAR_API_TOKEN` ou, quando configurado, JWT de usuário do Supabase Auth cujo `app_metadata.role` seja `gestor` ou `operador`. A credencial de serviço e a chave de sincronização nunca podem ser colocadas em `VITE_*` ou no bundle do navegador. O acesso do painel requer definir um fluxo de login de usuário do Supabase ou um proxy de mesma origem que encaminhe uma sessão de usuário. O frontend atual não implementa login nem envia bearer token.
+Todas as rotas exceto `GET /health` exigem bearer token. O backend aceita a credencial de serviço `RAIAR_API_TOKEN` ou, quando configurado, JWT de usuário do Supabase Auth cujo `app_metadata.role` seja `gestor` ou `operador`. No desenvolvimento local, o frontend usa o proxy do Vite: `RAIAR_DEV_API_TOKEN` é lido pelo processo Node e enviado no cabeçalho da requisição encaminhada. O cliente do navegador usa somente o caminho relativo `/api`; não recebe o token. Nenhuma credencial deve usar prefixo `VITE_` ou entrar no bundle. O frontend não implementa login. Em produção, o proxy de desenvolvimento não existe; o acesso requer autenticação de usuário e proxy reverso de mesma origem.
 
-O backend não configura CORS. O README recomenda publicar com HTTPS e mesma origem/reverse proxy. Em desenvolvimento, é preciso definir um proxy local ou uma lista explícita de origens permitidas para `http://localhost:5173` e `http://127.0.0.1:5173`; não se deve habilitar CORS irrestrito.
+O backend não configura CORS. Em desenvolvimento, o proxy local do Vite evita chamadas entre origens diferentes. Em produção, será necessário HTTPS com proxy reverso de mesma origem e autenticação de usuário; CORS irrestrito não deve ser habilitado.
 
 ## Comportamento da demonstração
 
-Enquanto a rota não está disponível, a interface lê três registros fictícios por meio do adaptador `src/frontend/src/services/alertsRepository.ts`. Um aviso visível deixa claro que são exemplos. O adaptador mantém a fronteira entre a tela e os dados para facilitar a troca pela API sem misturar o mock com os componentes.
+Enquanto a rota não está disponível, a interface lê três registros fictícios por meio do adaptador `src/frontend/src/services/alertsRepository.ts`. Um aviso visível deixa claro que são exemplos, inclusive quando a API fornece câmeras reais. Se a rota de alertas responder 404, a tela informa que os avisos ainda não estão disponíveis neste ambiente e mantém os exemplos. Erros de rede, autenticação ou serviço aparecem com uma mensagem e uma opção para tentar novamente.
 
 ## Referências {#referencias}
 
