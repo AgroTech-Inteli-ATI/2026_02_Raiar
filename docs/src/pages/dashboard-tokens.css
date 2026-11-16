@@ -1,0 +1,24 @@
+/* Raiar dashboard tokens. Brand values were observed on the official website. */
+:root {
+  --dashboard-brand-blue: #254d69;
+  --dashboard-brand-yellow: #ffd043;
+  --dashboard-brand-sky: #7cc8e0;
+  --dashboard-brand-peach: #f4a585;
+  --dashboard-brand-cream: #fffcf5;
+  --dashboard-white: #ffffff;
+  --dashboard-ink: #254d69;
+  --dashboard-muted: #526b7d;
+  --dashboard-border: #d8e2e8;
+  --dashboard-soft-blue: #edf5f8;
+  --dashboard-font: "Trebuchet MS", system-ui, sans-serif;
+  --dashboard-radius-small: 0.75rem;
+  --dashboard-radius-card: 1.125rem;
+  --dashboard-radius-pill: 999px;
+  --dashboard-space-1: 0.5rem;
+  --dashboard-space-2: 0.75rem;
+  --dashboard-space-3: 1rem;
+  --dashboard-space-4: 1.5rem;
+  --dashboard-space-5: 2rem;
+  --dashboard-space-6: 3rem;
+  --dashboard-shadow-card: 0 0.4rem 1.5rem rgb(37 77 105 / 8%);
+}
