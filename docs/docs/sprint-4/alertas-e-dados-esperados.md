@@ -43,7 +43,7 @@ O navegador deve usar a autenticação de usuário prevista pelo backend. A chav
 
 ## Comportamento da demonstração
 
-Enquanto a rota não está disponível, a interface lê três registros fictícios por meio do adaptador `docs/src/services/alertsRepository.ts`. Um aviso visível deixa claro que são exemplos. O adaptador mantém a fronteira entre a tela e os dados para facilitar a troca pela API sem misturar o mock com os componentes.
+Enquanto a rota não está disponível, a interface lê três registros fictícios por meio do adaptador `src/frontend/src/services/alertsRepository.ts`. Um aviso visível deixa claro que são exemplos. O adaptador mantém a fronteira entre a tela e os dados para facilitar a troca pela API sem misturar o mock com os componentes.
 
 ## Referências {#referencias}
 

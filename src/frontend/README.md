@@ -33,7 +33,7 @@ npm run preview
 
 Copie `.env.example` para `.env.local` e defina `VITE_API_BASE_URL` com a URL base pública da API. Sem essa variável, o frontend usa registros demonstrativos. Variáveis `VITE_*` são incluídas no JavaScript do navegador; portanto, essa variável pode conter somente uma URL pública, nunca um token, chave ou senha.
 
-O contrato esperado para a integração é `GET {VITE_API_BASE_URL}/alerts`, com uma resposta no formato `{"alerts": [...]}`. Cada item usa `id`, `camera_id`, `aviary_id`, `datetime` e `alarm_type`. Os filtros podem ser combinados com parâmetros `camera_id`, `date_from` e `date_to`. O contrato precisa ser confirmado pelo responsável pelo backend antes da integração.
+O contrato esperado para a integração é `GET {VITE_API_BASE_URL}/alerts`, com uma resposta no formato `{"alerts": [...]}`. Cada item usa `id`, `camera_id`, `aviary_id`, `datetime` e `alarm_type`. Atualmente, os filtros de câmera e data são aplicados no próprio frontend aos registros recebidos. Se o backend também filtrar no servidor, os parâmetros e a paginação precisam ser acordados antes da integração.
 
 ## Estrutura
 

@@ -14,4 +14,12 @@ Esta página registra o que a estrutura atual do projeto permite entregar para o
 | [Alertas e dados esperados](./alertas-e-dados-esperados.md) | Campos já definidos, comportamento da tela demonstrativa e proposta de leitura dos alertas pelo dashboard. |
 | [Proposta para o mapa de distribuição](./proposta-mapa-de-distribuicao.md) | Dados existentes, lacunas e decisões necessárias antes de calcular concentração por câmera. |
 
-O painel implementado nesta sprint está em `/dashboard`. Seus registros de alerta são demonstrativos até existir uma rota de leitura ligada ao backend.
+O painel é um site de frontend próprio em `src/frontend/`, separado deste site de documentação. Para executar a partir da raiz do repositório:
+
+```powershell
+cd src/frontend
+npm install
+npm run dev
+```
+
+O Vite informa o endereço local, normalmente `http://localhost:5173/`. Sem `VITE_API_BASE_URL`, a aba de alertas usa registros demonstrativos. A configuração da API está descrita em `src/frontend/README.md`.
