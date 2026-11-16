@@ -154,7 +154,7 @@ Este glossário explica os termos usados na [proposta de solução](./proposta-d
 
 **ONNX e NCNN:** formatos e ferramentas de execução para usar modelos exportados. A qualidade e a velocidade precisam ser verificadas novamente após a exportação.
 
-**Backend e endpoint:** serviço que recebe e armazena resultados e endereço de uma operação desse serviço. O módulo oferece um contrato de envio, sem definir a plataforma central.
+**Backend e endpoint:** serviço que recebe e armazena resultados e endereço de uma operação desse serviço. O backend da Sprint 4 também oferece cadastros e consultas à aplicação.
 
 **ROI, ou região de interesse:** parte definida da imagem que será analisada ou anotada. Contar aves em uma ROI não representa a contagem da imagem inteira.
 
@@ -329,3 +329,25 @@ Os termos abaixo aparecem na página do [nó de borda no Raspberry Pi](../sprint
 **Idempotente:** operação que, repetida, produz o mesmo resultado que uma única execução. O envio de análises é assim: reenviar uma análise já gravada não a duplica.
 
 **DVR simulado:** servidor de vídeo de teste que publica um vídeo gravado em repetição, como se fosse uma câmera, para validar a captura sem o DVR real.
+
+## Backend e banco de dados
+
+Os termos abaixo apoiam a documentação do [backend da Sprint 4](../sprint-4/backend.md).
+
+**API HTTP:** conjunto de operações acessíveis por requisições pela rede. Nesta API, GET consulta dados, POST cadastra ou envia informações e PATCH atualiza campos de um registro.
+
+**Node.js, TypeScript e Fastify:** Node.js executa JavaScript no servidor; TypeScript acrescenta verificação de tipos ao código; Fastify organiza o servidor HTTP e suas rotas.
+
+**PostgreSQL e SQL:** PostgreSQL é o banco relacional usado pelo backend. SQL é a linguagem que define suas tabelas e permite consultar e alterar registros.
+
+**Migração:** script versionado que cria ou altera a estrutura do banco em uma ordem conhecida.
+
+**Pool de conexões:** conjunto de conexões com o banco que o servidor reutiliza para atender às requisições.
+
+**Transação:** conjunto de alterações confirmado por inteiro ou desfeito em caso de falha. Permite encerrar uma ocupação e atualizar o lote atual sem deixar a operação pela metade.
+
+**Paginação:** divisão de uma lista em partes limitadas, para evitar carregar todo o histórico de uma vez.
+
+**TLS:** proteção da comunicação por criptografia. A verificação do certificado permite conferir a identidade do servidor do banco.
+
+**JWT:** token assinado usado para representar uma sessão autenticada. Na integração com Supabase Auth, o backend valida esse token antes de aceitar o perfil do usuário.
