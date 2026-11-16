@@ -2,39 +2,54 @@
 title: Proposta para o mapa de distribuição
 sidebar_label: Proposta de mapa
 sidebar_position: 2
-description: O que as análises atuais permitem concluir e o que falta definir para um mapa por câmera.
+description: Dados existentes, cálculo provisório por câmera e decisões para o mapa de distribuição.
 ---
 
 # Proposta para o mapa de distribuição
 
-## O que já existe
+## O que o backend já oferece
 
-O banco proposto no repositório registra cada análise com `camera_id`, `aviary_id`, horários, totais e estado do processamento. A tabela `analysis_level_count` registra, por análise, o identificador do nível, a contagem de aves e o percentual. A ingestão associa o aviário consultando a câmera [1].
+O backend persiste análises com `camera_id`, `aviary_id`, horários, totais e estado do processamento. A tabela `analysis_level_count` guarda, por análise, o identificador do nível, a contagem de aves e o percentual. A ingestão associa o aviário cadastrado à câmera e registra o lote correspondente ao instante de captura [1].
 
-Esses registros permitem resumir contagens observadas por câmera e nível ao longo de um período. Eles não definem por si só a posição da câmera dentro da planta do aviário nem a classificação de concentração baixa, média ou alta.
+`GET /analyses` aceita filtros por `camera_id`, `aviary_id`, `lot_id`, `status`, `lot_association_status`, `from`, `to`, `limit` e `offset`. Retorna `{data, pagination}`; cada linha inclui `visible_birds`, `assigned_total`, `unassigned_birds` e `levels`. `GET /cameras` fornece IDs, nomes e aviário associado. As duas rotas exigem autenticação.
 
-## Por que o cálculo ainda não foi implementado
+O esquema não guarda coordenadas, setor nem posição de câmera na planta. As contagens permitem comparar o que cada câmera observou, mas não posicionar os dispositivos em um desenho físico. A primeira visualização, portanto, só pode ser uma lista ou grade esquemática, claramente identificada como não espacial.
 
-O PR de backend consultado apresenta uma rota de consulta de análises com contagens por nível e identificador da câmera [2]. Porém, esse endpoint não está integrado ao backend desta branch e não fornece uma posição espacial da câmera. O esquema consultado também não guarda coordenadas, setor ou posição esquemática.
+## Módulo isolado implementado
 
-Para transformar contagens em concentração, também faltam limites aprovados para baixa, média e alta e uma janela temporal para combinar análises. Sem esses critérios, qualquer cor ou classificação seria uma regra inventada e poderia induzir a uma interpretação errada do aviário.
+`src/backend/src/distributionMap.ts` contém um plugin Fastify isolado para uma futura rota `GET /distribution/cameras` e a função de resumo por câmera. O cálculo considera somente análises com `status = 'valido'` e `visible_birds` disponível. Por câmera, retorna a média de aves visíveis por análise, a quantidade de análises válidas, o horário da análise mais recente e a classe de concentração.
 
-Por esse motivo, esta entrega não altera o banco, o backend do responsável pela API nem calcula classes de concentração. A aba de mapa do painel fica reservada, conforme o escopo da Sprint 4.
+A janela de tempo deve ser aplicada pela consulta, com `from` inclusivo e `to` exclusivo sobre `captured_at`. A paginação limita os resumos por câmera. Sem limites configurados, o plugin responde `503 distribution_not_configured`. O plugin ainda não foi registrado em `src/backend/src/app.ts`, respeitando o limite de não alterar o arquivo de integração mantido pelo Cauê.
 
-## Proposta mínima para discussão
+Para integrar, o Cauê precisa importar `distributionMapRoutes` e `readProvisionalThresholds` de `./distributionMap.js` e adicionar dentro de `buildApp`, antes de `return app`, esta chamada:
 
-Começar com uma representação esquemática, usando a câmera como unidade espacial, conforme a direção inicial da reunião. Antes de implementar, combinar:
+```ts
+app.register(distributionMapRoutes, {
+  prefix: '/distribution',
+  db,
+  thresholds: readProvisionalThresholds(process.env),
+});
+```
 
-1. O que significa concentração para a operação da Raiar: contagem absoluta, percentual por nível ou uma regra que combine ambos.
-2. Quais valores separam baixa, média e alta, e quem valida esses limites.
-3. Qual intervalo de tempo representa o estado exibido e como tratar análises ausentes ou inadequadas.
-4. Como identificar a posição de cada câmera no desenho esquemático e manter esse vínculo quando o equipamento mudar.
-5. Qual formato de resposta a API deve fornecer para o dashboard, incluindo câmera, horário da última análise válida e contagens por nível.
+A chamada deve permanecer dentro do app que aplica o hook global de autenticação. Os limites são configurados por `RAIAR_CONCENTRATION_LOW_MAX` e `RAIAR_CONCENTRATION_MEDIUM_MAX`, ambos em média de aves visíveis por análise. Não há valores padrão no código. Os valores `5` e `10` nos testes são fixtures artificiais para testar as faixas, não valores oficiais nem recomendação operacional.
 
-Depois desses acordos, pode-se decidir se o backend consulta e agrega `analysis` com `analysis_level_count` ou se a regra deve ser calculada em outro componente. A decisão de dados e qualquer mudança de esquema pertencem à pessoa responsável pelo backend e pelo banco.
+## Limites e decisões pendentes
+
+A média de aves visíveis não considera área, distância ou campo de visão de cada câmera. Ela é somente uma regra técnica inicial, não uma medida validada de densidade ou bem-estar. Os níveis baixa, média e alta, a janela de observação e o tratamento de câmeras sem dados válidos precisam ser acordados com a Raiar antes de usar o resultado para tomada de decisão.
+
+Também é necessário confirmar se a primeira versão será uma lista/grade esquemática ou se há uma planta e posições de câmeras que podem ser usadas. Sem coordenadas, não se deve apresentar os resultados como um mapa físico.
+
+Perguntas para fechar a proposta:
+
+1. A média de aves visíveis por análise é uma medida aceitável para representar concentração por câmera?
+2. Quais limites provisórios separam baixa, média e alta e quem da Raiar os valida?
+3. Qual intervalo de tempo deve representar o estado mostrado?
+4. O que mostrar para câmeras sem análise válida no período?
+5. A Raiar pode fornecer uma planta e a posição aproximada de cada câmera ou a primeira versão será somente uma grade?
+6. O Cauê pode registrar o plugin em `app.ts` e confirmar o contrato de resposta da rota?
+
+Os testes do módulo ficam em `src/backend/tests/distribution-map.test.ts`. A regra e os limites devem continuar identificados como provisórios até validação operacional.
 
 ## Referências {#referencias}
 
-[1] AGROTECH INTELI. **Integração do nó de borda com o banco de dados**. [Documentação da integração](../sprint-3/integracao-no-banco.md), seções “Extensão do esquema” e “Sem alertas”. Disponível em: repositório do projeto Raiar. Acesso em: 15 nov. 2026.
-
-[2] AGROTECH INTELI. **Feat/backend**. [Pull request 29](https://github.com/AgroTech-Inteli-ATI/2026_02_Raiar/pull/29). Disponível em: GitHub. Acesso em: 15 nov. 2026.
+[1] AGROTECH INTELI. **Backend e integração com o banco de dados**. [Documentação do backend](./backend.md), seções sobre análises, rotas e histórico de ocupação. Disponível em: repositório do projeto Raiar. Acesso em: 16 nov. 2026.
