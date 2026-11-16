@@ -10,7 +10,7 @@ test('migra uma base nova, preserva dados na repeticao e verifica checksums', as
   const db = testDatabase();
   try {
     const applied = await migrate(db);
-    assert.equal(applied.length, 5);
+    assert.equal(applied.length, 6);
     await db.query(`INSERT INTO public.raspberry (name, hostname, active) VALUES ('RPi', 'teste', false)`);
     assert.deepEqual(await migrate(db), []);
     assert.equal((await db.query('SELECT active FROM public.raspberry')).rows[0].active, false);
@@ -29,7 +29,7 @@ test('adota a integracao existente sem recriar tabelas ou apagar analises', asyn
     await db.query(transactionBody(await readFile(new URL('migrations/002_analises.sql', root), 'utf8')));
     const applied = await migrate(db);
     assert.ok(applied.includes('002_analises.sql (existente)'));
-    assert.equal(applied.length, 4);
+    assert.equal(applied.length, 5);
   } finally { await db.close(); }
 });
 

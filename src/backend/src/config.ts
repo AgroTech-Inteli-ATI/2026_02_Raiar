@@ -23,6 +23,10 @@ const settings = z.object({
   if (!value.DATABASE_SSL && !['localhost', '127.0.0.1', '[::1]'].includes(new URL(value.DATABASE_URL).hostname)) {
     context.addIssue({ code: 'custom', path: ['DATABASE_SSL'], message: 'TLS obrigatorio para banco remoto.' });
   }
+  if ([...new URL(value.DATABASE_URL).searchParams.keys()]
+    .some((key) => ['host', 'hostaddr'].includes(key.toLowerCase()))) {
+    context.addIssue({ code: 'custom', path: ['DATABASE_URL'], message: 'Informe o host somente na autoridade da URL.' });
+  }
 });
 
 export function loadConfig(environment = process.env) {

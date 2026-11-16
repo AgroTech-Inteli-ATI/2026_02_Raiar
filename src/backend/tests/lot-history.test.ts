@@ -60,6 +60,38 @@ describe('Historico de ocupacao e lote na captura', { concurrency: false }, () =
     assert.equal((await history()).length, 2);
   });
 
+  it('preserva o aviario de capturas pendentes e exige novo ID ao mover a camera fisica', async () => {
+    const other = await context.app.inject({ method: 'POST', url: '/aviaries', headers,
+      payload: { name: 'Outro aviario', number: 2, type: 'normal' } });
+    const otherId = other.json().id;
+    assert.equal(other.statusCode, 201);
+    assert.equal((await assign(2, '2026-11-01T00:00:00Z', otherId)).statusCode, 200);
+    // A captura ainda esta somente na fila do no: nao ha analises persistidas.
+    const old = frameAt('2026-11-12T12:00:00Z');
+    const move = await context.app.inject({ method: 'PATCH', url: '/cameras/1', headers,
+      payload: { aviary_id: otherId, name: 'Camera movida' } });
+    assert.equal(move.statusCode, 422);
+    await assert.rejects(context.db.query('UPDATE public.camera SET aviary_id = $1 WHERE id = 1', [otherId]),
+      (error: unknown) => (error as { code: string }).code === '23514');
+    const unchanged = await context.app.inject({ method: 'PATCH', url: '/cameras/1', headers,
+      payload: { aviary_id: 1, name: 'Camera original' } });
+    assert.equal(unchanged.statusCode, 200);
+    assert.equal(unchanged.json().aviary_id, 1);
+
+    const newCamera = await context.app.inject({ method: 'POST', url: '/cameras', headers,
+      payload: { raspberry_id: 1, aviary_id: otherId, name: 'Camera movida' } });
+    assert.equal(newCamera.statusCode, 201);
+    const recent = { ...frameAt('2026-11-13T12:00:00Z'), camera_id: String(newCamera.json().id) };
+    assert.deepEqual((await send([recent, old])).json().accepted_analysis_ids,
+      [recent.analise_id, old.analise_id]);
+    for (const [item, aviary, lot] of [[old, 1, 1], [recent, otherId, 2]] as const) {
+      const saved = await detail(item.analise_id);
+      assert.equal(saved.aviary_id, aviary);
+      assert.equal(saved.lot_id, lot);
+      assert.equal(saved.lot_association_status, 'matched');
+    }
+  });
+
   it('mantem lacunas e horario desconhecido explicitos, sem usar o lote atual como fallback', async () => {
     await assign(null, '2026-11-05T00:00:00Z');
     await assign(2, '2026-11-07T00:00:00Z');

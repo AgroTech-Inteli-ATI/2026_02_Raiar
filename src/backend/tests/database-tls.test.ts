@@ -35,3 +35,24 @@ test('DATABASE_SSL=false controla exclusivamente a conexao local', () => {
   const client = new Client(databasePoolConfig('postgresql://user:pass@localhost/raiar?ssl=no-verify', false));
   assert.equal(client.ssl, false);
 });
+
+for (const parameter of ['host=database.example', '%68ost=database.example',
+  'host=localhost&host=database.example', 'hostaddr=203.0.113.1']) {
+  test(`recusa sobrescrita do destino por ${parameter}`, () => {
+    const url = `postgresql://user:password@localhost/raiar?${parameter}`;
+    assert.throws(() => loadConfig({
+      DATABASE_URL: url, DATABASE_SSL: 'false',
+      RAIAR_API_TOKEN: 'a'.repeat(32), RAIAR_SYNC_TOKEN: 'b'.repeat(32),
+    }), /DATABASE_URL/);
+    for (const ssl of [true, false]) {
+      assert.throws(() => databasePoolConfig(url, ssl), /host/);
+    }
+  });
+}
+
+test('o pool tambem recusa conexao remota sem TLS quando usado sem loadConfig', () => {
+  assert.throws(() => databasePoolConfig('postgresql://user:password@database.example/raiar', false), /TLS/);
+  const client = new Client(databasePoolConfig('postgresql://user:password@database.example/raiar', true));
+  assert.equal(client.host, 'database.example');
+  assert.deepEqual(client.ssl, { rejectUnauthorized: true });
+});

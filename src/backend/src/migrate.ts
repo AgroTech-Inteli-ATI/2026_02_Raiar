@@ -9,6 +9,7 @@ const sqlRoot = fileURLToPath(new URL(import.meta.url.includes('/dist/')
   ? '../../../database/' : '../../database/', import.meta.url));
 export const migrationFiles = [
   '002_analises.sql', '003_dados_cadastro.sql', '004_ingestao_backend.sql', '005_historico_ocupacao.sql',
+  '006_camera_aviario_fixo.sql',
 ];
 export const transactionBody = (sql: string) => sql.replace(/^BEGIN;\s*$/m, '').replace(/^COMMIT;\s*$/m, '');
 

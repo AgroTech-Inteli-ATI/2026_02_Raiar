@@ -23,6 +23,12 @@ function clientDatabase(client: PoolClient): Database {
 
 export function databasePoolConfig(connectionString: string, ssl: boolean): PoolConfig {
   const url = new URL(connectionString);
+  if ([...url.searchParams.keys()].some((key) => ['host', 'hostaddr'].includes(key.toLowerCase()))) {
+    throw new Error('Informe o host somente na autoridade de DATABASE_URL.');
+  }
+  if (!ssl && !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) {
+    throw new Error('TLS obrigatorio para banco remoto.');
+  }
   // pg interpreta a URL depois das opcoes do pool. Remover todos os parametros TLS
   // impede que ssl=0, ssl=no-verify ou aliases substituam DATABASE_SSL.
   for (const key of [...url.searchParams.keys()]) {

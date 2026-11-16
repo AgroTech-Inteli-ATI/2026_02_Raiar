@@ -35,6 +35,9 @@ com `DATABASE_SSL=true` e certificado confiavel. Nao use a URL HTTP de REST como
 `DATABASE_SSL` prevalece sobre a URL: parametros `ssl*` e `uselibpqcompat` sao removidos
 antes de entregar a connection string ao driver. Com `true`, TLS e verificacao de
 certificado permanecem obrigatorios, inclusive com `ssl=0` ou `ssl=no-verify` na URL.
+Parametros `host` e `hostaddr` na query string sao recusados; informe o destino
+somente na autoridade da URL. `DATABASE_SSL=false` e aceito apenas para localhost,
+127.0.0.1 ou [::1], inclusive no acesso direto ao pool.
 Se o provedor usar uma CA especifica, configure `NODE_EXTRA_CA_CERTS` antes de iniciar o Node.
 
 ## Migracoes e conexao
@@ -44,7 +47,7 @@ nas consultas e garante rollback e liberacao do cliente em transacoes.
 
 `npm run migrate` cria uma base vazia ou atualiza as tabelas existentes. Os SQLs canonicos
 continuam em `../database/`; nao ha uma segunda copia dentro do backend.
-O comando aplica `002` a `005` em ordem, com transacao, trava de migracao e checksums.
+O comando aplica `002` a `006` em ordem, com transacao, trava de migracao e checksums.
 Uma instalacao anterior completa de `002` e reconhecida sem recriar suas tabelas.
 Esquemas parciais ou migracoes registradas com checksum diferente interrompem a operacao.
 O controle fica em `backend_internal.migration`, fora das tabelas publicas da API.
@@ -121,6 +124,12 @@ Cadastre dispositivo, lote e aviario antes da camera, usando os IDs retornados p
 - Aviario: `name`, `number` positivo, `type` (`rearing`/`normal`); opcionais `box_identifiers`,
   `registration_date`, `timezone` (padrao `America/Sao_Paulo`) e `current_lot_id`.
 - Camera: `raspberry_id`, `aviary_id`; opcionais `name`, `model`, `active` (padrao `true`).
+  O vinculo entre o ID da camera e o aviario e permanente, protegido pela migracao
+  `006` tambem em SQL direto e Supabase. Ao mover a camera fisica, cadastre um novo
+  ID no aviario de destino e configure o no para usa-lo somente nas novas capturas.
+  Preserve o ID antigo nos resultados pendentes e mantenha esse cadastro ativo ate
+  confirmar o envio de toda a fila; depois, desative-o. O servidor nao conhece a
+  fila offline e por isso recusa mudar `aviary_id` mesmo sem analises recebidas.
 - Lote: `name`; opcionais os tres campos de idade e `archived_at` (instante com fuso).
   Idade, data e origem devem estar todos preenchidos ou todos nulos.
 
