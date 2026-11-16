@@ -42,3 +42,14 @@
   --dashboard-radius-caption: 0.35rem;
   --dashboard-shadow-card: 0 0.4rem 1.5rem rgb(37 77 105 / 8%);
 }
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--dashboard-brand-cream);
+}

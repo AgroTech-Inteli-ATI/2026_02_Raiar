@@ -22,6 +22,15 @@ function CameraIcon() {
   );
 }
 
+function WarningIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7.5v5.25M12 16.5h.01" />
+    </svg>
+  );
+}
+
 function AlertImage({alert}: {alert: AlertRecord}) {
   if (!alert.image) return null;
   const {url, alt, box} = alert.image;
@@ -118,7 +127,8 @@ export default function DashboardPage() {
     <main className={styles.dashboard}>
         <header className={styles.topbar}>
           <a className={styles.wordmark} href="#inicio" aria-label="Raiar Orgânicos, início">
-            <span>raiar</span> <small>orgânicos</small>
+            <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="Raiar" />
+            <small>orgânicos</small>
           </a>
           <span className={styles.topbarLabel}>Monitoramento do aviário</span>
         </header>
@@ -254,9 +264,6 @@ export default function DashboardPage() {
                 </div>
               ) : visibleAlerts.length === 0 ? (
                 <div className={styles.stateCard}>
-                  <div className={styles.emptyIcon} aria-hidden="true">
-                    <CameraIcon />
-                  </div>
                   <h3>Nenhum alerta encontrado</h3>
                   <p>Não há registros para os filtros escolhidos.</p>
                 </div>
@@ -265,7 +272,7 @@ export default function DashboardPage() {
                   {visibleAlerts.map((alert) => (
                     <li className={styles.alertCard} key={alert.id}>
                       <div className={styles.alertMarker} aria-hidden="true">
-                        <CameraIcon />
+                        <WarningIcon />
                       </div>
                       <div className={styles.alertDetails}>
                         <div className={styles.alertTitleRow}>
@@ -294,7 +301,6 @@ export default function DashboardPage() {
               aria-labelledby="tab-configuration"
               tabIndex={0}
             >
-              <span className={styles.reservedMark} aria-hidden="true"><CameraIcon /></span>
               <h2>Configuração</h2>
               <p>Esta área será preenchida em uma próxima etapa.</p>
             </section>
@@ -308,7 +314,6 @@ export default function DashboardPage() {
               aria-labelledby="tab-map"
               tabIndex={0}
             >
-              <span className={styles.reservedMark} aria-hidden="true"><CameraIcon /></span>
               <h2>Mapa do aviário</h2>
               <p>Esta área será preenchida em uma próxima etapa.</p>
             </section>

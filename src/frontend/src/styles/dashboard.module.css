@@ -17,6 +17,9 @@
 }
 
 .wordmark {
+  display: flex;
+  align-items: center;
+  gap: var(--dashboard-space-2);
   color: var(--dashboard-brand-cream);
   font-size: 1.5rem;
   font-weight: 900;
@@ -29,10 +32,22 @@
   text-decoration: none;
 }
 
+.wordmark:focus-visible {
+  outline: 3px solid var(--dashboard-brand-yellow);
+  outline-offset: var(--dashboard-space-tight);
+  border-radius: var(--dashboard-radius-caption);
+}
+
 .wordmark small {
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0;
+}
+
+.wordmark img {
+  display: block;
+  width: 7.1rem;
+  height: auto;
 }
 
 .topbarLabel {
@@ -79,9 +94,7 @@
 }
 
 .cameraMark,
-.alertMarker,
-.emptyIcon,
-.reservedMark {
+.alertMarker {
   display: grid;
   flex: 0 0 auto;
   place-items: center;
@@ -96,9 +109,7 @@
 }
 
 .cameraMark svg,
-.alertMarker svg,
-.emptyIcon svg,
-.reservedMark svg {
+.alertMarker svg {
   width: 1.55rem;
   height: 1.55rem;
   fill: none;
@@ -111,7 +122,7 @@
 .tabs {
   display: flex;
   gap: var(--dashboard-space-tight);
-  overflow-x: auto;
+  overflow: visible;
   border-bottom: 2px solid var(--dashboard-border);
 }
 
@@ -387,13 +398,6 @@
   margin-top: var(--dashboard-space-3);
 }
 
-.emptyIcon,
-.reservedMark {
-  width: 3.5rem;
-  height: 3.5rem;
-  background: var(--dashboard-sky-tint-strong);
-}
-
 .spinner {
   width: 2rem;
   height: 2rem;
@@ -436,10 +440,30 @@
 @media (max-width: 640px) {
   .topbar {
     min-height: 3.75rem;
+    padding-inline: var(--dashboard-space-2);
   }
 
   .topbarLabel {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
+  }
+
+  .wordmark {
+    gap: var(--dashboard-space-1);
+  }
+
+  .wordmark img {
+    width: 5.5rem;
+  }
+
+  .wordmark small {
+    font-size: 0.68rem;
+  }
+
+  .tab {
+    flex: 1 1 auto;
+    padding: var(--dashboard-space-2) var(--dashboard-space-tight);
+    font-size: 0.82rem;
+    white-space: nowrap;
   }
 
   .content {
