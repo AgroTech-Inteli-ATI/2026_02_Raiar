@@ -1,5 +1,5 @@
 .dashboard {
-  min-height: calc(100vh - var(--ifm-navbar-height) - var(--ifm-footer-padding-vertical) * 2);
+  min-height: 100vh;
   background: var(--dashboard-brand-cream);
   color: var(--dashboard-ink);
   font-family: var(--dashboard-font);
