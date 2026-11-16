@@ -261,7 +261,7 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              {isDemoData && (
+              {isDemoData && !errorMessage && (
                 <div className={styles.demoNotice} role="note">
                   <span className={styles.noticeDot} aria-hidden="true" />
                   <span>{demoNotice ? `${demoNotice} Os registros abaixo são exemplos.` : 'Visualização demonstrativa. Os registros abaixo são exemplos.'}</span>
