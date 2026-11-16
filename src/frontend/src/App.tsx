@@ -13,15 +13,6 @@ const tabs: {id: TabName; label: string}[] = [
   {id: 'map', label: 'Mapa do aviário'},
 ];
 
-function CameraIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M4 7.5h3l1.4-2h7.2l1.4 2h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z" />
-      <circle cx="12" cy="13.5" r="3.5" />
-    </svg>
-  );
-}
-
 function WarningIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -105,7 +96,7 @@ function formatDate(value: string) {
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<TabName>('alerts');
   const [alerts, setAlerts] = useState<AlertRecord[]>([]);
-  const [isDemoData, setIsDemoData] = useState(true);
+  const [isDemoData, setIsDemoData] = useState(!import.meta.env.VITE_API_BASE_URL?.trim());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [cameraFilter, setCameraFilter] = useState('all');
@@ -166,7 +157,6 @@ export default function DashboardPage() {
         <header className={styles.topbar}>
           <a className={styles.wordmark} href="#inicio" aria-label="Raiar Orgânicos, início">
             <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="Raiar" />
-            <small>orgânicos</small>
           </a>
           <span className={styles.topbarLabel}>Monitoramento do aviário</span>
         </header>
@@ -179,9 +169,6 @@ export default function DashboardPage() {
               <p className={styles.introCopy}>
                 Aqui você encontra os avisos registrados pelas câmeras.
               </p>
-            </div>
-            <div className={styles.cameraMark} aria-hidden="true">
-              <CameraIcon />
             </div>
           </div>
 

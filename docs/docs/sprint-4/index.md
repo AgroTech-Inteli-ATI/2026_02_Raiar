@@ -22,4 +22,4 @@ npm install
 npm run dev
 ```
 
-O Vite informa o endereço local, normalmente `http://localhost:5173/`. Sem `VITE_API_BASE_URL`, a aba de alertas usa registros demonstrativos. A configuração da API está descrita em `src/frontend/README.md`.
+O Vite informa o endereço local, normalmente `http://localhost:5173/`. Sem `VITE_API_BASE_URL`, a aba de alertas usa registros demonstrativos. O backend integrado oferece consultas de análises, mas ainda não oferece geração ou leitura de alertas. O módulo isolado para cálculo de distribuição por câmera também aguarda validação dos limites e registro da rota no backend. A configuração e as lacunas estão descritas em `src/frontend/README.md`, [Alertas e dados esperados](./alertas-e-dados-esperados.md) e [Proposta para o mapa](./proposta-mapa-de-distribuicao.md).

@@ -29,11 +29,13 @@ npm run preview
 
 `npm run build` gera os arquivos estáticos em `src/frontend/dist/`. A pasta `dist/` pode ser publicada em um servidor estático. `npm run preview` serve esse build localmente na porta 4173.
 
-## API
+## API e estado da integração
 
-Copie `.env.example` para `.env.local` e defina `VITE_API_BASE_URL` com a URL base pública da API. Sem essa variável, o frontend usa registros demonstrativos. Variáveis `VITE_*` são incluídas no JavaScript do navegador; portanto, essa variável pode conter somente uma URL pública, nunca um token, chave ou senha.
+Sem `VITE_API_BASE_URL`, o frontend usa registros demonstrativos. O adaptador está preparado para `GET {VITE_API_BASE_URL}/alerts`, com resposta `{"alerts": [...]}`, e aplica os filtros de câmera e data no próprio frontend.
 
-O contrato esperado para a integração é `GET {VITE_API_BASE_URL}/alerts`, com uma resposta no formato `{"alerts": [...]}`. Cada item usa `id`, `camera_id`, `aviary_id`, `datetime` e `alarm_type`. Atualmente, os filtros de câmera e data são aplicados no próprio frontend aos registros recebidos. Se o backend também filtrar no servidor, os parâmetros e a paginação precisam ser acordados antes da integração.
+Essa rota ainda não existe no backend integrado. O backend oferece `GET /analyses`, que exige autenticação e retorna `{ "data": [...], "pagination": {...} }`; análises não são alertas e não devem ser convertidas automaticamente em alertas. Até que a regra de geração, a rota, os campos e a autenticação do dashboard sejam acordados, mantenha `VITE_API_BASE_URL` vazia para ver a demonstração. Se definir a variável agora, a consulta falhará.
+
+Variáveis `VITE_*` são incluídas no JavaScript do navegador. Nunca coloque `RAIAR_API_TOKEN`, `RAIAR_SYNC_TOKEN`, chave de serviço, senha ou outro segredo em `.env.local` ou no bundle do frontend. O frontend ainda não implementa login nem envia bearer token. A integração segura depende de autenticação de usuário ou proxy de mesma origem acordado com o backend.
 
 ## Estrutura
 
