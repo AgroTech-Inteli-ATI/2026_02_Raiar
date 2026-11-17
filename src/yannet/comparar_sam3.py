@@ -1,4 +1,4 @@
-"""Compara a segmentação por texto do SAM 3 nos quadros de desenvolvimento do YannET."""
+"""Compara a segmentação por texto do SAM 3 nos quadros de desenvolvimento do YanNet."""
 
 import argparse
 import csv
