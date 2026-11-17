@@ -1,7 +1,7 @@
 ---
 title: Proposta para o mapa de distribuição
 sidebar_label: Proposta de mapa
-sidebar_position: 2
+sidebar_position: 3
 description: Dados existentes, cálculo provisório por câmera e decisões para o mapa de distribuição.
 ---
 

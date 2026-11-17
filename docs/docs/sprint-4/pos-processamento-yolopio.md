@@ -1,7 +1,7 @@
 ---
 title: Pós-processamento do YOLOPIO para contagem por nível
 sidebar_label: Pós-processamento do YOLOPIO
-sidebar_position: 3
+sidebar_position: 5
 description: "Continuação do YOLOPIO de Yan Ribeiro (Sprint 2) na Sprint 4: pós-processamento inspirado na RaiarNet (níveis, limiares, filtro de Kalman), sem alterar o modelo, e o que isso mudou na contagem do vídeo da câmera C1."
 ---
 
