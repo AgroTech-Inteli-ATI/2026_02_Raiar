@@ -1,0 +1,20 @@
+{
+  "camera": "CAM 7",
+  "estado": "conferida_no_video",
+  "resolucao_referencia": [1238, 564],
+  "video_teste": {
+    "sha256": "c5e107d6bdee83330b08a1ab4d8fd0de5a54b91808da260587e0899c884260e0",
+    "resolucao": [1920, 888],
+    "inicio_s": 20,
+    "fim_s": 144,
+    "quadro_referencia_s": 30
+  },
+  "faixas": ["esquerda", "central", "direita"],
+  "linhas": [
+    [0.075, 0.420, 0.505, 0.605, 0.715],
+    [0.200, 0.325, 0.455, 0.735, 0.860],
+    [0.355, 0.218, 0.410, 0.810, 0.975],
+    [0.600, 0.098, 0.355, 0.852, 0.993],
+    [0.920, 0.034, 0.289, 0.901, 0.995]
+  ]
+}

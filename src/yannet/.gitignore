@@ -1,0 +1,15 @@
+# Gravações e imagens de referência locais
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.dav
+/referencia-cam7.png
+/midias/
+
+# Pesos e artefatos de execução
+*.safetensors
+*.pth
+*.ckpt
+/outputs/
