@@ -1,7 +1,7 @@
 ---
 title: Backend e integração com o banco de dados
 sidebar_label: Backend
-sidebar_position: 1
+sidebar_position: 4
 description: Estrutura, dados, rotas e execução do backend desenvolvido na Sprint 4.
 ---
 

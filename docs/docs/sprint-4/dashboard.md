@@ -1,7 +1,7 @@
 ---
 title: Dashboard e distribuição do aviário
-sidebar_label: Visão geral da Sprint 4
-sidebar_position: 0
+sidebar_label: Dashboard e distribuição
+sidebar_position: 1
 description: Escopo do dashboard de alertas e proposta para evoluir o mapa de distribuição do aviário.
 ---
 
@@ -23,6 +23,6 @@ npm install
 npm run dev
 ```
 
-O arquivo `.env.local` precisa conter um token de desenvolvimento local igual ao `RAIAR_API_TOKEN` do backend e um endereço local em `RAIAR_BACKEND_URL`. O Vite encaminha `/api` ao backend e adiciona o bearer token no processo Node; o token não é enviado ao código do navegador. Para iniciar o backend, configure `src/backend/.env` com credenciais locais e siga o README do backend.
+No arquivo `.env.local`, mantenha `VITE_API_BASE_URL=/api`, configure um endereço local em `RAIAR_BACKEND_URL` e defina `RAIAR_DEV_API_TOKEN` com o mesmo valor de `RAIAR_API_TOKEN` do backend. O Vite encaminha `/api` ao backend e adiciona o bearer token no processo Node; o token não é enviado ao código do navegador. Para iniciar o backend, configure `src/backend/.env` com credenciais locais e siga o README do backend.
 
 Com a API configurada, os filtros carregam câmeras e aviários, e o cabeçalho consulta `GET /health`. Os registros de alerta continuam demonstrativos porque não existe uma rota de leitura de alertas. O módulo isolado de distribuição por câmera ainda não está registrado no backend e usa limites provisórios. Em produção, é necessário disponibilizar proxy reverso de mesma origem e autenticação de usuário; o proxy do Vite existe somente durante o desenvolvimento. Consulte [Alertas e dados esperados](./alertas-e-dados-esperados.md) e [Proposta para o mapa](./proposta-mapa-de-distribuicao.md) para os contratos e limites atuais.

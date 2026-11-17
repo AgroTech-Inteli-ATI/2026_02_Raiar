@@ -1,7 +1,7 @@
 ---
 title: Alertas e dados esperados
 sidebar_label: Alertas e dados
-sidebar_position: 1
+sidebar_position: 2
 description: Campos de alerta disponíveis e contrato proposto para alimentar o painel.
 ---
 
