@@ -143,7 +143,7 @@ A grade **3 × 2, que parecia a melhor nos 6 quadros (erro 19,8), é a pior no v
 
 **Figura 1: erro do total de aves por iteração (vídeo inteiro, validação temporal)**
 
-![Gráfico de barras horizontais: YOLOPIO original 130, com ROI, níveis e fatias 92,5, com limiar por nível 23,9, com filtro de Kalman 17,2.](../../static/img/pos-processamento/erro-por-iteracao.png)
+![Gráfico de barras horizontais: YOLOPIO original 130, com ROI, níveis e fatias 92,5, com limiar por nível 23,9, com filtro de Kalman 17,2.](/img/pos-processamento/erro-por-iteracao.png)
 
 Fonte: elaborado pelos autores (2026). O valor 130 corresponde a contar 0 aves, contra cerca de 130 reais.
 
@@ -164,7 +164,7 @@ O código está em `src/modelos_PIO/pos_processamento/` e é independente do YOL
 
 **Figura 2: erro absoluto médio por quadro nos 6 quadros diurnos anotados**
 
-![Três gráficos de barras, um por nível, com o erro do YOLOPIO original, do YOLOPIO com pós-processamento, com Kalman e da RaiarNet.](../../static/img/pos-processamento/erro-por-nivel.png)
+![Três gráficos de barras, um por nível, com o erro do YOLOPIO original, do YOLOPIO com pós-processamento, com Kalman e da RaiarNet.](/img/pos-processamento/erro-por-nivel.png)
 
 Fonte: elaborado pelos autores (2026).
 
@@ -183,7 +183,7 @@ Os limiares do YOLOPIO foram ajustados em **todo o vídeo**, o que inclui esses 
 
 **Figura 3: quadro de 10 s – saída original do YOLOPIO (acima) e após o pós-processamento (abaixo)**
 
-![Dois quadros da câmera C1. Em cima, nenhuma caixa e contagem N0 0, N1 0, N2 0. Embaixo, caixas coloridas por nível sobre o piso, a faixa sob a plataforma e a grade, com contagem N0 125, N1 20, N2 1.](../../static/img/pos-processamento/antes-depois-dia.png)
+![Dois quadros da câmera C1. Em cima, nenhuma caixa e contagem N0 0, N1 0, N2 0. Embaixo, caixas coloridas por nível sobre o piso, a faixa sob a plataforma e a grade, com contagem N0 125, N1 20, N2 1.](/img/pos-processamento/antes-depois-dia.png)
 
 Fonte: elaborado pelos autores (2026). A anotação manual para este quadro é N0 113, N1 22 e N2 1.
 
@@ -193,7 +193,7 @@ A figura também mostra a limitação: as caixas são **pequenas e concentradas 
 
 **Figura 4: contagem por nível ao longo do vídeo, com e sem filtro de Kalman, e a anotação manual**
 
-![Três gráficos de linha, um por nível, com a contagem por quadro em cor clara, a série com Kalman em cor forte e pontos vermelhos da anotação manual entre 9 e 11,5 segundos.](../../static/img/pos-processamento/serie-temporal.png)
+![Três gráficos de linha, um por nível, com a contagem por quadro em cor clara, a série com Kalman em cor forte e pontos vermelhos da anotação manual entre 9 e 11,5 segundos.](/img/pos-processamento/serie-temporal.png)
 
 Fonte: elaborado pelos autores (2026). Os limiares desta figura foram ajustados em todo o vídeo (dentro da amostra).
 
@@ -205,7 +205,7 @@ Os limiares do dia foram ajustados no vídeo diurno. Para saber se funcionam em 
 
 **Figura 5: quadro noturno – contagem por nível em cada variante**
 
-![Três gráficos de barras (N0, N1, N2) comparando a anotação manual, o YOLOPIO original, o pós-processamento com os limiares do dia e com o perfil automático.](../../static/img/pos-processamento/teste-noturno.png)
+![Três gráficos de barras (N0, N1, N2) comparando a anotação manual, o YOLOPIO original, o pós-processamento com os limiares do dia e com o perfil automático.](/img/pos-processamento/teste-noturno.png)
 
 Fonte: elaborado pelos autores (2026).
 
@@ -218,7 +218,7 @@ Fonte: elaborado pelos autores (2026).
 
 **Figura 5b: quadro noturno – saída original (acima) e após o pós-processamento com perfil automático (abaixo)**
 
-![Quadro noturno da C1 em infravermelho. Em cima, caixas laranja na plataforma e caixas azuis grandes sobre manchas no piso. Embaixo, mais caixas laranja sobrepostas na plataforma e caixas azuis e magenta pequenas no piso e na faixa intermediária.](../../static/img/pos-processamento/antes-depois-noite.png)
+![Quadro noturno da C1 em infravermelho. Em cima, caixas laranja na plataforma e caixas azuis grandes sobre manchas no piso. Embaixo, mais caixas laranja sobrepostas na plataforma e caixas azuis e magenta pequenas no piso e na faixa intermediária.](/img/pos-processamento/antes-depois-noite.png)
 
 Fonte: elaborado pelos autores (2026). Cores dos níveis: azul = N0 (piso), magenta = N1, laranja = N2 (plataforma). Anotação manual: N0 2, N1 2, N2 19.
 
@@ -254,13 +254,13 @@ Sensibilidade ao limiar (fatias + máscara de piso): **0,10 → 211,7**, **0,25 
 
 **Figura 6: quadro do vídeo cortado – saída original (acima) e fatias com máscara de piso (abaixo)**
 
-![Dois quadros da CAM 7. Em cima, o YOLOPIO original com duas caixas verdes. Embaixo, caixas verdes sobre a cama com pintinhos e caixas vermelhas nas áreas descartadas, como parede azul, canos e grade.](../../static/img/pos-processamento/video-novo-antes-depois.jpg)
+![Dois quadros da CAM 7. Em cima, o YOLOPIO original com duas caixas verdes. Embaixo, caixas verdes sobre a cama com pintinhos e caixas vermelhas nas áreas descartadas, como parede azul, canos e grade.](/img/pos-processamento/video-novo-antes-depois.jpg)
 
 Fonte: elaborado pelos autores (2026). Em verde, caixas mantidas; em vermelho, caixas descartadas por estarem fora do piso.
 
 **Figura 7: aves contadas por quadro ao longo do vídeo cortado**
 
-![Gráfico de linhas: o YOLOPIO original perto de zero, as fatias sem máscara entre 150 e 250, as fatias com máscara de piso entre 70 e 140 e a linha com Kalman suavizando essa série, com queda no final do vídeo.](../../static/img/pos-processamento/video-novo-serie.png)
+![Gráfico de linhas: o YOLOPIO original perto de zero, as fatias sem máscara entre 150 e 250, as fatias com máscara de piso entre 70 e 140 e a linha com Kalman suavizando essa série, com queda no final do vídeo.](/img/pos-processamento/video-novo-serie.png)
 
 Fonte: elaborado pelos autores (2026).
 
