@@ -41,7 +41,16 @@ Arquivos/
 /src/arquivos/
 .ipynb_checkpoints/
 /src/modelos_PIO/midias/
-/src/modelos_PIO/resultados/
+# resultados/ continua ignorado (logs, caches .npz, gráficos do treino), exceto os pesos
+# treinados do YOLOPIO, que são versionados (best.pt, ~5,5 MB).
+/src/modelos_PIO/resultados/*
+!/src/modelos_PIO/resultados/treinos_yolo11/
+/src/modelos_PIO/resultados/treinos_yolo11/*
+!/src/modelos_PIO/resultados/treinos_yolo11/pio_yolo11n/
+/src/modelos_PIO/resultados/treinos_yolo11/pio_yolo11n/*
+!/src/modelos_PIO/resultados/treinos_yolo11/pio_yolo11n/weights/
+/src/modelos_PIO/resultados/treinos_yolo11/pio_yolo11n/weights/*
+!/src/modelos_PIO/resultados/treinos_yolo11/pio_yolo11n/weights/best.pt
 /src/modelos_PIO/pesos_iniciais/
 
 

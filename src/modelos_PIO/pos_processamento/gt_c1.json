@@ -1,0 +1,20 @@
+{
+  "fonte": "src/raiarnet/reports/avaliacao-raiarnet.json (campo por_quadro.gt): contagem manual por nível dos quadros de teste do vídeo diurno v3, o mesmo vídeo VID-20260929-WA0034.mp4. Os pontos individuais ficam fora do Git (data/); só estas contagens por nível estão disponíveis.",
+  "video": "VID-20260929-WA0034.mp4",
+  "quadros": {
+    "9000":  {"N0": 111, "N1": 21, "N2": 2},
+    "9500":  {"N0": 112, "N1": 21, "N2": 2},
+    "10000": {"N0": 113, "N1": 22, "N2": 1},
+    "10500": {"N0": 112, "N1": 23, "N2": 1},
+    "11000": {"N0": 117, "N1": 21, "N2": 0},
+    "11500": {"N0": 115, "N1": 23, "N2": 0}
+  },
+  "raiarnet_teste": {
+    "9000":  {"det": {"N0": 92, "N1": 22, "N2": 3}, "fused": {"N0": 94.76, "N1": 22.19, "N2": 3.0}},
+    "9500":  {"det": {"N0": 99, "N1": 21, "N2": 2}, "fused": {"N0": 100.76, "N1": 21.09, "N2": 2.0}},
+    "10000": {"det": {"N0": 94, "N1": 23, "N2": 2}, "fused": {"N0": 97.43, "N1": 23.06, "N2": 2.0}},
+    "10500": {"det": {"N0": 90, "N1": 23, "N2": 2}, "fused": {"N0": 93.77, "N1": 23.0, "N2": 2.0}},
+    "11000": {"det": {"N0": 101, "N1": 23, "N2": 2}, "fused": {"N0": 103.77, "N1": 23.0, "N2": 2.0}},
+    "11500": {"det": {"N0": 91, "N1": 23, "N2": 2}, "fused": {"N0": 95.02, "N1": 23.0, "N2": 2.0}}
+  }
+}
