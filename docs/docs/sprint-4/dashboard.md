@@ -9,6 +9,12 @@ description: Escopo do dashboard de alertas e proposta para evoluir o mapa de di
 
 Esta página resume a integração local disponível para o painel e os limites atuais dos dados usados para alertas e distribuição espacial.
 
+## Prévia do frontend
+
+![Dashboard do aviário na aba de alertas, com registros demonstrativos](/img/sprint-4/dashboard-alertas.png)
+
+Captura do painel em modo demonstrativo. Os registros e a ilustração exibidos são exemplos, não dados reais do aviário.
+
 | Página | Conteúdo |
 | --- | --- |
 | [Alertas e dados esperados](./alertas-e-dados-esperados.md) | Campos já definidos, comportamento da tela demonstrativa e proposta de leitura dos alertas pelo dashboard. |
