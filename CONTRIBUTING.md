@@ -16,9 +16,10 @@ docs/docs/
         └── subpagina.mdx
 ```
 
-- Cada sprint tem sua pasta `sprint-N/`, com um `_category_.json` que define `label` e `position`.
+- As pastas por sprint são mantidas para preservar os caminhos existentes. A barra lateral principal é organizada por assunto em `docs/sidebars.ts`; `_category_.json` não determina essa navegação.
 - Uma seção com várias páginas vira uma subpasta com `index.mdx` de abertura.
-- Toda página nova deve ser incluída na tabela da [visão geral](docs/docs/index.mdx).
+- Inclua cada página nova no grupo correspondente em `docs/sidebars.ts`. A [visão geral](docs/docs/index.mdx) apresenta o caminho de leitura; o [histórico](docs/docs/historico.mdx) mantém o índice por sprint.
+- Antes de mover ou consolidar arquivos, confira links, âncoras e rotas. Preserve a informação e planeje a compatibilidade dos endereços antigos.
 - Documentos de apoio recebidos do parceiro não entram em `docs/`.
 
 ## Nomes de arquivos
@@ -46,7 +47,7 @@ description: Frase curta, terminada em ponto, usada em buscas e prévias de link
 ```
 
 - `title` é igual ao título H1 da página.
-- `sidebar_position` é único dentro da pasta e segue a ordem de leitura.
+- `sidebar_position` pode ser preservado como metadado histórico. A ordem de leitura da barra lateral é definida em `docs/sidebars.ts`.
 - Use aspas apenas quando o valor tiver `:` (por exemplo, `title: "Personas: acompanhamento da recria"`).
 
 ## Títulos

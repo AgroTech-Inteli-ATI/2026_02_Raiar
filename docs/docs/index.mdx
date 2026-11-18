@@ -1,65 +1,33 @@
 ---
 slug: /
 title: Raiar Orgânicos
-sidebar_label: Visão geral
-sidebar_position: 1
-description: Documentação do projeto de visão computacional da AgroTech Inteli com a Raiar Orgânicos.
+sidebar_label: Comece aqui
+description: Guia de leitura da solução, dos resultados, da operação e da referência técnica do projeto Raiar.
 ---
 
 # Raiar Orgânicos
 
-Esta documentação reúne as definições e os artefatos do projeto desenvolvido pela AgroTech Inteli com a Raiar Orgânicos: o monitoramento da distribuição de aves visíveis nos níveis do Jump Start durante a recria.
+O projeto investiga o uso de imagens de câmeras para acompanhar a distribuição de aves visíveis nos níveis do Jump Start durante a recria. Esta documentação reúne o que foi proposto, desenvolvido e testado pela AgroTech Inteli com a Raiar Orgânicos.
 
-## Sprint 1
+## Por onde começar
 
-| Página | Conteúdo |
+Para conhecer a solução, comece pela [proposta e pelo escopo](./sprint-1/proposta-de-solucao.md). Depois, veja [como os níveis do Jump Start são considerados na contagem](./sprint-2/visao-computacional/niveis-e-regra-de-contagem.md) e os [resultados e limites dos testes](./sprint-2/visao-computacional/contagem-por-nivel.md).
+
+Para conhecer a interface, consulte o [painel de acompanhamento](./sprint-4/dashboard.md). Essa página diferencia a integração disponível dos registros demonstrativos. Os experimentos e as propostas descritos neste site têm estágios diferentes de desenvolvimento; cada página registra suas condições e limitações.
+
+## Encontre o assunto
+
+| Se você quer… | Leia… |
 | --- | --- |
-| [Proposta de solução](./sprint-1/proposta-de-solucao.md) | Problema, escopo do MVP, funcionalidades, hipóteses e critérios de validação. |
-| [Canvas de Proposta de Valor](./sprint-1/canvas-proposta-de-valor.md) | Perfil do cliente, mapa de valor e ajuste entre a necessidade da Raiar e a solução. |
-| [Personas](./sprint-1/personas/index.mdx) | Perfis hipotéticos de quem acompanha a recria e suas histórias de usuário. |
-| [Requisitos](./sprint-1/requisitos.md) | Requisitos funcionais e não funcionais, com critérios de aceitação e verificação. |
-| [Dicionário de dados e coleta inicial](./sprint-1/dicionario-de-dados.md) | Dados necessários, campos, regras de qualidade, amostragem e perguntas para a visita. |
-| [Pesquisa comparativa Brasil–Europa](./sprint-1/pesquisa-comparativa-brasil-europa.md) | Práticas e parâmetros de bem-estar nas semanas 1 a 15 e conexão com a solução. |
-| [Glossário em linguagem simples](./sprint-1/glossario.md) | Explicação dos termos usados nas páginas, incluindo aviário e Jump Start. |
-| [Piloto com o vídeo da Raiar](./sprint-1/piloto-video-raiar.md) | Extração de quadros e comparação da detecção automática por recortes. |
+| Entender o problema, o público e o escopo | [Proposta de solução](./sprint-1/proposta-de-solucao.md), [perfis de uso](./sprint-1/personas/index.mdx) e [requisitos](./sprint-1/requisitos.md). |
+| Entender o caminho entre a câmera e o painel | [Arquitetura preliminar](./sprint-2/arquitetura-preliminar.md) e [fluxo dos resultados até o banco](./sprint-4/backend.md). |
+| Conhecer os resultados dos modelos | [RaiarNet](./sprint-2/visao-computacional/contagem-por-nivel.md), [YOLOPIO e pós-processamento](./sprint-4/pos-processamento-yolopio.md) e [YanNet para grupos](./sprint-4/yannet.md). |
+| Entender o que o painel pode mostrar | [Painel](./sprint-4/dashboard.md), [alertas e dados esperados](./sprint-4/alertas-e-dados-esperados.md) e [proposta de mapa](./sprint-4/proposta-mapa-de-distribuicao.md). |
+| Preparar a instalação e testar a captura | [Raspberry Pi](./sprint-3/provisionamento-raspberry-pi.md), [DVR simulado e teste na prática](./sprint-3/dvr-simulado-e-teste-na-pratica.md) e [falhas e passagem para produção](./sprint-3/falhas-e-do-teste-para-producao.md). |
+| Integrar ou manter o software | [Backend](./sprint-4/backend.md), [integração com o banco](./sprint-3/integracao-no-banco.md) e [containers no dispositivo](./sprint-3/integracao-containers-no-no-de-borda.md). |
 
-## Sprint 2
+A barra lateral organiza os documentos por assunto. Os termos técnicos estão no [glossário](./sprint-1/glossario.md). Para localizar uma entrega pela etapa em que foi produzida, consulte o [histórico por sprint](./historico.mdx).
 
-| Página | Conteúdo |
-| --- | --- |
-| [Visão geral da Sprint 2](./sprint-2/index.md) | Os três modelos desenvolvidos e a documentação de cada um. |
-| [Modelo de visão computacional](./sprint-2/visao-computacional/index.mdx) | Visão geral do processo ponta a ponta do modelo construído do zero. |
-| [Níveis e regra de contagem](./sprint-2/visao-computacional/niveis-e-regra-de-contagem.md) | Divisória verde fixa, região azul móvel e medição direta de N0, N1 e N2. |
-| [Dados e anotação](./sprint-2/visao-computacional/dados-e-anotacao.md) | Vídeos, anotação assistida, caixas de referência e partição temporal. |
-| [Tratamento de imagens](./sprint-2/visao-computacional/tratamento-de-imagens.md) | Hipóteses ópticas, técnicas de realce e máscaras por nível. |
-| [Modelo do zero](./sprint-2/visao-computacional/modelo-identificacao-do-zero.md) | Arquitetura da RaiarNet em PyTorch, perdas e treino. |
-| [Contagem e resultados](./sprint-2/visao-computacional/contagem-por-nivel.md) | Contagem por nível, filtro de Kalman, resultados no teste e próximos passos. |
-| [Detecção de aves com YOLO](./sprint-2/deteccao-de-aves.md) | Uso do detector, dados próprios, treinamento, avaliação e integração. |
-| [Detecção e contagem de galinhas](./sprint-2/deteccao-e-contagem-de-galinhas.md) | PIOFlow e YOLOPIO, base PIO e resultados na validação. |
-| [Arquitetura preliminar](./sprint-2/arquitetura-preliminar.md) | Câmeras, acesso às imagens, modelos, zonas por nível e integração proposta. |
+## Para executar o painel
 
-## Sprint 3
-
-| Página | Conteúdo |
-| --- | --- |
-| [Visão geral da Sprint 3](./sprint-3/index.md) | Nó de borda e material para containerizar os modelos. |
-| [Nó de borda no Raspberry Pi](./sprint-3/provisionamento-raspberry-pi.md) | Arch Linux ARM `aarch64` ultra-leve no cartão SD, otimização de RAM, Docker e captura de câmera. |
-| [Containers no nó de borda](./sprint-3/integracao-containers-no-no-de-borda.md) | Arquitetura, orçamento de recursos, entrega e validação dos containers dos modelos no Raspberry Pi. |
-| [Integração com o banco](./sprint-3/integracao-no-banco.md) | Contrato do envio, extensão do esquema, captura simulada e função de ingestão no Supabase. |
-| [DVR simulado e teste real](./sprint-3/dvr-simulado-e-teste-na-pratica.md) | Explicação didática da simulação do DVR e roteiro para testar com as câmeras reais. |
-| [Falhas e produção](./sprint-3/falhas-e-do-teste-para-producao.md) | Mapa de falhas com mensagens e correções e lista do que trocar do teste para a produção. |
-| [Exemplo de containers](./sprint-3/exemplo-containers/index.md) | Guia de Docker, exercícios e exemplos executáveis para containerizar os modelos. |
-| [Banco de dados: primeira versão](./sprint-3/banco-de-dados.md) | Esquema SQL inicial, relacionamentos, campos e limites das tabelas. |
-
-## Sprint 4
-
-| Página | Conteúdo |
-| --- | --- |
-| [YanNet para identificação de amontoamentos](./sprint-4/yannet.md) | Faixas da CAM 7, localização de grupos por ocupação visual e resultados do primeiro ensaio. |
-| [Visão geral do dashboard e distribuição](./sprint-4/dashboard.md) | Frontend próprio em `src/frontend`, aba de alertas, contrato esperado e proposta para o mapa do aviário. |
-| [Backend e integração com o banco](./sprint-4/backend.md) | Estrutura, dados, rotas, histórico de ocupação e execução do backend. |
-| [Alertas e dados esperados](./sprint-4/alertas-e-dados-esperados.md) | Campos disponíveis, integração e contrato proposto para os alertas. |
-| [Proposta para o mapa de distribuição](./sprint-4/proposta-mapa-de-distribuicao.md) | Cálculo provisório por câmera e decisões pendentes para o mapa. |
-| [Pós-processamento do YOLOPIO](./sprint-4/pos-processamento-yolopio.md) | Ajustes de contagem por nível, resultados e limites dos testes. |
-
-O frontend é independente do site de documentação. Para executá-lo localmente, rode `cd src/frontend`, `npm install` e `npm run dev`; o Vite informa o endereço local (normalmente `http://localhost:5173/`).
+O painel é uma aplicação separada deste site de documentação. As instruções de execução e as condições de integração estão na página [Dashboard e distribuição do aviário](./sprint-4/dashboard.md).
