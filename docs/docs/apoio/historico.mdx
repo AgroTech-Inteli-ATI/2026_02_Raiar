@@ -1,0 +1,66 @@
+---
+title: "Histórico por sprint"
+description: "Índice das entregas por sprint, com links para os conteúdos consolidados."
+---
+
+# Histórico por sprint
+
+As entregas continuam listadas por sprint neste índice. Os links abrem as seções dos documentos consolidados. Para conhecer a solução, comece pelo [percurso principal](../index.mdx).
+
+## Histórico por sprint {#historico-histórico-por-sprint}
+
+Esta documentação reúne as definições e os artefatos do projeto desenvolvido pela AgroTech Inteli com a Raiar Orgânicos: o monitoramento da distribuição de aves visíveis nos níveis do Jump Start durante a recria.
+
+### Sprint 1 {#historico-sprint-1}
+
+| Página | Conteúdo |
+| --- | --- |
+| [Proposta de solução](../index.mdx#proposta-de-solucao-proposta-de-solução) | Problema, escopo do MVP, funcionalidades, hipóteses e critérios de validação. |
+| [Canvas de Proposta de Valor](canvas.mdx#canvas-proposta-de-valor-canvas-de-proposta-de-valor) | Perfil do cliente, mapa de valor e ajuste entre a necessidade da Raiar e a solução. |
+| [Personas](perfis.mdx#index-personas-acompanhamento-da-recria) | Perfis hipotéticos de quem acompanha a recria e suas histórias de usuário. |
+| [Requisitos](../tecnico/requisitos.mdx#requisitos-requisitos-funcionais-e-não-funcionais) | Requisitos funcionais e não funcionais, com critérios de aceitação e verificação. |
+| [Dicionário de dados e coleta inicial](../tecnico/dados.mdx#dicionario-de-dados-dicionário-de-dados-e-coleta-inicial) | Dados necessários, campos, regras de qualidade, amostragem e perguntas para a visita. |
+| [Pesquisa comparativa Brasil–Europa](bem-estar.mdx#pesquisa-comparativa-brasil-europa-bem-estar-e-monitoramento-de-poedeiras-nas-semanas-1-a-15) | Práticas e parâmetros de bem-estar nas semanas 1 a 15 e conexão com a solução. |
+| [Glossário em linguagem simples](glossario.mdx#glossario-glossário-em-linguagem-simples) | Explicação dos termos usados nas páginas, incluindo aviário e Jump Start. |
+| [Piloto com o vídeo da Raiar](../tecnico/yolo.mdx#piloto-video-raiar-piloto-com-o-vídeo-da-raiar) | Extração de quadros e comparação da detecção automática por recortes. |
+
+### Sprint 2 {#historico-sprint-2}
+
+| Página | Conteúdo |
+| --- | --- |
+| [Visão geral da Sprint 2](../resultados.mdx#index-modelos-de-detecção-e-contagem-de-aves) | Os três modelos desenvolvidos e a documentação de cada um. |
+| [Modelo de visão computacional](../resultados.mdx#index-modelo-de-visão-computacional-construído-do-zero) | Visão geral do processo ponta a ponta do modelo construído do zero. |
+| [Níveis e regra de contagem](../funcionamento.mdx#niveis-e-regra-de-contagem-níveis-do-jump-start-e-regra-de-contagem) | Divisória verde fixa, região azul móvel e medição direta de N0, N1 e N2. |
+| [Dados e anotação](../tecnico/raiarnet.mdx#dados-e-anotacao-dados-anotação-e-partição-do-conjunto) | Vídeos, anotação assistida, caixas de referência e partição temporal. |
+| [Tratamento de imagens](../tecnico/raiarnet.mdx#tratamento-de-imagens-tratamento-de-imagens-do-aviário) | Hipóteses ópticas, técnicas de realce e máscaras por nível. |
+| [Modelo do zero](../tecnico/raiarnet.mdx#modelo-identificacao-do-zero-modelo-de-identificação-construído-do-zero) | Arquitetura da RaiarNet em PyTorch, perdas e treino. |
+| [Contagem e resultados](../tecnico/raiarnet.mdx#contagem-por-nivel-contagem-de-aves-por-nível-e-resultados-do-modelo) | Contagem por nível, filtro de Kalman, resultados no teste e próximos passos. |
+| [Detecção de aves com YOLO](../tecnico/yolo.mdx#deteccao-de-aves-detecção-de-aves-com-yolo) | Uso do detector, dados próprios, treinamento, avaliação e integração. |
+| [Detecção e contagem de galinhas](../tecnico/pio.mdx#deteccao-e-contagem-de-galinhas-detecção-e-contagem-de-galinhas-em-imagens) | PIOFlow e YOLOPIO, base PIO e resultados na validação. |
+| [Arquitetura preliminar](../funcionamento.mdx#arquitetura-preliminar-arquitetura-preliminar-de-medição-por-nível) | Câmeras, acesso às imagens, modelos, zonas por nível e integração proposta. |
+
+### Sprint 3 {#historico-sprint-3}
+
+| Página | Conteúdo |
+| --- | --- |
+| [Visão geral da Sprint 3](../tecnico/captura-operacao.mdx#index-nó-de-borda-e-containers) | Nó de borda e material para containerizar os modelos. |
+| [Nó de borda no Raspberry Pi](../tecnico/dispositivo.mdx#provisionamento-raspberry-pi-provisionamento-do-nó-de-borda-com-arch-linux-arm-no-raspberry-pi-4) | Arch Linux ARM `aarch64` ultra-leve no cartão SD, otimização de RAM, Docker e captura de câmera. |
+| [Containers no nó de borda](../tecnico/servicos.mdx#integracao-containers-no-no-de-borda-integração-dos-containers-de-visão-computacional-no-nó-de-borda) | Arquitetura, orçamento de recursos, entrega e validação dos containers dos modelos no Raspberry Pi. |
+| [Integração com o banco](../tecnico/backend.mdx#integracao-no-banco-integração-do-nó-de-borda-com-o-banco-de-dados) | Contrato do envio, extensão do esquema, captura simulada e função de ingestão no Supabase. |
+| [DVR simulado e teste real](../tecnico/captura-operacao.mdx#dvr-simulado-e-teste-na-pratica-dvr-simulado-e-teste-na-prática) | Explicação didática da simulação do DVR e roteiro para testar com as câmeras reais. |
+| [Falhas e produção](../tecnico/captura-operacao.mdx#falhas-e-do-teste-para-producao-falhas-e-do-teste-para-a-produção) | Mapa de falhas com mensagens e correções e lista do que trocar do teste para a produção. |
+| [Exemplo de containers](docker.mdx#index-exemplo-de-containers-para-o-nó-de-borda) | Guia de Docker, exercícios e exemplos executáveis para containerizar os modelos. |
+| [Banco de dados: primeira versão](../tecnico/backend.mdx#banco-de-dados-banco-de-dados-primeira-versão) | Esquema SQL inicial, relacionamentos, campos e limites das tabelas. |
+
+### Sprint 4 {#historico-sprint-4}
+
+| Página | Conteúdo |
+| --- | --- |
+| [YanNet para identificação de amontoamentos](../tecnico/yannet.mdx#yannet-yannet-para-identificação-de-amontoamentos) | Faixas da CAM 7, localização de grupos por ocupação visual e resultados do primeiro ensaio. |
+| [Visão geral do dashboard e distribuição](../painel.mdx#dashboard-dashboard-e-distribuição-do-aviário) | Frontend próprio em `src/frontend`, aba de alertas, contrato esperado e proposta para o mapa do aviário. |
+| [Backend e integração com o banco](../tecnico/backend.mdx#backend-backend-e-integração-com-o-banco-de-dados) | Estrutura, dados, rotas, histórico de ocupação e execução do backend. |
+| [Alertas e dados esperados](../painel.mdx#alertas-e-dados-esperados-alertas-e-dados-esperados) | Campos disponíveis, integração e contrato proposto para os alertas. |
+| [Proposta para o mapa de distribuição](../painel.mdx#proposta-mapa-de-distribuicao-proposta-para-o-mapa-de-distribuição) | Cálculo provisório por câmera e decisões pendentes para o mapa. |
+| [Pós-processamento do YOLOPIO](../tecnico/pio.mdx#pos-processamento-yolopio-pós-processamento-do-yolopio-para-contagem-por-nível) | Ajustes de contagem por nível, resultados e limites dos testes. |
+
+O frontend é independente do site de documentação. Para executá-lo localmente, rode `cd src/frontend`, `npm install` e `npm run dev`; o Vite informa o endereço local (normalmente `http://localhost:5173/`).

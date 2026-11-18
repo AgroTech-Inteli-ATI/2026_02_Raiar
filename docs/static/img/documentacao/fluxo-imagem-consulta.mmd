@@ -1,0 +1,9 @@
+%%{init: {"theme": "base", "fontFamily": "Arial, sans-serif", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 45, "rankSpacing": 45}, "themeVariables": {"fontSize": "20px", "primaryColor": "#edf3f5", "primaryTextColor": "#212b36", "primaryBorderColor": "#254d69", "lineColor": "#254d69", "secondaryColor": "#fff6d9", "tertiaryColor": "#edf3e9", "background": "#fffdf7"}}}%%
+flowchart LR
+  CAM[/"Câmera e DVR"/] -.-> PROC["Processar quadros"]
+  PROC --> FILA[("Fila local SQLite")]
+  FILA -->|"HTTPS"| API["Backend"]
+  API --> DB[("PostgreSQL")]
+  API -.-> PAINEL["Painel de consulta"]
+  classDef pending fill:#fff6d9,stroke:#a27812,color:#212b36;
+  class CAM,PAINEL pending;

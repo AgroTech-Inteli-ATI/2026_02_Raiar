@@ -33,6 +33,7 @@ const config: Config = {
     },
   },
   themes: ['@docusaurus/theme-mermaid'],
+  plugins: ['./plugins/legacy-routes/index.cjs'],
 
   // Define o idioma do HTML e traduz os textos da interface do tema.
   i18n: {

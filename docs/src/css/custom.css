@@ -268,3 +268,17 @@
     object-position: center 22%;
   }
 }
+
+/* Autoria separada das considerações, que seguem o estilo do texto corrido. */
+.markdown p.figure-source,
+.markdown .figure-links p {
+  text-align: center;
+  text-indent: 0;
+  font-size: 0.9em;
+  line-height: 1.3;
+  color: var(--raiar-text-secondary);
+}
+
+.markdown p.figure-source {
+  margin-top: 0;
+}
