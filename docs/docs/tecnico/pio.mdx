@@ -1,0 +1,448 @@
+---
+title: "PIOFlow e YOLOPIO: evolução e avaliação"
+description: "Treino dos modelos na base PIO e pós-processamento dos resultados nas imagens da Raiar."
+---
+
+# PIOFlow e YOLOPIO: evolução e avaliação
+
+Esta página reúne a implementação inicial na base PIO e a evolução do pós-processamento nas imagens da Raiar. As avaliações usam conjuntos e referências diferentes, descritos em cada seção. A referência aproximada do total no vídeo não equivale a uma anotação manual por quadro.
+
+## Detecção e contagem de galinhas em imagens {#deteccao-e-contagem-de-galinhas-detecção-e-contagem-de-galinhas-em-imagens}
+
+Este trabalho investiga a identificação de galinhas em quadros de vídeo por meio de caixas delimitadoras. A quantidade de caixas aceitas em cada quadro também é usada como estimativa da contagem de aves visíveis naquela imagem. Foram desenvolvidos dois experimentos: o PIOFlow, implementado em TensorFlow/Keras com pesos iniciados aleatoriamente, e o YOLOPIO, que ajusta um YOLO11n com pesos iniciais pré-treinados. Os três notebooks e os arquivos usados pelos experimentos estão organizados em `src/modelos_PIO/`.
+
+Os resultados quantitativos desta página vêm da divisão de validação da base PIO. Os vídeos da Raiar foram usados para inspeção visual das previsões, pois seus quadros ainda não têm anotações de referência. As métricas da PIO não medem o desempenho nas câmeras da Raiar.
+
+### Dados e preparação das imagens {#deteccao-e-contagem-de-galinhas-dados-e-preparação-das-imagens}
+
+#### Base PIO {#deteccao-e-contagem-de-galinhas-base-pio}
+
+A base PIO (*A Large-Scale Dataset for Broiler Chicken Detection under Real Poultry Farming Conditions*) é um conjunto público de imagens de frangos de corte em granjas comerciais do Panamá, anotado em formato YOLO e disponibilizado sob licença CC BY 4.0 [1]. Foi usada a versão 1 (v.1) do dataset, obtida em [https://zenodo.org/records/16686320](https://zenodo.org/records/16686320).
+
+A base PIO disponível localmente contém imagens e arquivos de rótulos nas divisões `train` e `val`. Cada linha de rótulo segue o formato YOLO: classe, centro horizontal, centro vertical, largura e altura da caixa, com coordenadas normalizadas entre 0 e 1. A única classe utilizada é `0`, correspondente a galinha.
+
+| Divisão | Imagens | Caixas válidas lidas pelo PIOFlow |
+| --- | ---: | ---: |
+| Treino | 1.035 | 253.426 |
+| Validação | 452 | 73.857 |
+
+Os notebooks verificam a presença dos arquivos e o formato dos rótulos antes de usar a base. Foram encontradas cinco anotações com largura ou altura igual a zero, três no treino e duas na validação; elas são informadas e desconsideradas nas leituras de caixas válidas. A avaliação apresentada adiante usa as 452 imagens de `val`. Não há, neste experimento, uma avaliação quantitativa em uma divisão de teste separada.
+
+#### Vídeos da Raiar {#deteccao-e-contagem-de-galinhas-vídeos-da-raiar}
+
+O notebook `analise_imagens.ipynb` serve para preparar e examinar visualmente os quadros dos vídeos da Raiar antes de aplicá-los aos detectores. Ele lê `camera-raiar.mp4`, com aproximadamente 599 segundos, e `video-galinhas2.mp4`, com 15 segundos, e extrai um quadro a cada dois segundos, preservando os frames já existentes. A extração registrada no notebook produziu 300 quadros do primeiro vídeo e 8 do segundo, em pastas distintas.
+
+Depois da extração, o notebook permite visualizar quadros de diferentes instantes, examinar um recorte e comparar o quadro completo com o recorte ajustados para uma entrada de 640 × 640 pixels, mantendo a proporção e preenchendo as bordas. Essa análise ajudou a observar a diferença de enquadramento e a dificuldade de distinguir aves pequenas em parte das imagens.
+
+### Organização dos experimentos {#deteccao-e-contagem-de-galinhas-organização-dos-experimentos}
+
+| Local em `src/modelos_PIO/` | Conteúdo |
+| --- | --- |
+| `analise_imagens.ipynb` | Extração e inspeção dos frames dos dois vídeos da Raiar. |
+| `PIOFlow.ipynb` | Construção, treinamento e avaliação do detector em TensorFlow/Keras. |
+| `YOLOPIO.ipynb` | Treinamento, validação e inferência com YOLO11n por meio do Ultralytics. |
+| `midias/PIO/data/` | Imagens e rótulos da base PIO. |
+| `midias/raiar/camera-raiar/` e `midias/raiar/video-galinhas2/` | Cada vídeo e seus respectivos frames. |
+| `pesos_iniciais/yolo11n.pt` | Pesos pré-treinados usados no início do experimento YOLOPIO. |
+| `resultados/detector_pio.weights.h5` | Pesos salvos do PIOFlow. |
+| `resultados/treinos_yolo11/pio_yolo11n/` | Checkpoints, histórico por época e gráficos do treinamento YOLOPIO. |
+
+As mídias, os pesos e os resultados do treinamento permanecem locais e fora do Git nesta versão. Os notebooks podem localizar esses arquivos na estrutura do projeto; o PIOFlow também prevê caminhos alternativos para execução no Colab.
+
+### Modelos desenvolvidos {#deteccao-e-contagem-de-galinhas-modelos-desenvolvidos}
+
+#### PIOFlow: implementação experimental em TensorFlow/Keras {#deteccao-e-contagem-de-galinhas-pioflow-implementação-experimental-em-tensorflowkeras}
+
+O PIOFlow usa blocos convolucionais inspirados na arquitetura YOLO11n e três saídas de detecção, nas escalas P3, P4 e P5. Para entradas de 640 × 640 pixels, essas saídas têm dimensões `80 × 80 × 4 × 5`, `40 × 40 × 4 × 5` e `20 × 20 × 4 × 5`. A rede, a cabeça de detecção, a formação dos alvos, a função de perda e a decodificação das caixas foram implementadas no notebook. É uma implementação experimental própria, com cerca de 4,1 milhões de parâmetros, e não a implementação oficial do YOLO11.
+
+Os pesos começaram aleatórios. O treinamento foi configurado para até 50 épocas, lote de 2 imagens, otimizador Adam, taxa de aprendizado inicial de `0,001` e parada antecipada após oito épocas sem melhora na perda de validação. O histórico preservado no notebook registra 50 épocas; a menor perda de validação ocorreu na época 44, com valor aproximado de `3,11`. O checkpoint utilizado para a avaliação está em `resultados/detector_pio.weights.h5`.
+
+#### YOLOPIO: ajuste do YOLO11n pré-treinado {#deteccao-e-contagem-de-galinhas-yolopio-ajuste-do-yolo11n-pré-treinado}
+
+O YOLOPIO utiliza a implementação do Ultralytics e parte do arquivo `yolo11n.pt`. O notebook prepara a configuração local da base com uma classe, treina o modelo e salva o melhor checkpoint em `resultados/treinos_yolo11/pio_yolo11n/weights/best.pt`. A execução registrada chegou a 30 épocas, com imagens de 640 × 640 pixels, lote de 4 imagens, semente aleatória 42 e paciência de oito épocas. O histórico por época está em `results.csv` na mesma pasta de treinamento.
+
+Os pesos iniciais deste segundo experimento já continham aprendizado anterior; por isso seu resultado não representa treinamento a partir de pesos aleatórios. O notebook mantém o treinamento desativado por padrão para reutilizar o checkpoint existente e também permite retomar uma execução interrompida a partir de `last.pt`.
+
+### Avaliação na base PIO {#deteccao-e-contagem-de-galinhas-avaliação-na-base-pio}
+
+Os dois notebooks avaliam detecção e contagem nas 452 imagens da divisão de validação. A detecção compara caixas previstas e anotadas; a contagem compara o número de detecções aceitas com o número de caixas válidas em cada imagem. Os procedimentos de cálculo das métricas de detecção são próprios de cada notebook, portanto a tabela indica a tendência dos experimentos e não substitui uma comparação com protocolo único.
+
+| Métrica na validação PIO | PIOFlow | YOLOPIO |
+| --- | ---: | ---: |
+| Precisão | 34,20% | 92,78% |
+| Recall | 94,11% | 89,67% |
+| AP ou mAP@0,50 | 83,96% | 94,52% |
+| mAP@0,50:0,95 | 45,52% | 63,93% |
+| MAE da contagem | 286,24 galinhas/imagem | 20,92 galinhas/imagem |
+| RMSE da contagem | 310,17 galinhas/imagem | 31,18 galinhas/imagem |
+| MAPE da contagem | 351,77% | 11,72% |
+| Viés médio da contagem | +286,24 galinhas/imagem | +19,79 galinhas/imagem |
+
+**Precisão** indica a proporção das detecções aceitas que correspondem a uma anotação; **recall**, a proporção de anotações encontradas. AP/mAP resume o desempenho ao variar o limiar de confiança e exigir sobreposição entre caixas. O **MAE** é a média do erro absoluto entre contagem prevista e real, em galinhas por imagem; o **RMSE** penaliza mais os erros grandes. O **MAPE** expressa a média do erro relativo à contagem anotada, em porcentagem. O **viés** preserva o sinal da diferença: valor positivo indica tendência a contar aves a mais. O MAPE calculado nos notebooks exclui imagens sem galinhas anotadas; nenhuma das 452 imagens avaliadas precisou ser excluída por esse motivo.
+
+O PIOFlow apresentou muitos falsos positivos no limiar de confiança de `0,25`: o notebook registra 203.239 detecções para 73.857 caixas válidas anotadas. O YOLOPIO registrou 82.802 detecções para as mesmas 73.857 caixas válidas, ainda com viés positivo de contagem. O melhor resultado do YOLOPIO na PIO não elimina o erro por imagem nem demonstra que a contagem será correta em outros cenários.
+
+### Inspeção dos vídeos da Raiar {#deteccao-e-contagem-de-galinhas-inspeção-dos-vídeos-da-raiar}
+
+Cada notebook de treinamento mostra previsões em até três quadros de cada vídeo da Raiar. Na execução registrada, o PIOFlow produziu centenas de caixas nos seis quadros exibidos. O YOLOPIO produziu uma detecção em cada um dos três quadros escolhidos de `camera-raiar.mp4` e, no segundo vídeo, 32, 32 e 43 detecções nos quadros exibidos.
+
+Esses valores são saídas do modelo, não contagens verificadas de galinhas. Sem caixas e contagens anotadas para os mesmos quadros, não é possível calcular precisão, recall ou erro de contagem nas câmeras da Raiar. A diferença observada entre os vídeos indica que o desempenho medido na PIO não pode ser transferido diretamente para as imagens das câmeras locais.
+
+**Resultados do PIOFlow nas câmeras da Raiar**
+
+![Output do modelo PIOFlow: Resultados nas câmeras da Raiar.](/img/outputFLOW.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+O resultado foi obtido no notebook 'PIOFlow'.
+
+**Resultados do YOLOPIO nas câmeras da Raiar**
+
+![Output do modelo PIOYOLO: Resultados nas câmeras da Raiar.](/img/outputYOLO.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+O resultado foi obtido no notebook 'YOLOPIO'.
+
+### Estado atual e validações pendentes {#deteccao-e-contagem-de-galinhas-estado-atual-e-validações-pendentes}
+
+O experimento com pesos pré-treinados alcançou métricas de detecção e contagem melhores na validação PIO do que a implementação experimental com pesos aleatórios. O próximo resultado necessário para avaliar uso nas câmeras da Raiar é um conjunto de quadros locais anotados e revisados, com caixas e contagens de referência. Essa avaliação deverá separar sessões de captura entre desenvolvimento e teste e informar os resultados por câmera e condição de imagem. Até lá, as previsões nos vídeos da Raiar servem para inspeção, sem uma medida quantitativa de desempenho local.
+
+### Referências {#deteccao-e-contagem-de-galinhas-referencias}
+
+[1] BONICHE, Keyla; CRUZ, Edmanuel. **PIO, A Large-Scale Dataset for Broiler Chicken Detection under Real Poultry Farming Conditions: DATASET v.1**. Zenodo, 2025. DOI: 10.5281/zenodo.16686320. Disponível em: [https://zenodo.org/records/16686320](https://zenodo.org/records/16686320). Acesso em: 15 out. 2026.
+
+## Pós-processamento do YOLOPIO para contagem por nível {#pos-processamento-yolopio-pós-processamento-do-yolopio-para-contagem-por-nível}
+
+Esta página registra, passo a passo, como levamos ao [YOLOPIO](pio.mdx#deteccao-e-contagem-de-galinhas-detecção-e-contagem-de-galinhas-em-imagens) a capacidade que a [RaiarNet](raiarnet.mdx#contagem-por-nivel-contagem-de-aves-por-nível-e-resultados-do-modelo) já tem: partir da saída do modelo e ajustá-la para chegar a uma contagem mais próxima da realidade em N0, N1 e N2. O modelo YOLOPIO não foi alterado em nenhum momento: os pesos são os mesmos e todo o trabalho acontece depois (e, onde indicado, na forma de entregar a imagem ao modelo). Os termos técnicos estão no [glossário](../apoio/glossario.mdx#glossario-glossário-em-linguagem-simples).
+
+:::caution Leia antes de usar os números
+- A verdade de referência é **pequena**: só há contagem manual por nível em **6 quadros diurnos** (9,0 a 11,5 s) do vídeo `VID-20260929-WA0034.mp4`, quase idênticos entre si, e em **1 quadro noturno**. Os pontos e as caixas individuais não estão disponíveis (ficam fora do Git), então **não medimos se cada caixa está sobre uma ave**, só se a *quantidade* por nível se aproxima da anotada.
+- Para não depender só desses 6 quadros, usamos também a faixa que a equipe registrou para o vídeo inteiro (**122 a 138 aves na ROI**) como referência fraca em todos os quadros.
+- O YOLOPIO original **não detecta nenhuma ave** nos quadros diurnos da C1. O pós-processamento reduz o erro de forma clara, mas **não torna o YOLOPIO tão bom quanto a RaiarNet** neste cenário. A [seção de limites](pio.mdx#pos-processamento-yolopio-limites-e-riscos) detalha por quê.
+:::
+
+### Relação com a documentação do YOLOPIO (Sprint 2) {#pos-processamento-yolopio-relação-com-a-documentação-do-yolopio-sprint-2}
+
+Esta página, da Sprint 4, é uma continuação do trabalho de Yan Ribeiro, registrado na Sprint 2 em [Detecção e contagem de galinhas em imagens](pio.mdx#deteccao-e-contagem-de-galinhas-detecção-e-contagem-de-galinhas-em-imagens). Ele desenvolveu o PIOFlow e o YOLOPIO (YOLO11n ajustado na base PIO), definiu a receita de treino e a avaliação na validação PIO. Nada disso foi substituído: esta etapa parte dos resultados e das conclusões da documentação dele.
+
+Três pontos daquela página explicam por que esta etapa existe:
+
+- **Aviso sobre as câmeras da Raiar.** A página afirma que as métricas da PIO "não medem o desempenho nas câmeras da Raiar" e que, na inspeção visual, o YOLOPIO produziu **uma detecção em cada um dos três quadros** do primeiro vídeo. Confirmamos esse comportamento com números: no vídeo diurno da C1, o modelo devolve 0 caixas com confiança de 0,25.
+- **Validação pendente.** A seção "Estado atual e validações pendentes" diz que faltava "um conjunto de quadros locais anotados e revisados, com caixas e contagens de referência". Esta etapa usa as contagens por nível que a equipe já anotou para a RaiarNet (6 quadros diurnos e 1 noturno) como primeira avaliação quantitativa do YOLOPIO nas câmeras da Raiar. É uma avaliação **parcial**, sem caixas individuais.
+- **Vídeo de 15 s.** Yan Ribeiro relata 32, 32 e 43 detecções nos quadros do segundo vídeo (15 s). A duração coincide com a do vídeo noturno da C1, e o nosso teste noturno também mostra que o YOLOPIO responde melhor à noite (infravermelho). Não verificamos se são o mesmo arquivo.
+
+O quadro abaixo separa o que vem do trabalho dele do que é novo.
+
+| Aspecto | YOLOPIO original | Esta etapa |
+| --- | --- | --- |
+| Modelo e receita de treino | YOLO11n, 30 épocas, 640 px, lote 4, semente 42 | **Mesma receita.** Os pesos foram retreinados por falta do `best.pt` original (ver [reprodução](pio.mdx#pos-processamento-yolopio-reprodução-do-yolopio)) |
+| Notebooks (`YOLOPIO.ipynb`, `PIOFlow.ipynb`, `analise_imagens.ipynb`) | Entregues por Yan Ribeiro | **Não alterados.** O código novo está em arquivos separados |
+| Entrada do modelo | Imagem inteira, 640 px, confiança 0,25 | **Novo (não é pós-processamento):** máscara de ROI, fatias com sobreposição e confiança mínima de 0,01. Os pesos continuam iguais |
+| Saída | Contagem de caixas por imagem | **Novo:** contagem por nível (N0, N1, N2), limiar por nível, filtro de Kalman e perfil dia/noite, ideias vindas da RaiarNet |
+| Onde se avalia | Validação PIO (frangos brancos) | **Novo:** vídeo diurno e quadro noturno da câmera C1 da Raiar |
+
+### O que foi testado e encontrado {#pos-processamento-yolopio-resumo-para-quem-tem-pouco-tempo}
+
+| Pergunta | Resposta |
+| --- | --- |
+| O YOLOPIO original conta as galinhas da câmera C1? | **Não.** No vídeo diurno, devolve 0 caixas com confiança de 0,25, ou seja, conta 0 aves quando há cerca de 135. |
+| O que o pós-processamento mudou? | O erro médio do **total de aves** por quadro caiu de **130 para cerca de 17** (validação temporal, com filtro de Kalman). |
+| E contra a RaiarNet? | Nos 6 quadros anotados, a RaiarNet ainda erra menos em N1 (0,7 contra 2,6) e se equivale em N0 (18,8 contra 16,7 com Kalman). Mas a RaiarNet foi **treinada neste vídeo**, e o YOLOPIO não. |
+| Funciona à noite? | **Não melhora nem piora** (1 quadro apenas): o erro total é de 13 aves antes e depois do pós-processamento. |
+| Qual o próximo passo mais importante? | **Ajustar (fine-tuning) o YOLOPIO com quadros anotados da Raiar.** Isso muda o modelo, então ficou fora do escopo desta tarefa. |
+
+### Contexto: o que a RaiarNet faz depois de detectar {#pos-processamento-yolopio-contexto-o-que-a-raiarnet-faz-depois-de-detectar}
+
+Na RaiarNet, a rede devolve caixas e um mapa de densidade; o que transforma isso em "quantas aves há em cada nível" é o pós-processamento (`src/raiarnet/models/counter.py`). Identificamos cinco ideias que o YOLOPIO não tinha:
+
+| # | Ideia da RaiarNet | O que faz | Aplicada ao YOLOPIO? |
+| --- | --- | --- | --- |
+| 1 | **Regiões de interesse por nível** | Cada ave é atribuída a N0, N1 ou N2 pelo centro da caixa; o que cai fora dos polígonos (região azul, fundo além da divisória) é descartado. N1 nunca é calculado por diferença. | **Sim, adotada** |
+| 2 | **Limiar escolhido na validação** | Em vez de um limiar fixo, escolhe-se o valor que minimiza o erro. Aqui, **um limiar por nível**. | **Sim, adotada** |
+| 3 | **Máscara cinza fora da ROI** | Antes da inferência, tudo fora dos níveis é pintado de cinza. | **Sim, adotada** (entrada do modelo) |
+| 4 | **Filtro de Kalman por nível** | Suaviza a série de contagens entre quadros do vídeo (q = 0,5; r = 4,0, os mesmos valores da RaiarNet). | **Sim, adotada** |
+| 5 | **Filtro de tamanho por perspectiva** e **fusão com densidade** | Descarta caixas incompatíveis com o tamanho esperado da ave naquela posição; soma o excedente da densidade em janelas. | **Testadas e descartadas** (ver [iterações](pio.mdx#pos-processamento-yolopio-iterações)) |
+
+### Reprodução do YOLOPIO {#pos-processamento-yolopio-reprodução-do-yolopio}
+
+Os pesos de Yan Ribeiro (`best.pt`) não estavam disponíveis. Por isso retreinamos o YOLOPIO com a mesma receita do notebook (`src/modelos_PIO/treinar_yolopio.py`): YOLO11n pré-treinado, 1 classe, 640 × 640 px, lote 4, 30 épocas, paciência 8, semente 42, na base PIO v.1 (1.035 imagens de treino e 452 de validação, obtidas em [Zenodo](https://zenodo.org/records/16686320)). As únicas diferenças são o treino em CPU e o número de processos de leitura de dados (`workers`).
+
+| Métrica na validação PIO (452 imagens) | Documento de Yan Ribeiro | Nossa reprodução |
+| --- | ---: | ---: |
+| Precisão | 92,78% | 92,89% |
+| Recall | 89,67% | 89,30% |
+| mAP@0,50 | 94,52% | 94,45% |
+| mAP@0,50:0,95 | 63,93% | 63,76% |
+| MAE da contagem (conf. 0,25) | 20,92 | 9,31 |
+| Viés médio da contagem | +19,79 | +4,63 |
+
+A detecção reproduz o resultado documentado por Yan Ribeiro com diferença inferior a 0,4 ponto percentual. A contagem na PIO difere (nosso erro é menor); não investigamos a causa, e isso não afeta as conclusões sobre a câmera C1, que usam apenas nossas próprias medições. Os pesos retreinados estão versionados em `src/modelos_PIO/resultados/treinos_yolo11/pio_yolo11n/weights/best.pt` (5,5 MB), e os relatórios em `src/modelos_PIO/relatorios/`. Com o `best.pt` não é preciso repetir o treino para reproduzir os experimentos.
+
+### Por que o YOLOPIO original falha na câmera C1 {#pos-processamento-yolopio-por-que-o-yolopio-original-falha-na-câmera-c1}
+
+O vídeo de validação mostra galinhas marrons vistas de lado, em um aviário com grades, enquanto a base PIO tem frangos de corte brancos vistos de cima. O resultado é que o modelo quase não reage:
+
+- a 640 px, a maior confiança do modelo em um quadro diurno é de **0,03**, muito abaixo do limiar de 0,25 do notebook; contagem resultante: **0 aves** nos 6 quadros;
+- as aves da C1 medem de 12 a 50 px no quadro de 1024 px, e **menores do que as da PIO** quando reduzidas a 640 px;
+- quando se abaixa muito o limiar, o modelo passa a "ver" aves na grade da plataforma (N2), com caixas minúsculas.
+
+Por isso, só mexer no limiar de saída não basta: quando a saída está vazia, não há o que ajustar. Foi preciso também mudar a forma de entregar a imagem ao modelo, sem tocar nos pesos.
+
+### Iterações {#pos-processamento-yolopio-iterações}
+
+Cada iteração liga uma técnica a mais e mede o erro de contagem. Os scripts estão em `src/modelos_PIO/` e os resultados em `relatorios/`.
+
+#### Iteração 1: Como alimentar o modelo (sem mudar os pesos) {#pos-processamento-yolopio-iteração-1--como-alimentar-o-modelo-sem-mudar-os-pesos}
+
+`explorar_entrada.py` testou 32 combinações de preparo da imagem e escala. Resumo (erro absoluto médio do **total** por quadro, nos 6 quadros diurnos, com um limiar por nível ajustado por validação cruzada entre os quadros; menor é melhor):
+
+| Preparo | Entrada | Erro do total | Maior confiança |
+| --- | --- | ---: | ---: |
+| Imagem original | 640 px, imagem inteira (notebook) | 136,2 | 0,03 |
+| Imagem original | 1280 px, imagem inteira | 127,5 | 0,40 |
+| Imagem original | fatias 4 × 3 | 45,7 | 0,73 |
+| ROI cinza | 640 px, imagem inteira | 136,0 | 0,06 |
+| ROI cinza | fatias 3 × 2 | 19,8 | 0,74 |
+| ROI cinza | fatias 4 × 3 | 46,7 | 0,68 |
+| ROI cinza | fatias 4 × 4 | 28,5 | 0,75 |
+
+**O que aprendemos:** dividir o quadro em **fatias com sobreposição** (cada uma ampliada para 640 px, como o SAHI) é o que faz o modelo "enxergar" as aves pequenas. Foi a técnica de maior efeito. Os resultados variam muito entre grades, o que já indicava fragilidade (veja a iteração 5).
+
+#### Iteração 2: ROI e níveis {#pos-processamento-yolopio-iteração-2--roi-e-níveis}
+
+Cada caixa vai para N0, N1 ou N2 pelo centro (mesmos polígonos de `c1-jump-start.json` da RaiarNet) e o que fica fora é descartado. Sozinha, essa etapa não resolve (com limiar 0,25 e fatias 4 × 3 o erro do total ainda é 92,5 no vídeo inteiro), mas é a base para as seguintes.
+
+#### Iteração 3: Limiar por nível {#pos-processamento-yolopio-iteração-3--limiar-por-nível}
+
+Como a RaiarNet escolhe o limiar na validação, escolhemos um limiar por nível. É a etapa que mais reduz o erro depois das fatias:
+
+| Etapa (fatias 4 × 3, quadros anotados, validação cruzada) | N0 | N1 | N2 | Total |
+| --- | ---: | ---: | ---: | ---: |
+| Limiar 0,25 fixo | 98,8 | 21,0 | 22,7 | 97,2 |
+| **Limiar por nível** | **43,0** | **5,3** | **1,3** | **46,7** |
+
+Os limiares escolhidos ficaram muito baixos (0,05 em N0 e N1; 0,40 em N2), o que mostra que o YOLOPIO tem pouca confiança nas galinhas da C1.
+
+#### Iteração 4: Técnicas testadas e descartadas {#pos-processamento-yolopio-iteração-4--técnicas-testadas-e-descartadas}
+
+| Técnica | Resultado | Decisão |
+| --- | --- | --- |
+| Filtro de tamanho por perspectiva (0,4–2,5× o tamanho esperado) | Erro do total subiu de 46,7 para 85,0 | **Descartada**: as caixas do YOLOPIO medem só ~0,35× o tamanho real da ave (mediana de 9 × 10 px em N0), então o filtro apagava aves reais. |
+| Remoção de caixas contidas em outras | Sem efeito mensurável (86,5 contra 85,0 do filtro) | Mantida no código, desligada |
+| Contagem suave (detecções fracas com peso) | Sem efeito, os limiares já são baixos | Mantida no código, desligada |
+| Soma ponderada de confianças (análoga à densidade) | Erro do total de 21,8 a 59,1 conforme a grade; não superou o limiar por nível de forma consistente | Descartada |
+| Calibração por fator multiplicativo por nível | Empilhada sobre o filtro de tamanho, recuperou parte do erro, mas ficou pior que o limiar por nível sozinho em 3 das 4 grades | Descartada por instabilidade |
+| Realce CLAHE e tons de cinza | Ganho irregular entre grades (CLAHE: 51,3 em 3 × 2, 23,3 em 3 × 3, 31,8 em 4 × 3, 33,7 em 4 × 4), sem vencer a máscara de ROI de forma consistente | Descartados |
+
+#### Iteração 5: Teste na série inteira do vídeo e escolha da grade {#pos-processamento-yolopio-iteração-5--teste-na-série-inteira-do-vídeo-e-escolha-da-grade}
+
+Os 6 quadros anotados são muito parecidos entre si; um método pode "acertar" ali por acaso. Para evitar isso, usamos o vídeo inteiro (60 quadros) e a faixa de 122 a 138 aves documentada pela equipe. O ajuste de limiares é feito numa metade do vídeo e medido na outra (validação temporal alternada).
+
+| Grade de fatias | Erro do total, bruto | Erro com Kalman | Quadros dentro da faixa 122–138 (Kalman) | Erro com limiar 0,25 |
+| --- | ---: | ---: | ---: | ---: |
+| 3 × 2 | 40,4 | 36,4 | 5% | 116,0 |
+| 3 × 3 | 36,0 | 21,9 | 22% | 54,4 |
+| **4 × 3** | **23,9** | **17,2** | **33%** | 92,5 |
+| 4 × 4 | 26,1 | 19,5 | 27% | 81,4 |
+
+A grade 3 × 2, que parecia a melhor nos 6 quadros (erro 19,8), é a pior no vídeo inteiro: ela havia se ajustado ao trecho de 9 a 11,5 s. Escolhemos a 4 × 3, a mais estável. A avaliação no vídeo inteiro mudou a escolha da grade. Considerar apenas os quadros anotados teria favorecido uma configuração que funcionou pior no restante do vídeo.
+
+**Figura 1: erro do total de aves por iteração (vídeo inteiro, validação temporal)**
+
+![Gráfico de barras horizontais: YOLOPIO original 130, com ROI, níveis e fatias 92,5, com limiar por nível 23,9, com filtro de Kalman 17,2.](/img/pos-processamento/erro-por-iteracao.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+O valor 130 corresponde a contar 0 aves, contra cerca de 130 reais.
+
+### Configuração final {#pos-processamento-yolopio-configuração-final}
+
+1. `ROI cinza`: tudo fora dos polígonos de N0, N1 e N2 vira cinza (como na RaiarNet).
+2. **Fatias 4 × 3** com 20% de sobreposição, cada uma ampliada para 640 px, e fusão das caixas por NMS (IoU 0,5).
+3. Confiança mínima do cache de 0,01; **limiar por nível** `N0 = 0,05`, `N1 = 0,05`, `N2 = 0,40` (perfil diurno).
+4. Atribuição ao nível pelo centro da caixa e descarte fora da ROI.
+5. **Filtro de Kalman** 1D por nível (q = 0,5; r = 4,0).
+6. **Perfil automático dia/noite** pela saturação média da imagem (< 25 = infravermelho): à noite usa-se o limiar 0,25 do notebook.
+
+O código está em `src/modelos_PIO/pos_processamento/` e é independente do YOLOPIO: recebe caixas e confianças e devolve contagens.
+
+### Resultados no vídeo diurno {#pos-processamento-yolopio-resultados-no-vídeo-diurno}
+
+#### Erro por quadro e por nível {#pos-processamento-yolopio-erro-por-quadro-e-por-nível}
+
+**Figura 2: erro absoluto médio por quadro nos 6 quadros diurnos anotados**
+
+![Três gráficos de barras, um por nível, com o erro do YOLOPIO original, do YOLOPIO com pós-processamento, com Kalman e da RaiarNet.](/img/pos-processamento/erro-por-nivel.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+| Sistema | N0 | N1 | N2 |
+| --- | ---: | ---: | ---: |
+| YOLOPIO original (notebook) | 113,3 | 21,8 | 1,0 |
+| YOLOPIO + pós-processamento | 43,0 | 5,3 | 1,3 |
+| YOLOPIO + pós-processamento + Kalman | 16,7 | 2,6 | 1,3 |
+| RaiarNet (detecção, relatório da Sprint 2) | 18,8 | 0,7 | 1,2 |
+
+:::note Como ler esta tabela
+Os limiares do YOLOPIO foram ajustados em todo o vídeo, o que inclui esses 6 quadros; a RaiarNet foi treinada em quadros anteriores do mesmo vídeo e não viu estes 6. Esse protocolo favorece o YOLOPIO; mesmo assim, a RaiarNet teve menor erro em N1. O erro de 16,7 em N0 com Kalman não deve ser lido como desempenho esperado em outros dias.
+:::
+
+#### Antes e depois em um quadro {#pos-processamento-yolopio-antes-e-depois-em-um-quadro}
+
+**Figura 3: quadro de 10 s – saída original do YOLOPIO (acima) e após o pós-processamento (abaixo)**
+
+![Dois quadros da câmera C1. Em cima, nenhuma caixa e contagem N0 0, N1 0, N2 0. Embaixo, caixas coloridas por nível sobre o piso, a faixa sob a plataforma e a grade, com contagem N0 125, N1 20, N2 1.](/img/pos-processamento/antes-depois-dia.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+A anotação manual para este quadro é N0 113, N1 22 e N2 1.
+
+A figura também mostra a limitação: as caixas são pequenas e concentradas no fundo do piso, e as aves grandes do primeiro plano continuam sem caixa. A contagem se aproxima porque muitas caixas pequenas compensam as aves grandes não detectadas, não porque cada ave foi encontrada.
+
+#### Série ao longo do vídeo {#pos-processamento-yolopio-série-ao-longo-do-vídeo}
+
+**Figura 4: contagem por nível ao longo do vídeo, com e sem filtro de Kalman, e a anotação manual**
+
+![Três gráficos de linha, um por nível, com a contagem por quadro em cor clara, a série com Kalman em cor forte e pontos vermelhos da anotação manual entre 9 e 11,5 segundos.](/img/pos-processamento/serie-temporal.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+Os limiares desta figura foram ajustados em todo o vídeo (dentro da amostra).
+
+O Kalman reduz a variação média entre quadros consecutivos de 17,0 para 6,3 aves em N0, de 3,3 para 1,1 em N1 e de 0,58 para 0,24 em N2. Mesmo assim, o N0 oscila entre cerca de 50 e 150 aves ao longo do vídeo, enquanto a anotação indica cerca de 110 a 120: o N0 continua instável. N1 e N2, com poucas aves, acompanham a anotação de forma razoável.
+
+### Teste noturno (fora da distribuição) {#pos-processamento-yolopio-teste-noturno-fora-da-distribuição}
+
+Os limiares do dia foram ajustados no vídeo diurno. Para saber se funcionam em outra condição, usamos o único quadro noturno anotado (vídeo v2 a 13,5 s; anotação: N0 2, N1 2, N2 19), que não participa de nenhum ajuste.
+
+**Figura 5: quadro noturno – contagem por nível em cada variante**
+
+![Três gráficos de barras (N0, N1, N2) comparando a anotação manual, o YOLOPIO original, o pós-processamento com os limiares do dia e com o perfil automático.](/img/pos-processamento/teste-noturno.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+| Variante | N0 | N1 | N2 | Erro total |
+| --- | ---: | ---: | ---: | ---: |
+| Anotação manual | 2 | 2 | 19 | – |
+| YOLOPIO original | 4 | 0 | 10 | 13 |
+| Pós-processamento com limiares **do dia** | 51 | 23 | 14 | 75 |
+| Pós-processamento com **perfil automático** (noite = 0,25) | 12 | 5 | 19 | 13 |
+
+**Figura 5b: quadro noturno – saída original (acima) e após o pós-processamento com perfil automático (abaixo)**
+
+![Quadro noturno da C1 em infravermelho. Em cima, caixas laranja na plataforma e caixas azuis grandes sobre manchas no piso. Embaixo, mais caixas laranja sobrepostas na plataforma e caixas azuis e magenta pequenas no piso e na faixa intermediária.](/img/pos-processamento/antes-depois-noite.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+Cores dos níveis: azul = N0 (piso), magenta = N1, laranja = N2 (plataforma). Anotação manual: N0 2, N1 2, N2 19.
+
+Na plataforma (laranja), a contagem de N2 bate com a anotação (19), mas várias caixas se sobrepõem na mesma ave. No piso (azul), o pós-processamento adiciona caixas pequenas sobre áreas sem ave definida, e é por isso que N0 sobe de 4 para 12 enquanto a anotação é 2.
+
+Os limiares do dia pioram muito o resultado à noite (51 aves em N0 contra 2), por isso criamos o perfil automático. Com ele, o erro total iguala o do YOLOPIO original (13): N2 passa a ser exato (19), mas N0 passa de 4 para 12. É um único quadro, então o resultado indica a direção, não uma medida de desempenho.
+
+### Teste em um segundo vídeo (CAM 7, galpão de cria) {#pos-processamento-yolopio-teste-em-um-segundo-vídeo-cam-7-galpão-de-cria}
+
+Depois dos experimentos na C1, testamos o mesmo YOLOPIO em outro material: `RPReplay_Final1792098378.mp4`, uma gravação de tela do aplicativo do DVR (146 s, 60 quadros por segundo, imagem 1920 × 888). Os primeiros 12 s mostram a interface do aplicativo e a CAM 15 (externa, sem aves). A partir de 12 s a tela passa a mostrar a CAM 7, um galpão de cria com pintinhos, em 15/10/2026 por volta das 16h. Por isso cortamos o início até 12 s e usamos os 134 s restantes. O arquivo cortado fica em `src/modelos_PIO/midias/rpreplay/` (fora do Git).
+
+:::caution Este teste não mede erro
+Para esta câmera não existem contagem manual nem polígonos de nível. Por isso os níveis N0, N1 e N2 não foram aplicados e não calculamos MAE. O teste só mostra como o modelo se comporta e o quanto o pós-processamento estabiliza a saída. Para dizer se a contagem está correta, será preciso anotar alguns quadros.
+:::
+
+Adaptações em relação à C1, todas sem alterar os pesos:
+
+- **Interface do DVR:** pintamos de cinza a data, o nome da câmera e a numeração, que viravam falsos positivos.
+- **Máscara de piso por cor** no lugar da ROI da C1: considera a cama (laranja/bege) e descarta a parede azul, os canos e a grade da plataforma.
+- **Fatias 6 × 3** (pintinhos medem poucos pixels em 1920 px) e **limiar 0,25**, o do notebook, porque os limiares da C1 não valem para outra câmera.
+- **Filtro de Kalman** com os mesmos parâmetros.
+
+Foi analisado 1 quadro a cada 2 s, começando em 1 s do vídeo cortado para evitar o quadro exato da troca de câmera (67 quadros).
+
+| Configuração | Aves contadas por quadro (média) | Variação média entre quadros |
+| --- | ---: | ---: |
+| YOLOPIO original (640 px, conf. 0,25) | 1,3 (máximo 11) | – |
+| Fatias 6 × 3, sem máscara | 202,6 | 28,7 |
+| Fatias 6 × 3 + máscara de piso | 97,2 | 18,9 |
+| Fatias 6 × 3 + máscara de piso + Kalman | 99,7 | 4,3 |
+
+Sensibilidade ao limiar (fatias + máscara de piso): 0,10 → 211,7, 0,25 → 97,2 e 0,40 → 50,0 aves por quadro. A contagem muda mais de quatro vezes só variando o limiar, e sem uma referência manual não há como dizer qual valor está certo. Cerca de 53% das caixas das fatias sem máscara caem fora do piso (parede, canos, grade, ou pintinhos em áreas escuras), o que indica um número relevante de falsos positivos nessa configuração.
+
+**Figura 6: quadro do vídeo cortado – saída original (acima) e fatias com máscara de piso (abaixo)**
+
+![Dois quadros da CAM 7. Em cima, o YOLOPIO original com duas caixas verdes. Embaixo, caixas verdes sobre a cama com pintinhos e caixas vermelhas nas áreas descartadas, como parede azul, canos e grade.](/img/pos-processamento/video-novo-antes-depois.jpg)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+Em verde, caixas mantidas; em vermelho, caixas descartadas por estarem fora do piso.
+
+**Figura 7: aves contadas por quadro ao longo do vídeo cortado**
+
+![Gráfico de linhas: o YOLOPIO original perto de zero, as fatias sem máscara entre 150 e 250, as fatias com máscara de piso entre 70 e 140 e a linha com Kalman suavizando essa série, com queda no final do vídeo.](/img/pos-processamento/video-novo-serie.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+**O que se conclui:** o YOLOPIO original também falha nesta câmera (1,3 ave por quadro em média), e o mesmo conjunto de técnicas (entrada em fatias, máscara espacial e Kalman) faz o modelo responder e estabiliza a série (variação entre quadros de 18,9 para 4,3). **O que não se conclui:** que a contagem esteja correta. A figura mostra que muitos pintinhos do lado direito do galpão seguem sem caixa, e a queda da série perto do fim do vídeo não foi investigada (pode ser movimentação das aves, a entrada de uma pessoa no galpão ou efeito da máscara).
+
+### Limites e riscos {#pos-processamento-yolopio-limites-e-riscos}
+
+1. **Pouca verdade de referência.** Há contagem por nível em apenas 6 quadros diurnos (quase idênticos) e 1 noturno. As faixas do vídeo inteiro são uma referência fraca do total, sem detalhe por nível.
+2. **Sem verificação de cada caixa.** Medimos quantidade, não localização. Uma contagem correta pode vir de erros que se compensam (como na Figura 3).
+3. **Limiares muito baixos.** O ajuste escolheu 0,05 (o mínimo testado em N0 e N1). Quando o limiar chega ao piso, é um sinal de que o modelo mal distingue as aves do fundo.
+4. **Dependência da grade de fatias.** O erro varia de 17 a 36 conforme a grade. Os limiares também mudaram entre as duas metades do vídeo (por exemplo, N0 = 0,15 e 0,05 na grade 4 × 3).
+5. **Custo de inferência.** A grade 4 × 3 exige 12 passagens do modelo por quadro (em vez de 1). Não medimos o tempo na Raspberry Pi; a RaiarNet roda a ~3,5 quadros/s em CPU de computador.
+6. **Um só dia, uma só câmera.** O desempenho com outra idade do lote, iluminação ou posição de mesas ainda precisa ser medido.
+7. **Este experimento não substitui treinar com dados da Raiar.** O pós-processamento corrige parte do desvio, mas a causa é o YOLOPIO ter sido treinado em frangos brancos vistos de cima.
+
+### Como reproduzir {#pos-processamento-yolopio-como-reproduzir}
+
+Pré-requisitos: dataset PIO v.1 em `src/modelos_PIO/midias/PIO/data` e vídeo `VID-20260929-WA0034.mp4`. A partir de `src/modelos_PIO/`:
+
+```bash
+# 1. treino do YOLOPIO (receita do notebook; 30 épocas levaram ~4 h em CPU)
+python treinar_yolopio.py
+
+# 2. detecções brutas (modelo não é alterado)
+python gerar_deteccoes.py --pesos resultados/treinos_yolo11/pio_yolo11n/weights/best.pt \
+  --video ~/Downloads/VID-20260929-WA0034.mp4 --saida resultados/pos_processamento
+
+# 3. experimentos, validação temporal, ajuste final e figuras
+python explorar_entrada.py --pesos ... --video ... --saida resultados/pos_processamento
+python rodar_experimentos.py --pasta resultados/pos_processamento
+python avaliar_generalizacao.py --pesos ... --pasta resultados/pos_processamento
+python avaliar_video_inteiro.py --pesos ... --video ... --pasta resultados/pos_processamento
+python ajustar_final.py --pesos ... --video ... --pasta resultados/pos_processamento
+python gerar_figuras.py --pesos ... --video ... --pasta resultados/pos_processamento \
+  --saida ../../docs/static/img/pos-processamento
+
+# 4. segundo vídeo (CAM 7): corte a partir de 12 s e teste sem referência manual
+ffmpeg -ss 12 -i ~/Downloads/RPReplay_Final1792098378.mp4 -an -c:v libx264 -crf 20 \
+  midias/rpreplay/rpreplay_cortado_12s.mp4
+python testar_video_novo.py --pesos ... --video midias/rpreplay/rpreplay_cortado_12s.mp4 \
+  --saida ../../docs/static/img/pos-processamento
+
+# testes do pacote
+PYTHONPATH=. pytest tests
+```
+
+| Arquivo | Conteúdo |
+| --- | --- |
+| `pos_processamento/niveis.py` | Polígonos de N0, N1 e N2 (mesma calibração da RaiarNet) e tamanho esperado da ave por posição. |
+| `pos_processamento/posprocessamento.py` | Atribuição ao nível, limiar por nível, filtros, perfil dia/noite. |
+| `pos_processamento/temporal.py` | Filtro de Kalman 1D. |
+| `pos_processamento/avaliacao.py` | MAE, RMSE, MAPE e viés por nível. |
+| `relatorios/*.json` | Resultados de cada experimento, para rastreabilidade. |
+
+### Próximos passos {#pos-processamento-yolopio-próximos-passos}
+
+1. **Fine-tuning do YOLOPIO com quadros anotados da C1** (muda o modelo; decisão da equipe). É a ação com maior potencial de ganho.
+2. **Anotar mais quadros** de outros dias e horários para uma validação que não dependa de 6 quadros parecidos.
+3. **Medir o tempo da grade 4 × 3** na Raspberry Pi 4 e avaliar fatias seletivas (só no fundo do piso).
+4. Avaliar **fusão** entre a RaiarNet (N1, onde é melhor) e o YOLOPIO + pós-processamento (N0), cada um onde é mais confiável.
+
+### Referências {#pos-processamento-yolopio-referencias}
+
+[2] BONICHE, Keyla; CRUZ, Edmanuel. **PIO, A Large-Scale Dataset for Broiler Chicken Detection under Real Poultry Farming Conditions: DATASET v.1**. Zenodo, 2025. DOI: 10.5281/zenodo.16686320. Disponível em: [https://zenodo.org/records/16686320](https://zenodo.org/records/16686320). Acesso em: 15 nov. 2026.
+
+[3] AKYON, F. C.; ALTINUC, S. O.; TEMIZEL, A. Slicing aided hyper inference and fine-tuning for small object detection. In: IEEE INTERNATIONAL CONFERENCE ON IMAGE PROCESSING, 2022, Bordeaux. **Proceedings** [...]. Piscataway: IEEE, 2022. p. 966-970.
+
+[4] KALMAN, R. E. A new approach to linear filtering and prediction problems. **Journal of Basic Engineering**, v. 82, n. 1, p. 35-45, 1960.

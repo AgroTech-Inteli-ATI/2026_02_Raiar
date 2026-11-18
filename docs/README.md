@@ -14,7 +14,7 @@ Site da documentação do projeto Raiar Orgânicos, construído com [Docusaurus]
 
 ## Organização
 
-- `docs/`: páginas da documentação. A barra lateral é gerada a partir das pastas.
+- `docs/`: páginas da documentação. Cinco páginas formam o percurso principal. `tecnico/` reúne a referência técnica e `apoio/` os materiais complementares. A navegação é definida em `sidebars.ts`; `legacy-routes.json` preserva os destinos e âncoras dos endereços anteriores por meio do plugin local de redirecionamento.
 - `src/css/custom.css`: paleta da Raiar e formatação ABNT do corpo do texto, das figuras e das referências.
 - `static/img/`: imagens, referenciadas nas páginas como `/img/...`.
 

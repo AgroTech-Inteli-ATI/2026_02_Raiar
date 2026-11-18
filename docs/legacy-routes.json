@@ -1,0 +1,726 @@
+[
+  {
+    "source": "sprint-1/proposta-de-solucao.md",
+    "from": "/sprint-1/proposta-de-solucao",
+    "to": "/",
+    "anchor": "proposta-de-solucao-proposta-de-solução",
+    "hashes": {
+      "proposta-de-solução": "proposta-de-solucao-proposta-de-solução",
+      "público-e-valor-esperado": "proposta-de-solucao-público-e-valor-esperado",
+      "alternativas-consideradas": "proposta-de-solucao-alternativas-consideradas",
+      "escopo-do-mvp": "proposta-de-solucao-escopo-do-mvp",
+      "funcionalidades-incluídas": "proposta-de-solucao-funcionalidades-incluídas",
+      "fora-do-mvp-inicial": "proposta-de-solucao-fora-do-mvp-inicial",
+      "módulos-e-fluxo-proposto": "proposta-de-solucao-módulos-e-fluxo-proposto",
+      "hipóteses-critérios-e-métricas": "proposta-de-solucao-hipóteses-critérios-e-métricas",
+      "viabilidade-riscos-e-condições-de-revisão": "proposta-de-solucao-viabilidade-riscos-e-condições-de-revisão",
+      "próximas-validações": "proposta-de-solucao-próximas-validações",
+      "referencias": "proposta-de-solucao-referencias"
+    }
+  },
+  {
+    "source": "sprint-2/proposta-solucao-cobertura.md",
+    "from": "/sprint-2/proposta-solucao-cobertura",
+    "to": "/",
+    "anchor": "proposta-solucao-cobertura-proposta-de-solução-e-cobertura-do-aviário",
+    "hashes": {
+      "proposta-de-solução-e-cobertura-do-aviário": "proposta-solucao-cobertura-proposta-de-solução-e-cobertura-do-aviário",
+      "1-problema-e-objetivo": "proposta-solucao-cobertura-1-problema-e-objetivo",
+      "2-contexto-dos-aviários": "proposta-solucao-cobertura-2-contexto-dos-aviários",
+      "recria": "proposta-solucao-cobertura-recria",
+      "situações-registradas-na-visita": "proposta-solucao-cobertura-situações-registradas-na-visita",
+      "produção": "proposta-solucao-cobertura-produção",
+      "lote-e-boxes": "proposta-solucao-cobertura-lote-e-boxes",
+      "imagens-e-câmeras-existentes": "proposta-solucao-cobertura-imagens-e-câmeras-existentes",
+      "3-proposta-de-solução": "proposta-solucao-cobertura-3-proposta-de-solução",
+      "caminho-da-imagem-até-o-resultado": "proposta-solucao-cobertura-caminho-da-imagem-até-o-resultado",
+      "posicionamento-e-cobertura": "proposta-solucao-cobertura-posicionamento-e-cobertura",
+      "piloto-em-um-box": "proposta-solucao-cobertura-piloto-em-um-box",
+      "modelo-e-contagem": "proposta-solucao-cobertura-modelo-e-contagem",
+      "apresentação-dos-resultados": "proposta-solucao-cobertura-apresentação-dos-resultados"
+    }
+  },
+  {
+    "source": "sprint-2/arquitetura-preliminar.md",
+    "from": "/sprint-2/arquitetura-preliminar",
+    "to": "/funcionamento",
+    "anchor": "arquitetura-preliminar-arquitetura-preliminar-de-medição-por-nível",
+    "hashes": {
+      "arquitetura-preliminar-de-medição-por-nível": "arquitetura-preliminar-arquitetura-preliminar-de-medição-por-nível",
+      "conexão-com-as-câmeras": "arquitetura-preliminar-conexão-com-as-câmeras",
+      "separação-dos-níveis": "arquitetura-preliminar-separação-dos-níveis",
+      "estado-dos-componentes": "arquitetura-preliminar-estado-dos-componentes",
+      "próxima-sprint-verificações-em-duas-semanas": "arquitetura-preliminar-próxima-sprint-verificações-em-duas-semanas"
+    }
+  },
+  {
+    "source": "sprint-2/visao-computacional/niveis-e-regra-de-contagem.md",
+    "from": "/sprint-2/visao-computacional/niveis-e-regra-de-contagem",
+    "to": "/funcionamento",
+    "anchor": "niveis-e-regra-de-contagem-níveis-do-jump-start-e-regra-de-contagem",
+    "hashes": {
+      "níveis-do-jump-start-e-regra-de-contagem": "niveis-e-regra-de-contagem-níveis-do-jump-start-e-regra-de-contagem",
+      "geometria-observada-pela-câmera-c1": "niveis-e-regra-de-contagem-geometria-observada-pela-câmera-c1",
+      "divisória-verde-fixa-e-região-azul-móvel": "niveis-e-regra-de-contagem-divisória-verde-fixa-e-região-azul-móvel",
+      "por-que-descartamos-n1--total-da-seção--n0--n2": "niveis-e-regra-de-contagem-por-que-descartamos-n1--total-da-seção--n0--n2",
+      "regra-adotada-no-mvp": "niveis-e-regra-de-contagem-regra-adotada-no-mvp",
+      "referencias": "niveis-e-regra-de-contagem-referencias"
+    }
+  },
+  {
+    "source": "sprint-2/index.md",
+    "from": "/sprint-2",
+    "to": "/resultados",
+    "anchor": "index-modelos-de-detecção-e-contagem-de-aves",
+    "hashes": {
+      "modelos-de-detecção-e-contagem-de-aves": "index-modelos-de-detecção-e-contagem-de-aves"
+    }
+  },
+  {
+    "source": "sprint-2/visao-computacional/index.mdx",
+    "from": "/sprint-2/visao-computacional",
+    "to": "/resultados",
+    "anchor": "index-modelo-de-visão-computacional-construído-do-zero",
+    "hashes": {
+      "modelo-de-visão-computacional-construído-do-zero": "index-modelo-de-visão-computacional-construído-do-zero"
+    }
+  },
+  {
+    "source": "sprint-4/dashboard.md",
+    "from": "/sprint-4/dashboard",
+    "to": "/painel",
+    "anchor": "dashboard-dashboard-e-distribuição-do-aviário",
+    "hashes": {
+      "dashboard-e-distribuição-do-aviário": "dashboard-dashboard-e-distribuição-do-aviário"
+    }
+  },
+  {
+    "source": "sprint-4/alertas-e-dados-esperados.md",
+    "from": "/sprint-4/alertas-e-dados-esperados",
+    "to": "/painel",
+    "anchor": "alertas-e-dados-esperados-alertas-e-dados-esperados",
+    "hashes": {
+      "alertas-e-dados-esperados": "alertas-e-dados-esperados-alertas-e-dados-esperados",
+      "campos-disponíveis": "alertas-e-dados-esperados-campos-disponíveis",
+      "api-disponível-e-diferença-para-o-painel": "alertas-e-dados-esperados-api-disponível-e-diferença-para-o-painel",
+      "cadastros-que-podem-alimentar-filtros": "alertas-e-dados-esperados-cadastros-que-podem-alimentar-filtros",
+      "contrato-futuro-sugerido-para-alertas": "alertas-e-dados-esperados-contrato-futuro-sugerido-para-alertas",
+      "imagem-associada": "alertas-e-dados-esperados-imagem-associada",
+      "autenticação-e-origem": "alertas-e-dados-esperados-autenticação-e-origem",
+      "comportamento-da-demonstração": "alertas-e-dados-esperados-comportamento-da-demonstração",
+      "referencias": "alertas-e-dados-esperados-referencias"
+    }
+  },
+  {
+    "source": "sprint-4/proposta-mapa-de-distribuicao.md",
+    "from": "/sprint-4/proposta-mapa-de-distribuicao",
+    "to": "/painel",
+    "anchor": "proposta-mapa-de-distribuicao-proposta-para-o-mapa-de-distribuição",
+    "hashes": {
+      "proposta-para-o-mapa-de-distribuição": "proposta-mapa-de-distribuicao-proposta-para-o-mapa-de-distribuição",
+      "o-que-o-backend-já-oferece": "proposta-mapa-de-distribuicao-o-que-o-backend-já-oferece",
+      "módulo-isolado-implementado": "proposta-mapa-de-distribuicao-módulo-isolado-implementado",
+      "limites-e-decisões-pendentes": "proposta-mapa-de-distribuicao-limites-e-decisões-pendentes",
+      "referencias": "proposta-mapa-de-distribuicao-referencias"
+    }
+  },
+  {
+    "source": "sprint-3/provisionamento-raspberry-pi.md",
+    "from": "/sprint-3/provisionamento-raspberry-pi",
+    "to": "/tecnico/dispositivo",
+    "anchor": "provisionamento-raspberry-pi-provisionamento-do-nó-de-borda-com-arch-linux-arm-no-raspberry-pi-4",
+    "hashes": {
+      "provisionamento-do-nó-de-borda-com-arch-linux-arm-no-raspberry-pi-4": "provisionamento-raspberry-pi-provisionamento-do-nó-de-borda-com-arch-linux-arm-no-raspberry-pi-4",
+      "em-linguagem-simples": "provisionamento-raspberry-pi-em-linguagem-simples",
+      "motivação": "provisionamento-raspberry-pi-motivação",
+      "escolhas": "provisionamento-raspberry-pi-escolhas",
+      "layout-do-armazenamento": "provisionamento-raspberry-pi-layout-do-armazenamento",
+      "boot-pelo-cartão-sd": "provisionamento-raspberry-pi-boot-pelo-cartão-sd",
+      "otimização-de-memória": "provisionamento-raspberry-pi-otimização-de-memória",
+      "desgaste-do-cartão-sd": "provisionamento-raspberry-pi-desgaste-do-cartão-sd",
+      "wi-fi-e-acesso-remoto": "provisionamento-raspberry-pi-wi-fi-e-acesso-remoto",
+      "primeiro-boot-docker-e-câmera": "provisionamento-raspberry-pi-primeiro-boot-docker-e-câmera",
+      "enxugamento-do-sistema": "provisionamento-raspberry-pi-enxugamento-do-sistema",
+      "reprodução-com-o-script-do-repositório": "provisionamento-raspberry-pi-reprodução-com-o-script-do-repositório",
+      "roteiro-completo": "provisionamento-raspberry-pi-roteiro-completo",
+      "caminho-alternativo-notebook-sem-leitor-de-cartão": "provisionamento-raspberry-pi-caminho-alternativo-notebook-sem-leitor-de-cartão",
+      "acesso-ao-nó": "provisionamento-raspberry-pi-acesso-ao-nó",
+      "problemas-encontrados": "provisionamento-raspberry-pi-problemas-encontrados",
+      "situação-atual-e-limites": "provisionamento-raspberry-pi-situação-atual-e-limites",
+      "referencias": "provisionamento-raspberry-pi-referencias"
+    }
+  },
+  {
+    "source": "sprint-3/index.md",
+    "from": "/sprint-3",
+    "to": "/tecnico/captura-operacao",
+    "anchor": "index-nó-de-borda-e-containers",
+    "hashes": {
+      "nó-de-borda-e-containers": "index-nó-de-borda-e-containers"
+    }
+  },
+  {
+    "source": "sprint-3/dvr-simulado-e-teste-na-pratica.md",
+    "from": "/sprint-3/dvr-simulado-e-teste-na-pratica",
+    "to": "/tecnico/captura-operacao",
+    "anchor": "dvr-simulado-e-teste-na-pratica-dvr-simulado-e-teste-na-prática",
+    "hashes": {
+      "dvr-simulado-e-teste-na-prática": "dvr-simulado-e-teste-na-pratica-dvr-simulado-e-teste-na-prática",
+      "em-linguagem-simples": "dvr-simulado-e-teste-na-pratica-em-linguagem-simples",
+      "o-que-a-simulação-provou-e-o-que-não-provou": "dvr-simulado-e-teste-na-pratica-o-que-a-simulação-provou-e-o-que-não-provou",
+      "como-repetir-a-simulação": "dvr-simulado-e-teste-na-pratica-como-repetir-a-simulação",
+      "como-testar-na-prática-com-o-dvr-de-verdade": "dvr-simulado-e-teste-na-pratica-como-testar-na-prática-com-o-dvr-de-verdade",
+      "escolher-quais-câmeras-o-raspberry-pi-usa": "dvr-simulado-e-teste-na-pratica-escolher-quais-câmeras-o-raspberry-pi-usa"
+    }
+  },
+  {
+    "source": "sprint-3/falhas-e-do-teste-para-producao.md",
+    "from": "/sprint-3/falhas-e-do-teste-para-producao",
+    "to": "/tecnico/captura-operacao",
+    "anchor": "falhas-e-do-teste-para-producao-falhas-e-do-teste-para-a-produção",
+    "hashes": {
+      "falhas-e-do-teste-para-a-produção": "falhas-e-do-teste-para-producao-falhas-e-do-teste-para-a-produção",
+      "do-clone-à-primeira-análise": "falhas-e-do-teste-para-producao-do-clone-à-primeira-análise",
+      "como-ver-o-que-está-acontecendo": "falhas-e-do-teste-para-producao-como-ver-o-que-está-acontecendo",
+      "mapa-de-falhas": "falhas-e-do-teste-para-producao-mapa-de-falhas",
+      "do-teste-para-a-produção": "falhas-e-do-teste-para-producao-do-teste-para-a-produção",
+      "limites-conhecidos": "falhas-e-do-teste-para-producao-limites-conhecidos"
+    }
+  },
+  {
+    "source": "sprint-3/integracao-containers-no-no-de-borda.md",
+    "from": "/sprint-3/integracao-containers-no-no-de-borda",
+    "to": "/tecnico/servicos",
+    "anchor": "integracao-containers-no-no-de-borda-integração-dos-containers-de-visão-computacional-no-nó-de-borda",
+    "hashes": {
+      "integração-dos-containers-de-visão-computacional-no-nó-de-borda": "integracao-containers-no-no-de-borda-integração-dos-containers-de-visão-computacional-no-nó-de-borda",
+      "em-linguagem-simples": "integracao-containers-no-no-de-borda-em-linguagem-simples",
+      "papel-do-nó-e-fluxo-de-dados": "integracao-containers-no-no-de-borda-papel-do-nó-e-fluxo-de-dados",
+      "orçamento-de-recursos": "integracao-containers-no-no-de-borda-orçamento-de-recursos",
+      "arquitetura-proposta": "integracao-containers-no-no-de-borda-arquitetura-proposta",
+      "decisões-e-alternativas": "integracao-containers-no-no-de-borda-decisões-e-alternativas",
+      "imagem-do-container": "integracao-containers-no-no-de-borda-imagem-do-container",
+      "composição-dos-serviços": "integracao-containers-no-no-de-borda-composição-dos-serviços",
+      "alternativas-se-o-dvr-não-puder-ser-usado": "integracao-containers-no-no-de-borda-alternativas-se-o-dvr-não-puder-ser-usado",
+      "entrega-e-atualização": "integracao-containers-no-no-de-borda-entrega-e-atualização",
+      "o-que-é-preciso-do-nó-e-dos-containers": "integracao-containers-no-no-de-borda-o-que-é-preciso-do-nó-e-dos-containers",
+      "pontos-que-ainda-dependem-de-código-ou-de-hardware": "integracao-containers-no-no-de-borda-pontos-que-ainda-dependem-de-código-ou-de-hardware",
+      "validacao-no-no": "integracao-containers-no-no-de-borda-validacao-no-no",
+      "problemas-encontrados-na-validação": "integracao-containers-no-no-de-borda-problemas-encontrados-na-validação",
+      "ainda-não-validado": "integracao-containers-no-no-de-borda-ainda-não-validado",
+      "captura-simulada": "integracao-containers-no-no-de-borda-captura-simulada",
+      "limitações-do-raiarnet": "integracao-containers-no-no-de-borda-limitações-do-raiarnet",
+      "validação-antes-de-homologar": "integracao-containers-no-no-de-borda-validação-antes-de-homologar",
+      "referencias": "integracao-containers-no-no-de-borda-referencias"
+    }
+  },
+  {
+    "source": "sprint-4/backend.md",
+    "from": "/sprint-4/backend",
+    "to": "/tecnico/backend",
+    "anchor": "backend-backend-e-integração-com-o-banco-de-dados",
+    "hashes": {
+      "backend-e-integração-com-o-banco-de-dados": "backend-backend-e-integração-com-o-banco-de-dados",
+      "funcionamento-e-estrutura": "backend-funcionamento-e-estrutura",
+      "dados-armazenados": "backend-dados-armazenados",
+      "lote-no-momento-da-captura": "backend-lote-no-momento-da-captura",
+      "rotas-e-acesso": "backend-rotas-e-acesso",
+      "execução-local": "backend-execução-local",
+      "validação-e-limites": "backend-validação-e-limites"
+    }
+  },
+  {
+    "source": "sprint-3/integracao-no-banco.md",
+    "from": "/sprint-3/integracao-no-banco",
+    "to": "/tecnico/backend",
+    "anchor": "integracao-no-banco-integração-do-nó-de-borda-com-o-banco-de-dados",
+    "hashes": {
+      "integração-do-nó-de-borda-com-o-banco-de-dados": "integracao-no-banco-integração-do-nó-de-borda-com-o-banco-de-dados",
+      "caminho-dos-dados": "integracao-no-banco-caminho-dos-dados",
+      "contrato-do-envio": "integracao-no-banco-contrato-do-envio",
+      "extensão-do-esquema": "integracao-no-banco-extensão-do-esquema",
+      "como-colocar-no-ar": "integracao-no-banco-como-colocar-no-ar",
+      "o-que-foi-validado": "integracao-no-banco-o-que-foi-validado"
+    }
+  },
+  {
+    "source": "sprint-3/banco-de-dados.md",
+    "from": "/sprint-3/banco-de-dados",
+    "to": "/tecnico/backend",
+    "anchor": "banco-de-dados-banco-de-dados-primeira-versão",
+    "hashes": {
+      "banco-de-dados-primeira-versão": "banco-de-dados-banco-de-dados-primeira-versão",
+      "entidades-e-relacionamentos": "banco-de-dados-entidades-e-relacionamentos",
+      "campos-e-regras": "banco-de-dados-campos-e-regras",
+      "lote-lot": "banco-de-dados-lote-lot",
+      "aviário-aviary": "banco-de-dados-aviário-aviary",
+      "raspberry-pi-raspberry": "banco-de-dados-raspberry-pi-raspberry",
+      "câmera-camera": "banco-de-dados-câmera-camera",
+      "alerta-alerts": "banco-de-dados-alerta-alerts",
+      "criação-do-esquema": "banco-de-dados-criação-do-esquema",
+      "como-consultar-as-relações": "banco-de-dados-como-consultar-as-relações"
+    }
+  },
+  {
+    "source": "sprint-1/dicionario-de-dados.md",
+    "from": "/sprint-1/dicionario-de-dados",
+    "to": "/tecnico/dados",
+    "anchor": "dicionario-de-dados-dicionário-de-dados-e-coleta-inicial",
+    "hashes": {
+      "dicionário-de-dados-e-coleta-inicial": "dicionario-de-dados-dicionário-de-dados-e-coleta-inicial",
+      "resumo-executivo": "dicionario-de-dados-resumo-executivo",
+      "dados-iniciais-a-solicitar": "dicionario-de-dados-dados-iniciais-a-solicitar",
+      "plano-inicial-de-amostragem-e-envio": "dicionario-de-dados-plano-inicial-de-amostragem-e-envio",
+      "inspeção-antes-da-coleta-maior": "dicionario-de-dados-inspeção-antes-da-coleta-maior",
+      "pacote-piloto-para-exploração-e-anotação": "dicionario-de-dados-pacote-piloto-para-exploração-e-anotação",
+      "cronograma-a-pactuar": "dicionario-de-dados-cronograma-a-pactuar",
+      "convenções-do-dicionário": "dicionario-de-dados-convenções-do-dicionário",
+      "cadastros-e-configuração": "dicionario-de-dados-cadastros-e-configuração",
+      "aviário-e-lote": "dicionario-de-dados-aviário-e-lote",
+      "instalação-coleta-e-zonas": "dicionario-de-dados-instalação-coleta-e-zonas",
+      "imagens-e-anotações": "dicionario-de-dados-imagens-e-anotações",
+      "quadro-e-manifesto-de-recebimento": "dicionario-de-dados-quadro-e-manifesto-de-recebimento",
+      "anotação-de-referência": "dicionario-de-dados-anotação-de-referência",
+      "resultados-produzidos-pelo-sistema": "dicionario-de-dados-resultados-produzidos-pelo-sistema",
+      "contagem-por-quadro-e-nível": "dicionario-de-dados-contagem-por-quadro-e-nível",
+      "fórmulas-e-agregação": "dicionario-de-dados-fórmulas-e-agregação",
+      "métricas-para-validar-a-medição": "dicionario-de-dados-métricas-para-validar-a-medição",
+      "dados-complementares-e-operação": "dicionario-de-dados-dados-complementares-e-operação",
+      "telemetria-e-eventos-de-contexto": "dicionario-de-dados-telemetria-e-eventos-de-contexto",
+      "falhas-acesso-e-retenção": "dicionario-de-dados-falhas-acesso-e-retenção",
+      "perguntas-para-a-visita": "dicionario-de-dados-perguntas-para-a-visita",
+      "critérios-de-aceite-desta-definição": "dicionario-de-dados-critérios-de-aceite-desta-definição"
+    }
+  },
+  {
+    "source": "sprint-1/requisitos.md",
+    "from": "/sprint-1/requisitos",
+    "to": "/tecnico/requisitos",
+    "anchor": "requisitos-requisitos-funcionais-e-não-funcionais",
+    "hashes": {
+      "requisitos-funcionais-e-não-funcionais": "requisitos-requisitos-funcionais-e-não-funcionais",
+      "requisitos-funcionais": "requisitos-requisitos-funcionais",
+      "requisitos-não-funcionais-e-forma-de-verificação": "requisitos-requisitos-não-funcionais-e-forma-de-verificação",
+      "conclusão": "requisitos-conclusão"
+    }
+  },
+  {
+    "source": "sprint-2/visao-computacional/dados-e-anotacao.md",
+    "from": "/sprint-2/visao-computacional/dados-e-anotacao",
+    "to": "/tecnico/raiarnet",
+    "anchor": "dados-e-anotacao-dados-anotação-e-partição-do-conjunto",
+    "hashes": {
+      "dados-anotação-e-partição-do-conjunto": "dados-e-anotacao-dados-anotação-e-partição-do-conjunto",
+      "vídeos-recebidos-e-escopo": "dados-e-anotacao-vídeos-recebidos-e-escopo",
+      "anotação-assistida-por-pontos": "dados-e-anotacao-anotação-assistida-por-pontos",
+      "caixas-de-referência": "dados-e-anotacao-caixas-de-referência",
+      "partição-temporal": "dados-e-anotacao-partição-temporal",
+      "referencias": "dados-e-anotacao-referencias"
+    }
+  },
+  {
+    "source": "sprint-2/visao-computacional/tratamento-de-imagens.md",
+    "from": "/sprint-2/visao-computacional/tratamento-de-imagens",
+    "to": "/tecnico/raiarnet",
+    "anchor": "tratamento-de-imagens-tratamento-de-imagens-do-aviário",
+    "hashes": {
+      "tratamento-de-imagens-do-aviário": "tratamento-de-imagens-tratamento-de-imagens-do-aviário",
+      "hipóteses-sobre-os-problemas-ópticos": "tratamento-de-imagens-hipóteses-sobre-os-problemas-ópticos",
+      "técnicas-implementadas": "tratamento-de-imagens-técnicas-implementadas",
+      "medidas-sem-modelo": "tratamento-de-imagens-medidas-sem-modelo",
+      "próximo-passo-ablação-com-o-modelo": "tratamento-de-imagens-próximo-passo-ablação-com-o-modelo",
+      "referencias": "tratamento-de-imagens-referencias"
+    }
+  },
+  {
+    "source": "sprint-2/visao-computacional/modelo-identificacao-do-zero.md",
+    "from": "/sprint-2/visao-computacional/modelo-identificacao-do-zero",
+    "to": "/tecnico/raiarnet",
+    "anchor": "modelo-identificacao-do-zero-modelo-de-identificação-construído-do-zero",
+    "hashes": {
+      "modelo-de-identificação-construído-do-zero": "modelo-identificacao-do-zero-modelo-de-identificação-construído-do-zero",
+      "decisão-de-paradigma": "modelo-identificacao-do-zero-decisão-de-paradigma",
+      "arquitetura-da-raiarnet": "modelo-identificacao-do-zero-arquitetura-da-raiarnet",
+      "backbone": "modelo-identificacao-do-zero-backbone",
+      "pescoço": "modelo-identificacao-do-zero-pescoço",
+      "cabeças": "modelo-identificacao-do-zero-cabeças",
+      "funções-de-perda": "modelo-identificacao-do-zero-funções-de-perda",
+      "treino": "modelo-identificacao-do-zero-treino",
+      "evolução-do-treino": "modelo-identificacao-do-zero-evolução-do-treino",
+      "referencias": "modelo-identificacao-do-zero-referencias"
+    }
+  },
+  {
+    "source": "sprint-2/visao-computacional/contagem-por-nivel.md",
+    "from": "/sprint-2/visao-computacional/contagem-por-nivel",
+    "to": "/tecnico/raiarnet",
+    "anchor": "contagem-por-nivel-contagem-de-aves-por-nível-e-resultados-do-modelo",
+    "hashes": {
+      "contagem-de-aves-por-nível-e-resultados-do-modelo": "contagem-por-nivel-contagem-de-aves-por-nível-e-resultados-do-modelo",
+      "do-detector-à-contagem-por-nível": "contagem-por-nivel-do-detector-à-contagem-por-nível",
+      "estabilização-temporal-no-vídeo": "contagem-por-nivel-estabilização-temporal-no-vídeo",
+      "resultados-no-teste": "contagem-por-nivel-resultados-no-teste",
+      "identificação": "contagem-por-nivel-identificação",
+      "contagem-por-nível": "contagem-por-nivel-contagem-por-nível",
+      "leitura-dos-resultados": "contagem-por-nivel-leitura-dos-resultados",
+      "limitações-e-próximos-passos": "contagem-por-nivel-limitações-e-próximos-passos",
+      "referencias": "contagem-por-nivel-referencias"
+    }
+  },
+  {
+    "source": "sprint-1/piloto-video-raiar.md",
+    "from": "/sprint-1/piloto-video-raiar",
+    "to": "/tecnico/yolo",
+    "anchor": "piloto-video-raiar-piloto-com-o-vídeo-da-raiar",
+    "hashes": {
+      "piloto-com-o-vídeo-da-raiar": "piloto-video-raiar-piloto-com-o-vídeo-da-raiar",
+      "preparação-dos-quadros": "piloto-video-raiar-preparação-dos-quadros",
+      "região-próxima-e-detecção-por-blocos": "piloto-video-raiar-região-próxima-e-detecção-por-blocos",
+      "resultado-do-piloto": "piloto-video-raiar-resultado-do-piloto",
+      "execução-automática-e-consulta-dos-resultados": "piloto-video-raiar-execução-automática-e-consulta-dos-resultados",
+      "condições-para-treinamento-e-avaliação": "piloto-video-raiar-condições-para-treinamento-e-avaliação",
+      "referencias": "piloto-video-raiar-referencias"
+    }
+  },
+  {
+    "source": "sprint-2/deteccao-de-aves.md",
+    "from": "/sprint-2/deteccao-de-aves",
+    "to": "/tecnico/yolo",
+    "anchor": "deteccao-de-aves-detecção-de-aves-com-yolo",
+    "hashes": {
+      "detecção-de-aves-com-yolo": "deteccao-de-aves-detecção-de-aves-com-yolo",
+      "modelos-e-ambiente": "deteccao-de-aves-modelos-e-ambiente",
+      "organização-do-código-e-dos-arquivos": "deteccao-de-aves-organização-do-código-e-dos-arquivos",
+      "inferência-em-imagens-e-vídeos": "deteccao-de-aves-inferência-em-imagens-e-vídeos",
+      "visualização-com-notebook": "deteccao-de-aves-visualização-com-notebook",
+      "exemplo-no-segundo-vídeo-da-raiar": "deteccao-de-aves-exemplo-no-segundo-vídeo-da-raiar",
+      "zonas-do-jump-start": "deteccao-de-aves-zonas-do-jump-start",
+      "preparação-opcional-de-dados-para-treinamento": "deteccao-de-aves-preparação-opcional-de-dados-para-treinamento",
+      "treinamento-próprio-e-comparação": "deteccao-de-aves-treinamento-próprio-e-comparação",
+      "capacidade-e-exportação": "deteccao-de-aves-capacidade-e-exportação",
+      "contrato-de-sincronização-e-integração": "deteccao-de-aves-contrato-de-sincronização-e-integração",
+      "verificação-e-situação-atual": "deteccao-de-aves-verificação-e-situação-atual",
+      "referencias": "deteccao-de-aves-referencias"
+    }
+  },
+  {
+    "source": "sprint-2/deteccao-e-contagem-de-galinhas.md",
+    "from": "/sprint-2/deteccao-e-contagem-de-galinhas",
+    "to": "/tecnico/pio",
+    "anchor": "deteccao-e-contagem-de-galinhas-detecção-e-contagem-de-galinhas-em-imagens",
+    "hashes": {
+      "detecção-e-contagem-de-galinhas-em-imagens": "deteccao-e-contagem-de-galinhas-detecção-e-contagem-de-galinhas-em-imagens",
+      "dados-e-preparação-das-imagens": "deteccao-e-contagem-de-galinhas-dados-e-preparação-das-imagens",
+      "base-pio": "deteccao-e-contagem-de-galinhas-base-pio",
+      "vídeos-da-raiar": "deteccao-e-contagem-de-galinhas-vídeos-da-raiar",
+      "organização-dos-experimentos": "deteccao-e-contagem-de-galinhas-organização-dos-experimentos",
+      "modelos-desenvolvidos": "deteccao-e-contagem-de-galinhas-modelos-desenvolvidos",
+      "pioflow-implementação-experimental-em-tensorflowkeras": "deteccao-e-contagem-de-galinhas-pioflow-implementação-experimental-em-tensorflowkeras",
+      "yolopio-ajuste-do-yolo11n-pré-treinado": "deteccao-e-contagem-de-galinhas-yolopio-ajuste-do-yolo11n-pré-treinado",
+      "avaliação-na-base-pio": "deteccao-e-contagem-de-galinhas-avaliação-na-base-pio",
+      "inspeção-dos-vídeos-da-raiar": "deteccao-e-contagem-de-galinhas-inspeção-dos-vídeos-da-raiar",
+      "estado-atual-e-validações-pendentes": "deteccao-e-contagem-de-galinhas-estado-atual-e-validações-pendentes",
+      "referencias": "deteccao-e-contagem-de-galinhas-referencias"
+    }
+  },
+  {
+    "source": "sprint-4/pos-processamento-yolopio.md",
+    "from": "/sprint-4/pos-processamento-yolopio",
+    "to": "/tecnico/pio",
+    "anchor": "pos-processamento-yolopio-pós-processamento-do-yolopio-para-contagem-por-nível",
+    "hashes": {
+      "pós-processamento-do-yolopio-para-contagem-por-nível": "pos-processamento-yolopio-pós-processamento-do-yolopio-para-contagem-por-nível",
+      "relação-com-a-documentação-do-yolopio-sprint-2": "pos-processamento-yolopio-relação-com-a-documentação-do-yolopio-sprint-2",
+      "resumo-para-quem-tem-pouco-tempo": "pos-processamento-yolopio-resumo-para-quem-tem-pouco-tempo",
+      "contexto-o-que-a-raiarnet-faz-depois-de-detectar": "pos-processamento-yolopio-contexto-o-que-a-raiarnet-faz-depois-de-detectar",
+      "reprodução-do-yolopio": "pos-processamento-yolopio-reprodução-do-yolopio",
+      "por-que-o-yolopio-original-falha-na-câmera-c1": "pos-processamento-yolopio-por-que-o-yolopio-original-falha-na-câmera-c1",
+      "iterações": "pos-processamento-yolopio-iterações",
+      "iteração-1--como-alimentar-o-modelo-sem-mudar-os-pesos": "pos-processamento-yolopio-iteração-1--como-alimentar-o-modelo-sem-mudar-os-pesos",
+      "iteração-2--roi-e-níveis": "pos-processamento-yolopio-iteração-2--roi-e-níveis",
+      "iteração-3--limiar-por-nível": "pos-processamento-yolopio-iteração-3--limiar-por-nível",
+      "iteração-4--técnicas-testadas-e-descartadas": "pos-processamento-yolopio-iteração-4--técnicas-testadas-e-descartadas",
+      "iteração-5--teste-na-série-inteira-do-vídeo-e-escolha-da-grade": "pos-processamento-yolopio-iteração-5--teste-na-série-inteira-do-vídeo-e-escolha-da-grade",
+      "configuração-final": "pos-processamento-yolopio-configuração-final",
+      "resultados-no-vídeo-diurno": "pos-processamento-yolopio-resultados-no-vídeo-diurno",
+      "erro-por-quadro-e-por-nível": "pos-processamento-yolopio-erro-por-quadro-e-por-nível",
+      "antes-e-depois-em-um-quadro": "pos-processamento-yolopio-antes-e-depois-em-um-quadro",
+      "série-ao-longo-do-vídeo": "pos-processamento-yolopio-série-ao-longo-do-vídeo",
+      "teste-noturno-fora-da-distribuição": "pos-processamento-yolopio-teste-noturno-fora-da-distribuição",
+      "teste-em-um-segundo-vídeo-cam-7-galpão-de-cria": "pos-processamento-yolopio-teste-em-um-segundo-vídeo-cam-7-galpão-de-cria",
+      "limites-e-riscos": "pos-processamento-yolopio-limites-e-riscos",
+      "como-reproduzir": "pos-processamento-yolopio-como-reproduzir",
+      "próximos-passos": "pos-processamento-yolopio-próximos-passos",
+      "referencias": "pos-processamento-yolopio-referencias"
+    }
+  },
+  {
+    "source": "sprint-4/yannet.md",
+    "from": "/sprint-4/yannet",
+    "to": "/tecnico/yannet",
+    "anchor": "yannet-yannet-para-identificação-de-amontoamentos",
+    "hashes": {
+      "yannet-para-identificação-de-amontoamentos": "yannet-yannet-para-identificação-de-amontoamentos",
+      "dados-e-área-de-análise": "yannet-dados-e-área-de-análise",
+      "segmentação-e-formação-das-caixas": "yannet-segmentação-e-formação-das-caixas",
+      "resultado-do-ensaio-na-foto": "yannet-resultado-do-ensaio-na-foto",
+      "como-reproduzir-o-ensaio": "yannet-como-reproduzir-o-ensaio",
+      "limitações-e-próximos-passos": "yannet-limitações-e-próximos-passos",
+      "referencias": "yannet-referencias"
+    }
+  },
+  {
+    "source": "sprint-1/personas/index.mdx",
+    "from": "/sprint-1/personas",
+    "to": "/apoio/perfis",
+    "anchor": "index-personas-acompanhamento-da-recria",
+    "hashes": {
+      "personas-acompanhamento-da-recria": "index-personas-acompanhamento-da-recria",
+      "foco-atualizado": "index-foco-atualizado",
+      "perfis": "index-perfis",
+      "necessidades-comuns": "index-necessidades-comuns",
+      "pontos-a-validar-com-a-raiar": "index-pontos-a-validar-com-a-raiar"
+    }
+  },
+  {
+    "source": "sprint-1/personas/operadora-de-campo.mdx",
+    "from": "/sprint-1/personas/operadora-de-campo",
+    "to": "/apoio/perfis",
+    "anchor": "operadora-de-campo-joana--operadora-da-recria",
+    "hashes": {
+      "joana--operadora-da-recria": "operadora-de-campo-joana--operadora-da-recria",
+      "contexto": "operadora-de-campo-contexto",
+      "objetivos": "operadora-de-campo-objetivos",
+      "dificuldades": "operadora-de-campo-dificuldades",
+      "necessidades-para-o-sistema": "operadora-de-campo-necessidades-para-o-sistema",
+      "jornada-de-acompanhamento-a-validar": "operadora-de-campo-jornada-de-acompanhamento-a-validar",
+      "história-de-usuário": "operadora-de-campo-história-de-usuário",
+      "critérios-de-experiência": "operadora-de-campo-critérios-de-experiência",
+      "perguntas-para-validação": "operadora-de-campo-perguntas-para-validação"
+    }
+  },
+  {
+    "source": "sprint-1/personas/profissional-de-producao.mdx",
+    "from": "/sprint-1/personas/profissional-de-producao",
+    "to": "/apoio/perfis",
+    "anchor": "profissional-de-producao-marina--profissional-de-produção-e-bem-estar",
+    "hashes": {
+      "marina--profissional-de-produção-e-bem-estar": "profissional-de-producao-marina--profissional-de-produção-e-bem-estar",
+      "contexto": "profissional-de-producao-contexto",
+      "objetivos": "profissional-de-producao-objetivos",
+      "dificuldades": "profissional-de-producao-dificuldades",
+      "necessidades-para-o-sistema": "profissional-de-producao-necessidades-para-o-sistema",
+      "jornada-de-acompanhamento-a-validar": "profissional-de-producao-jornada-de-acompanhamento-a-validar",
+      "história-de-usuário": "profissional-de-producao-história-de-usuário",
+      "critérios-de-experiência": "profissional-de-producao-critérios-de-experiência",
+      "perguntas-para-validação": "profissional-de-producao-perguntas-para-validação"
+    }
+  },
+  {
+    "source": "sprint-1/personas/gestor-qualidade.mdx",
+    "from": "/sprint-1/personas/gestor-qualidade",
+    "to": "/apoio/perfis",
+    "anchor": "gestor-qualidade-rafael--gestor-de-qualidade-e-operação",
+    "hashes": {
+      "rafael--gestor-de-qualidade-e-operação": "gestor-qualidade-rafael--gestor-de-qualidade-e-operação",
+      "contexto": "gestor-qualidade-contexto",
+      "objetivos": "gestor-qualidade-objetivos",
+      "dificuldades": "gestor-qualidade-dificuldades",
+      "necessidades-para-o-sistema": "gestor-qualidade-necessidades-para-o-sistema",
+      "jornada-de-acompanhamento-a-validar": "gestor-qualidade-jornada-de-acompanhamento-a-validar",
+      "história-de-usuário": "gestor-qualidade-história-de-usuário",
+      "critérios-de-experiência": "gestor-qualidade-critérios-de-experiência",
+      "perguntas-para-validação": "gestor-qualidade-perguntas-para-validação"
+    }
+  },
+  {
+    "source": "sprint-1/canvas-proposta-de-valor.md",
+    "from": "/sprint-1/canvas-proposta-de-valor",
+    "to": "/apoio/canvas",
+    "anchor": "canvas-proposta-de-valor-canvas-de-proposta-de-valor",
+    "hashes": {
+      "canvas-de-proposta-de-valor": "canvas-proposta-de-valor-canvas-de-proposta-de-valor",
+      "explicação-detalhada-do-canvas": "canvas-proposta-de-valor-explicação-detalhada-do-canvas",
+      "perfil-do-cliente": "canvas-proposta-de-valor-perfil-do-cliente",
+      "mapa-de-valor": "canvas-proposta-de-valor-mapa-de-valor",
+      "referencias": "canvas-proposta-de-valor-referencias"
+    }
+  },
+  {
+    "source": "sprint-1/pesquisa-comparativa-brasil-europa.md",
+    "from": "/sprint-1/pesquisa-comparativa-brasil-europa",
+    "to": "/apoio/bem-estar",
+    "anchor": "pesquisa-comparativa-brasil-europa-bem-estar-e-monitoramento-de-poedeiras-nas-semanas-1-a-15",
+    "hashes": {
+      "bem-estar-e-monitoramento-de-poedeiras-nas-semanas-1-a-15": "pesquisa-comparativa-brasil-europa-bem-estar-e-monitoramento-de-poedeiras-nas-semanas-1-a-15",
+      "síntese": "pesquisa-comparativa-brasil-europa-síntese",
+      "recorte-de-idade-e-comparação-correta": "pesquisa-comparativa-brasil-europa-recorte-de-idade-e-comparação-correta",
+      "o-ponto-de-partida-da-raiar": "pesquisa-comparativa-brasil-europa-o-ponto-de-partida-da-raiar",
+      "parâmetros-de-referência-para-as-semanas-1-a-15": "pesquisa-comparativa-brasil-europa-parâmetros-de-referência-para-as-semanas-1-a-15",
+      "o-que-a-pesquisa-europeia-mostra-sobre-a-recria": "pesquisa-comparativa-brasil-europa-o-que-a-pesquisa-europeia-mostra-sobre-a-recria",
+      "o-que-já-existe-fora-do-brasil": "pesquisa-comparativa-brasil-europa-o-que-já-existe-fora-do-brasil",
+      "como-a-solução-se-conecta-às-semanas-1-a-15": "pesquisa-comparativa-brasil-europa-como-a-solução-se-conecta-às-semanas-1-a-15",
+      "proposta-de-indicadores-para-um-piloto": "pesquisa-comparativa-brasil-europa-proposta-de-indicadores-para-um-piloto",
+      "caminho-de-validação-da-solução": "pesquisa-comparativa-brasil-europa-caminho-de-validação-da-solução",
+      "decisões-que-dependem-de-informações-da-raiar": "pesquisa-comparativa-brasil-europa-decisões-que-dependem-de-informações-da-raiar",
+      "conclusão": "pesquisa-comparativa-brasil-europa-conclusão",
+      "referencias": "pesquisa-comparativa-brasil-europa-referencias"
+    }
+  },
+  {
+    "source": "sprint-3/Analise Financeira/analise-financeira.md",
+    "from": "/sprint-3/Analise Financeira/analise-financeira",
+    "to": "/apoio/financeiro",
+    "anchor": "analise-financeira-análise-financeira",
+    "hashes": {
+      "análise-financeira": "analise-financeira-análise-financeira",
+      "como-usar-a-planilha": "analise-financeira-como-usar-a-planilha",
+      "objetivo-e-construção-da-análise": "analise-financeira-objetivo-e-construção-da-análise",
+      "premissas-dos-cenários": "analise-financeira-premissas-dos-cenários",
+      "principais-resultados": "analise-financeira-principais-resultados",
+      "desembolso-e-custo-integral": "analise-financeira-desembolso-e-custo-integral",
+      "capex-e-investimento-inicial": "analise-financeira-capex-e-investimento-inicial",
+      "poc-materiais-para-validação": "analise-financeira-poc-materiais-para-validação",
+      "implementação-materiais-para-operação-em-campo": "analise-financeira-implementação-materiais-para-operação-em-campo",
+      "desenvolvimento-e-adoção-da-solução": "analise-financeira-desenvolvimento-e-adoção-da-solução",
+      "opex-custos-de-operação": "analise-financeira-opex-custos-de-operação",
+      "benefício-escolhido-evitar-perdas-de-ovos-orgânicos": "analise-financeira-benefício-escolhido-evitar-perdas-de-ovos-orgânicos",
+      "preço-de-mercado-usado-como-referência": "analise-financeira-preço-de-mercado-usado-como-referência",
+      "hipóteses-ilustrativas-do-retorno": "analise-financeira-hipóteses-ilustrativas-do-retorno",
+      "como-substituir-a-simulação-pelos-dados-da-raiar": "analise-financeira-como-substituir-a-simulação-pelos-dados-da-raiar",
+      "lógica-dos-cálculos": "analise-financeira-lógica-dos-cálculos",
+      "resultado-inicial-da-implementação": "analise-financeira-resultado-inicial-da-implementação",
+      "benefício-mínimo-para-recuperar-o-investimento": "analise-financeira-benefício-mínimo-para-recuperar-o-investimento",
+      "limites-e-validação": "analise-financeira-limites-e-validação"
+    }
+  },
+  {
+    "source": "sprint-3/exemplo-containers/index.md",
+    "from": "/sprint-3/exemplo-containers",
+    "to": "/apoio/docker",
+    "anchor": "index-exemplo-de-containers-para-o-nó-de-borda",
+    "hashes": {
+      "exemplo-de-containers-para-o-nó-de-borda": "index-exemplo-de-containers-para-o-nó-de-borda"
+    }
+  },
+  {
+    "source": "sprint-3/exemplo-containers/guia-docker-para-iniciantes.md",
+    "from": "/sprint-3/exemplo-containers/guia-docker-para-iniciantes",
+    "to": "/apoio/docker",
+    "anchor": "guia-docker-para-iniciantes-guia-de-docker-para-quem-nunca-usou-containerizando-os-modelos-da-raiar",
+    "hashes": {
+      "guia-de-docker-para-quem-nunca-usou-containerizando-os-modelos-da-raiar": "guia-docker-para-iniciantes-guia-de-docker-para-quem-nunca-usou-containerizando-os-modelos-da-raiar",
+      "como-usar-este-guia": "guia-docker-para-iniciantes-como-usar-este-guia",
+      "parte-1-a-ideia-em-cinco-minutos": "guia-docker-para-iniciantes-parte-1-a-ideia-em-cinco-minutos",
+      "o-problema": "guia-docker-para-iniciantes-o-problema",
+      "a-solução-o-container": "guia-docker-para-iniciantes-a-solução-o-container",
+      "container-não-é-máquina-virtual": "guia-docker-para-iniciantes-container-não-é-máquina-virtual",
+      "parte-2-o-vocabulário": "guia-docker-para-iniciantes-parte-2-o-vocabulário",
+      "parte-3-instalação-e-os-primeiros-comandos": "guia-docker-para-iniciantes-parte-3-instalação-e-os-primeiros-comandos",
+      "instalar": "guia-docker-para-iniciantes-instalar",
+      "exercício-1-o-primeiro-container": "guia-docker-para-iniciantes-exercício-1-o-primeiro-container",
+      "exercício-2-olhar-o-que-existe": "guia-docker-para-iniciantes-exercício-2-olhar-o-que-existe",
+      "exercício-3-entrar-num-container": "guia-docker-para-iniciantes-exercício-3-entrar-num-container",
+      "exercício-4-o-ciclo-de-vida": "guia-docker-para-iniciantes-exercício-4-o-ciclo-de-vida",
+      "parte-4-construindo-a-sua-própria-imagem": "guia-docker-para-iniciantes-parte-4-construindo-a-sua-própria-imagem",
+      "o-dockerfile-linha-por-linha": "guia-docker-para-iniciantes-o-dockerfile-linha-por-linha",
+      "exercício-5-construir-e-rodar": "guia-docker-para-iniciantes-exercício-5-construir-e-rodar",
+      "as-camadas-e-o-cache": "guia-docker-para-iniciantes-as-camadas-e-o-cache",
+      "o-dockerignore": "guia-docker-para-iniciantes-o-dockerignore",
+      "parte-5-dados-que-sobrevivem": "guia-docker-para-iniciantes-parte-5-dados-que-sobrevivem",
+      "o-que-acontece-sem-volume": "guia-docker-para-iniciantes-o-que-acontece-sem-volume",
+      "exercício-6-volume-nomeado": "guia-docker-para-iniciantes-exercício-6-volume-nomeado",
+      "três-formas-de-ligar-pastas": "guia-docker-para-iniciantes-três-formas-de-ligar-pastas",
+      "parte-6-a-armadilha-das-permissões": "guia-docker-para-iniciantes-parte-6-a-armadilha-das-permissões",
+      "a-correção": "guia-docker-para-iniciantes-a-correção",
+      "com-bind-mount-de-uma-pasta-do-computador": "guia-docker-para-iniciantes-com-bind-mount-de-uma-pasta-do-computador",
+      "parte-7-o-docker-compose": "guia-docker-para-iniciantes-parte-7-o-docker-compose",
+      "exercício-7-dois-containers-conversando-por-um-volume": "guia-docker-para-iniciantes-exercício-7-dois-containers-conversando-por-um-volume",
+      "os-dados-sobrevivem-a-recriar-os-containers": "guia-docker-para-iniciantes-os-dados-sobrevivem-a-recriar-os-containers",
+      "parte-8-limites-de-recurso-e-o-que-acontece-ao-estourar": "guia-docker-para-iniciantes-parte-8-limites-de-recurso-e-o-que-acontece-ao-estourar",
+      "exercício-8-ver-o-oom-acontecer": "guia-docker-para-iniciantes-exercício-8-ver-o-oom-acontecer",
+      "reinício-automático": "guia-docker-para-iniciantes-reinício-automático",
+      "parte-9-arquiteturas-de-processador": "guia-docker-para-iniciantes-parte-9-arquiteturas-de-processador",
+      "construir-para-o-pi-no-seu-notebook": "guia-docker-para-iniciantes-construir-para-o-pi-no-seu-notebook",
+      "levar-a-imagem-até-o-pi": "guia-docker-para-iniciantes-levar-a-imagem-até-o-pi",
+      "parte-10-conhecendo-o-projeto": "guia-docker-para-iniciantes-parte-10-conhecendo-o-projeto",
+      "o-que-a-raiar-precisa": "guia-docker-para-iniciantes-o-que-a-raiar-precisa",
+      "o-fluxo-de-dados": "guia-docker-para-iniciantes-o-fluxo-de-dados",
+      "quem-faz-o-quê": "guia-docker-para-iniciantes-quem-faz-o-quê",
+      "o-código": "guia-docker-para-iniciantes-o-código",
+      "parte-11-containerizando-o-projeto-passo-a-passo": "guia-docker-para-iniciantes-parte-11-containerizando-o-projeto-passo-a-passo",
+      "passo-1-preparar-a-pasta": "guia-docker-para-iniciantes-passo-1-preparar-a-pasta",
+      "passo-2-as-três-descobertas-que-mudam-o-dockerfile": "guia-docker-para-iniciantes-passo-2-as-três-descobertas-que-mudam-o-dockerfile",
+      "passo-3-o-dockerfile-linha-por-linha": "guia-docker-para-iniciantes-passo-3-o-dockerfile-linha-por-linha",
+      "passo-4-construir": "guia-docker-para-iniciantes-passo-4-construir",
+      "passo-5-rodar-a-detecção": "guia-docker-para-iniciantes-passo-5-rodar-a-detecção",
+      "passo-6-entender-o-que-foi-gravado": "guia-docker-para-iniciantes-passo-6-entender-o-que-foi-gravado",
+      "passo-7-enviar-ao-backend-com-um-backend-de-mentira": "guia-docker-para-iniciantes-passo-7-enviar-ao-backend-com-um-backend-de-mentira",
+      "passo-8-o-compose-do-projeto": "guia-docker-para-iniciantes-passo-8-o-compose-do-projeto",
+      "passo-9-medir": "guia-docker-para-iniciantes-passo-9-medir",
+      "parte-12-indo-para-o-raspberry-pi": "guia-docker-para-iniciantes-parte-12-indo-para-o-raspberry-pi",
+      "o-que-o-responsável-pelo-nó-entrega": "guia-docker-para-iniciantes-o-que-o-responsável-pelo-nó-entrega",
+      "o-que-você-precisa-pedir-ao-responsável-pelo-nó": "guia-docker-para-iniciantes-o-que-você-precisa-pedir-ao-responsável-pelo-nó",
+      "entregar-e-subir": "guia-docker-para-iniciantes-entregar-e-subir",
+      "a-câmera": "guia-docker-para-iniciantes-a-câmera",
+      "alternativa-câmera-usb": "guia-docker-para-iniciantes-alternativa-câmera-usb",
+      "o-que-ainda-falta-construir": "guia-docker-para-iniciantes-o-que-ainda-falta-construir",
+      "parte-13-reduzir-o-tamanho-da-imagem": "guia-docker-para-iniciantes-parte-13-reduzir-o-tamanho-da-imagem",
+      "parte-14-solução-de-problemas": "guia-docker-para-iniciantes-parte-14-solução-de-problemas",
+      "parte-15-consulta-rápida": "guia-docker-para-iniciantes-parte-15-consulta-rápida",
+      "parte-16-boas-práticas-em-uma-página": "guia-docker-para-iniciantes-parte-16-boas-práticas-em-uma-página",
+      "parte-17-teste-o-que-aprendeu": "guia-docker-para-iniciantes-parte-17-teste-o-que-aprendeu",
+      "parte-18-o-que-ainda-está-em-aberto": "guia-docker-para-iniciantes-parte-18-o-que-ainda-está-em-aberto",
+      "referências": "guia-docker-para-iniciantes-referências"
+    }
+  },
+  {
+    "source": "sprint-3/exemplo-containers/exemplos-de-codigo.md",
+    "from": "/sprint-3/exemplo-containers/exemplos-de-codigo",
+    "to": "/apoio/docker",
+    "anchor": "exemplos-de-codigo-exemplos-de-código-dos-containers",
+    "hashes": {
+      "exemplos-de-código-dos-containers": "exemplos-de-codigo-exemplos-de-código-dos-containers",
+      "exemplo-01-contador": "exemplos-de-codigo-exemplo-01-contador",
+      "01-contadorappcontadorpy": "exemplos-de-codigo-01-contadorappcontadorpy",
+      "01-contadordockerfile": "exemplos-de-codigo-01-contadordockerfile",
+      "01-contadorcomposeyaml": "exemplos-de-codigo-01-contadorcomposeyaml",
+      "exemplo-02-imagem-do-nó-de-borda-raiar-vision": "exemplos-de-codigo-exemplo-02-imagem-do-nó-de-borda-raiar-vision",
+      "02-raiar-visiondockerfile": "exemplos-de-codigo-02-raiar-visiondockerfile",
+      "02-raiar-visioncomposeyaml": "exemplos-de-codigo-02-raiar-visioncomposeyaml",
+      "02-raiar-visioncomposeusbyaml": "exemplos-de-codigo-02-raiar-visioncomposeusbyaml",
+      "02-raiar-visiondockerignore": "exemplos-de-codigo-02-raiar-visiondockerignore",
+      "02-raiar-visionbackend_falsopy": "exemplos-de-codigo-02-raiar-visionbackend_falsopy"
+    }
+  },
+  {
+    "source": "sprint-1/glossario.md",
+    "from": "/sprint-1/glossario",
+    "to": "/apoio/glossario",
+    "anchor": "glossario-glossário-em-linguagem-simples",
+    "hashes": {
+      "glossário-em-linguagem-simples": "glossario-glossário-em-linguagem-simples",
+      "aviário-e-criação": "glossario-aviário-e-criação",
+      "imagens-e-contagens": "glossario-imagens-e-contagens",
+      "dados-e-medidas": "glossario-dados-e-medidas",
+      "software-identificação-e-validação": "glossario-software-identificação-e-validação",
+      "detecção-e-treinamento-de-aves": "glossario-detecção-e-treinamento-de-aves",
+      "modelo-de-visão-computacional-construído-do-zero": "glossario-modelo-de-visão-computacional-construído-do-zero",
+      "nó-de-borda-e-raspberry-pi": "glossario-nó-de-borda-e-raspberry-pi",
+      "backend-e-banco-de-dados": "glossario-backend-e-banco-de-dados"
+    }
+  },
+  {
+    "source": "historico.mdx",
+    "from": "/historico",
+    "to": "/apoio/historico",
+    "anchor": "historico-histórico-por-sprint",
+    "hashes": {
+      "histórico-por-sprint": "historico-histórico-por-sprint",
+      "sprint-1": "historico-sprint-1",
+      "sprint-2": "historico-sprint-2",
+      "sprint-3": "historico-sprint-3",
+      "sprint-4": "historico-sprint-4"
+    }
+  }
+]

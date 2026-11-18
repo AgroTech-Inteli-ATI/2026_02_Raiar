@@ -1,0 +1,354 @@
+---
+title: "RaiarNet: método e reprodução"
+description: "Dados, arquitetura, treinamento e avaliação da contagem por nível com a RaiarNet."
+---
+
+# RaiarNet: método e reprodução
+
+O experimento da RaiarNet está organizado na ordem em que foi executado: dados e anotações, tratamento das imagens, arquitetura e avaliação. A separação dos níveis está em [Como funciona](../funcionamento.mdx).
+
+## Dados, anotação e partição do conjunto {#dados-e-anotacao-dados-anotação-e-partição-do-conjunto}
+
+Esta página descreve como transformamos os vídeos `.mp4` recebidos da Raiar em um conjunto rotulado para treinar e avaliar os modelos. Como não havia nenhuma imagem anotada no início, a anotação foi a primeira etapa de engenharia do projeto. A regra de níveis aplicada aos rótulos está em [níveis e regra de contagem](../funcionamento.mdx#niveis-e-regra-de-contagem-níveis-do-jump-start-e-regra-de-contagem).
+
+### Vídeos recebidos e escopo {#dados-e-anotacao-vídeos-recebidos-e-escopo}
+
+Inspecionamos os quatro vídeos disponíveis, todos com 1024 × 576 pixels e cerca de 15 quadros por segundo.
+
+| Vídeo | Duração | Conteúdo | Uso no projeto |
+| --- | ---: | --- | --- |
+| v3 (29/09, 09h48) | 11,9 s | Câmera C1 de dia, recria no Jump Start | Treino, validação e teste |
+| v2 (29/09, 05h14) | 15,0 s | Câmera C1 à noite, infravermelho, aves empoleiradas | Treino, validação e teste |
+| v1 (28/09, 19h56) | 11,0 s | Câmera CAM16 externa, vegetação, sem aves | Fora do escopo |
+| v4 (07/10, 16h29) | 599,1 s | Câmera CAM16 em galpão de cria, pintinhos sem estrutura de níveis | Fora do escopo |
+
+Os vídeos v2 e v3 mostram exatamente o mesmo enquadramento da C1, um de dia e outro à noite, e por isso compartilham os mesmos polígonos de nível. O vídeo v4 é o mesmo usado no [piloto com o detector pré-treinado](yolo.mdx#piloto-video-raiar-piloto-com-o-vídeo-da-raiar): ele mostra pintinhos de poucos dias, com cerca de 5 pixels cada, espalhados por um galpão de cria sem plataformas. Como o objetivo é medir a ocupação de N0, N1 e N2 no Jump Start durante a recria, deixamos v1 e v4 fora do conjunto.
+
+### Anotação assistida por pontos {#dados-e-anotacao-anotação-assistida-por-pontos}
+
+Anotamos cada ave visível como um ponto no centro do corpo. Escolhemos pontos, e não caixas, porque as aves se sobrepõem com frequência e o ponto é o rótulo mais rápido e menos ambíguo em aglomerações [1]. Desenvolvemos uma ferramenta própria em `src/raiarnet/labeling/annotate.py` com três recursos:
+
+1. **Blocos ampliados com grade de coordenadas**: o quadro é recortado em blocos de 160 a 300 pixels, ampliados de 2 a 4 vezes, com realce de exposição e saturação apenas para a revisão visual. A grade permite registrar a posição de cada ave em pixels do quadro original, como mostra a Figura 1.
+2. **Propagação por fluxo óptico**: depois de anotar um quadro, os pontos são levados ao quadro seguinte pelo fluxo óptico denso de Farnebäck [2]. A revisão passa a consistir em corrigir aves que se moveram, entraram ou saíram, em vez de recomeçar do zero.
+3. **Verificação reversa**: propagamos os pontos de um quadro posterior para trás e listamos as aves que não tinham correspondente. Com isso, encontramos 12 aves que tinham ficado sem rótulo nos dois primeiros quadros de treino.
+
+**Figura 1 – Bloco ampliado usado na anotação, com grade de coordenadas e pontos marcados**
+
+![Recorte ampliado do fundo do piso, com aves marrons aglomeradas, linhas de grade numeradas a cada 32 pixels e pontos vermelhos sobre o centro de cada ave anotada.](/img/visao-computacional/anotacao-bloco-ampliado.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+Testamos também um detector de vocabulário aberto (OWLv2) para propor caixas automaticamente. No quadro diurno, ele gerou centenas de caixas sobre grade, maravalha e grupos de aves, sem separar indivíduos, e por isso o descartamos como fonte de rótulos.
+
+### Caixas de referência {#dados-e-anotacao-caixas-de-referência}
+
+As métricas de detecção (mAP, precisão e revocação) e o treino do baseline exigem caixas. Convertemos cada ponto em uma caixa em duas etapas, implementadas em `src/raiarnet/labeling/boxes.py`:
+
+1. **Prior de perspectiva**: medimos manualmente o tamanho de 34 aves isoladas em N0, N1 e N2 e interpolamos o tamanho esperado em qualquer posição do quadro. Uma ave no primeiro plano mede cerca de 50 × 45 pixels; no fundo do corredor, cerca de 12 × 11 pixels.
+2. **Refinamento com Segment Anything (SAM)** [3]: usamos o ponto como prompt positivo e os quatro vizinhos mais próximos como prompts negativos. A caixa do SAM só é aceita quando tem entre 0,6 e 1,6 vez o tamanho do prior e contém o ponto perto do centro. Nos demais casos, mantemos a caixa do prior.
+
+O SAM foi usado apenas como ferramenta de rotulagem; ele não faz parte de nenhum dos modelos avaliados. Em média, 54% das caixas vieram do SAM e 46% do prior. A Figura 2 mostra os pontos atribuídos a cada nível e as caixas resultantes em um quadro de teste.
+
+**Figura 2 – Pontos anotados por nível e caixas de referência em um quadro de teste**
+
+![À esquerda, quadro diurno da C1 com pontos azuis no piso, magenta no nível intermediário e laranja na plataforma; à direita, o mesmo quadro com caixas verdes aceitas do SAM e caixas amarelas geradas pelo prior de perspectiva.](/img/visao-computacional/anotacao-pontos-e-caixas.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+Como parte das caixas vem de um prior de tamanho, o mAP@50:95 mede também o quanto cada modelo reproduz esse prior. Por isso, damos mais peso ao mAP@50, ao F1 e às métricas de contagem, que dependem da localização da ave, e não do ajuste fino da caixa.
+
+### Partição temporal {#dados-e-anotacao-partição-temporal}
+
+Separamos os quadros por instante, e não aleatoriamente, para que o teste não contenha quadros quase idênticos aos de treino. A validação fica entre treino e teste e é usada apenas para escolher o limiar de confiança e o melhor checkpoint.
+
+| Partição | Quadros | Aves anotadas | Aves na ROI | Conteúdo |
+| --- | ---: | ---: | ---: | --- |
+| Treino | 9 | 980 | 928 | v3 de 0 a 6 s (7 quadros) e v2 em 0 e 4,5 s |
+| Validação | 2 | 178 | 152 | v3 em 7,5 s e v2 em 7,5 s |
+| Teste | 7 | 867 | 837 | v3 de 9 a 11,5 s (6 quadros) e v2 em 13,5 s |
+
+As partições estão em `src/raiarnet/configs/dataset-splits.json`. Os quadros e anotações ficam em `data/`, fora do Git, como os demais dados do projeto.
+
+Reconhecemos o principal limite deste conjunto: ele vem de uma única câmera, em dois horários de um mesmo dia, e o teste cobre poucos segundos de vídeo. Os resultados medem o desempenho neste enquadramento e devem ser confirmados com gravações de outros dias e idades do lote antes de qualquer uso operacional.
+
+### Referências {#dados-e-anotacao-referencias}
+
+[1] LEMPITSKY, V.; ZISSERMAN, A. Learning to count objects in images. In: ADVANCES IN NEURAL INFORMATION PROCESSING SYSTEMS, 23., 2010, Vancouver. **Proceedings** [...]. Red Hook: Curran Associates, 2010. p. 1324-1332.
+
+[2] FARNEBÄCK, G. Two-frame motion estimation based on polynomial expansion. In: SCANDINAVIAN CONFERENCE ON IMAGE ANALYSIS, 13., 2003, Halmstad. **Proceedings** [...]. Berlin: Springer, 2003. p. 363-370.
+
+[3] KIRILLOV, A. *et al*. Segment anything. In: IEEE/CVF INTERNATIONAL CONFERENCE ON COMPUTER VISION, 2023, Paris. **Proceedings** [...]. Piscataway: IEEE, 2023. p. 4015-4026.
+
+## Tratamento de imagens do aviário {#tratamento-de-imagens-tratamento-de-imagens-do-aviário}
+
+Desenvolvemos o pipeline de tratamento de imagens em `src/raiarnet/preprocessing/` a partir dos quadros reais da câmera C1. Esta página registra as hipóteses que formulamos sobre os problemas ópticos do aviário, as técnicas que implementamos para cada uma, as medidas sem modelo e a decisão sobre o pipeline usado pela [RaiarNet](raiarnet.mdx#modelo-identificacao-do-zero-modelo-de-identificação-construído-do-zero).
+
+### Hipóteses sobre os problemas ópticos {#tratamento-de-imagens-hipóteses-sobre-os-problemas-ópticos}
+
+Ao inspecionar os quadros diurnos e noturnos, levantamos cinco hipóteses de degradação, cada uma ligada a um nível:
+
+| Hipótese | Onde aparece | Efeito esperado no modelo | Técnica candidata |
+| --- | --- | --- | --- |
+| Sombra intensa sob a plataforma | N1 | Aves escuras com pouco detalhe de textura | Correção gama adaptativa e Retinex multiescala |
+| Baixo contraste entre plumagem marrom e maravalha | N0 | Aves do fundo do piso confundidas com a cama | CLAHE e destaque cromático da plumagem |
+| Oclusão pela grade metálica | N1 e N2 | Bordas da grade competem com o contorno das aves | Filtros que preservam bordas e augmentation de grade |
+| Iluminação lateral estourada | Fundo do corredor | Perda de detalhe nas áreas claras | CLAHE com limite de recorte e gama maior que 1 nas áreas claras |
+| Motion blur e compressão do vídeo | Todos | Aves em movimento sem contorno nítido | Nitidez leve e augmentation de borrão |
+
+### Técnicas implementadas {#tratamento-de-imagens-técnicas-implementadas}
+
+Implementamos cada técnica como uma função independente em `src/raiarnet/preprocessing/enhance.py`, e as combinações ficam nomeadas em `src/raiarnet/preprocessing/pipeline.py`, o que permite reproduzir qualquer configuração do estudo:
+
+- **CLAHE** (equalização adaptativa de histograma com limite de contraste) [4], aplicada à luminância L\* do espaço LAB ou ao canal V do HSV, com limite de recorte 2,0 e blocos de 8 × 8;
+- **MSRCR** (Retinex multiescala com restauração de cor) [5], com escalas gaussianas de 15, 80 e 200 pixels;
+- **correção gama adaptativa** [6]: o expoente varia com a luminância local, e fica menor que 1 nas sombras de N1 e maior que 1 nas áreas estouradas;
+- **filtro bilateral** [7] e **filtro guiado** [8], que suavizam a textura da maravalha e o ruído de compressão sem apagar o contorno das aves;
+- **destaque cromático**: aumenta a saturação apenas nas matizes marrom-avermelhadas da plumagem, já que a grade galvanizada e a maravalha são pouco saturadas;
+- **mascaramento por ROI**: tudo o que está fora dos polígonos de N0, N1 e N2, dilatados em 16 pixels, é preenchido com cinza neutro, como descrito em [níveis e regra de contagem](../funcionamento.mdx#niveis-e-regra-de-contagem-níveis-do-jump-start-e-regra-de-contagem).
+
+A Figura 3 compara o quadro original com os principais realces em recortes de cada nível no período diurno, e a Figura 4 faz o mesmo para o período noturno.
+
+**Figura 3 – Comparação do tratamento de imagem nos níveis N0, N1 e N2 em um quadro diurno**
+
+![Quadro comparativo com cinco linhas (original, CLAHE em LAB, MSRCR, gama adaptativa e a combinação gama, CLAHE, filtro guiado e destaque cromático) e três colunas com recortes do piso, do nível intermediário sob a mesa e da plataforma.](/img/visao-computacional/comparacao-pre-processamento-dia.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+**Figura 4 – Comparação do tratamento de imagem nos níveis N0, N1 e N2 em um quadro noturno**
+
+![Mesmo quadro comparativo da figura anterior aplicado a um quadro noturno em infravermelho, com aves claras sobre a plataforma e o piso escuro.](/img/visao-computacional/comparacao-pre-processamento-noite.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+### Medidas sem modelo {#tratamento-de-imagens-medidas-sem-modelo}
+
+Antes de treinar, medimos o efeito de cada técnica com indicadores que não dependem do detector. Para cada ave anotada, comparamos o interior da caixa (metade central) com um anel de fundo ao redor, sem outras aves, dentro do mesmo nível. Calculamos o d de Cohen na luminância L\* (diferença das médias dividida pelo desvio padrão combinado) e a distância média no plano cromático a\*b\*. Usamos as 1.077 aves dos quadros de treino e validação (840 em N0, 167 em N1 e 70 em N2).
+
+| Pipeline | d L\* N0 | d L\* N1 | d L\* N2 | Δa\*b\* N0 | Δa\*b\* N1 | Δa\*b\* N2 | Nitidez N0 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Original | 0,44 | 1,57 | 1,28 | 3,3 | 7,7 | 10,2 | 2.192 |
+| CLAHE (LAB) | 0,49 | 1,60 | 1,27 | 3,3 | 7,6 | 10,1 | 5.380 |
+| CLAHE (HSV) | 0,51 | 1,58 | 1,29 | 3,7 | 8,1 | 10,3 | 5.212 |
+| MSRCR | 0,41 | 1,38 | 1,08 | 2,7 | 5,5 | 6,2 | 2.496 |
+| Gama adaptativa | 0,44 | 1,55 | 1,15 | 3,3 | 7,7 | 10,2 | 2.204 |
+| Bilateral | 0,48 | 1,73 | 1,37 | 3,3 | 7,6 | 10,1 | 1.881 |
+| Filtro guiado | 0,61 | 2,01 | 1,60 | 3,1 | 7,5 | 9,8 | 942 |
+| Destaque cromático | 0,43 | 1,63 | 1,38 | 4,8 | 11,0 | 13,4 | 2.195 |
+| Gama + CLAHE | 0,48 | 1,52 | 1,17 | 3,3 | 7,6 | 10,1 | 5.666 |
+| Gama + CLAHE + guiado + cromático | 0,56 | 1,93 | 1,41 | 4,7 | 10,7 | 13,0 | 3.446 |
+
+A tabela mostra as diferenças entre os níveis. Primeiro, N0 é o nível mais difícil: a separabilidade da ave em relação à maravalha (d = 0,44) é três vezes menor que em N1 e N2, resultado compatível com a hipótese de baixo contraste no piso. Segundo, o MSRCR, apesar de clarear as sombras visualmente, reduziu a separabilidade em todos os níveis, porque equaliza também o fundo e desbota a cor da plumagem. Terceiro, o filtro guiado tem o maior d, mas parte do ganho vem da redução da variância (a nitidez cai para menos da metade), e uma rede convolucional pode perder textura útil com isso. Como essas medidas não garantem ganho no detector, adotamos no modelo final os quadros originais com a máscara de ROI, que preservam a textura da plumagem, e deixamos os realces como etapas configuráveis do pipeline.
+
+### Próximo passo: ablação com o modelo {#tratamento-de-imagens-próximo-passo-ablação-com-o-modelo}
+
+O estudo de ablação com o detector, em que a RaiarNet é treinada com cada pipeline nas mesmas condições, ficou preparado, mas não foi executado nesta entrega por falta de tempo de processamento (cada treino leva de 15 a 75 minutos em CPU). Os pipelines candidatos são o original, CLAHE em LAB, MSRCR, gama adaptativa, filtro guiado, destaque cromático e a combinação de gama, CLAHE, filtro guiado e destaque cromático, com uma segunda semente do original para estimar a variação entre treinos. O comando de treino aceita o pipeline como parâmetro:
+
+```bash
+cd src/raiarnet
+python -m training.train_raiarnet --name abl-clahe --pipeline clahe-lab --iters 600
+```
+
+### Referências {#tratamento-de-imagens-referencias}
+
+[4] ZUIDERVELD, K. Contrast limited adaptive histogram equalization. In: HECKBERT, P. S. (ed.). **Graphics gems IV**. San Diego: Academic Press, 1994. p. 474-485.
+
+[5] JOBSON, D. J.; RAHMAN, Z.; WOODELL, G. A. A multiscale retinex for bridging the gap between color images and the human observation of scenes. **IEEE Transactions on Image Processing**, v. 6, n. 7, p. 965-976, 1997.
+
+[6] HUANG, S.-C.; CHENG, F.-C.; CHIU, Y.-S. Efficient contrast enhancement using adaptive gamma correction with weighting distribution. **IEEE Transactions on Image Processing**, v. 22, n. 3, p. 1032-1041, 2013.
+
+[7] TOMASI, C.; MANDUCHI, R. Bilateral filtering for gray and color images. In: INTERNATIONAL CONFERENCE ON COMPUTER VISION, 6., 1998, Bombay. **Proceedings** [...]. Piscataway: IEEE, 1998. p. 839-846.
+
+[8] HE, K.; SUN, J.; TANG, X. Guided image filtering. **IEEE Transactions on Pattern Analysis and Machine Intelligence**, v. 35, n. 6, p. 1397-1409, 2013.
+
+## Modelo de identificação construído do zero {#modelo-identificacao-do-zero-modelo-de-identificação-construído-do-zero}
+
+Construímos o modelo de identificação de aves inteiramente em PyTorch, sem bibliotecas de detecção prontas e sem pesos pré-treinados. Chamamos esse modelo de RaiarNet. O código está em `src/raiarnet/models/`: blocos em `blocks.py`, rede em `raiarnet.py`, alvos e perdas em `losses.py` e decodificação em `decode.py`. A adaptação para contagem por nível e os resultados no teste estão em [contagem e resultados](raiarnet.mdx#contagem-por-nivel-contagem-de-aves-por-nível-e-resultados-do-modelo).
+
+### Decisão de paradigma {#modelo-identificacao-do-zero-decisão-de-paradigma}
+
+Avaliamos três paradigmas que poderíamos escrever do zero:
+
+| Paradigma | Pontos fortes | Pontos fracos para o nosso caso |
+| --- | --- | --- |
+| Detector de estágio único estilo YOLO, com âncoras ou sem âncoras por caixa | Saída direta em caixas, ecossistema conhecido | Depende de NMS, que suprime aves aglomeradas cujas caixas se sobrepõem; muitos hiperparâmetros de atribuição de rótulos para poucos dados |
+| Detector por pontos-chave (heatmap de centros) | Cada ave é um pico local; não precisa de NMS entre caixas; supervisão densa, adequada a poucos quadros anotados | Precisa de resolução alta na saída para separar centros próximos |
+| Regressão de mapa de densidade | Conta bem multidões e oclusões parciais | Não identifica aves individualmente, o que impede mAP, F1 e auditoria visual |
+
+Formulamos a hipótese de que um detector híbrido de duas cabeças combinaria o melhor dos dois últimos: o heatmap identifica cada ave, e a densidade recupera as aves parcialmente ocultas que não formam um pico nítido. Também consideramos que a anotação por pontos já fornece exatamente o alvo do heatmap. Por isso, escolhemos esse caminho. O estilo YOLO continua como referência externa: a reimplementação do Chicken-YOLO ficou pronta para a comparação da próxima etapa.
+
+### Arquitetura da RaiarNet {#modelo-identificacao-do-zero-arquitetura-da-raiarnet}
+
+A Figura 5 resume a arquitetura. A entrada é o quadro completo da C1 (1024 × 576 pixels), já realçado e mascarado fora da ROI.
+
+**Figura 5 – Arquitetura da RaiarNet**
+
+![Diagrama de blocos: quadro de entrada, backbone com quatro estágios SPD-Conv e CSP com atenção por coordenadas nos strides 2, 4, 8 e 16, pescoço BiFPN repetido duas vezes, cabeça de detecção e cabeça de densidade em stride 4 e saídas de aves identificadas e contagem por nível.](/img/visao-computacional/arquitetura-raiarnet.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+#### Backbone {#modelo-identificacao-do-zero-backbone}
+
+O backbone tem quatro estágios. Em cada um, a redução de resolução usa SPD-Conv [9]: o bloco reorganiza cada vizinhança 2 × 2 em canais e aplica uma convolução sem passo, em vez de descartar três de cada quatro pixels como faz a convolução com stride 2. Adotamos esse bloco porque as aves do fundo do corredor têm de 10 a 15 pixels, e qualquer perda espacial precoce apaga essas aves. Depois de cada redução, um bloco CSP (Cross Stage Partial) processa metade dos canais por gargalos residuais e concatena o resultado com a outra metade, o que mantém o custo baixo.
+
+Nos estágios de stride 4, 8 e 16, incluímos atenção por coordenadas [10]. Ela codifica separadamente as direções horizontal e vertical; como as barras da grade das mesas têm orientação dominante, esperávamos que a atenção ajudasse a destacar aves atrás da grade em N1. Implementamos também o CBAM [11] como alternativa. O último estágio tem um SPPF (pooling espacial em pirâmide) para ampliar o campo receptivo.
+
+#### Pescoço {#modelo-identificacao-do-zero-pescoço}
+
+O pescoço é um BiFPN [12] com três níveis (strides 4, 8 e 16), repetido duas vezes. Cada fusão soma as entradas com pesos aprendidos e normalizados e aplica uma convolução separável em profundidade. O caminho descendente leva contexto semântico para a resolução alta, e o ascendente devolve detalhe aos níveis profundos. A saída de stride 4 (256 × 144 células) alimenta as cabeças: com ela, duas aves só se confundem se os centros estiverem a menos de 4 pixels.
+
+#### Cabeças {#modelo-identificacao-do-zero-cabeças}
+
+A cabeça de detecção prevê, em cada célula, a probabilidade de existir um centro de ave (heatmap), o tamanho da caixa em escala logarítmica e o deslocamento subcélula do centro, seguindo a formulação de detecção por pontos [13]. Na inferência, cada máximo local 3 × 3 acima do limiar é uma ave. Não aplicamos NMS entre caixas, o que evita suprimir aves aglomeradas. O Soft-NMS [14] ficou implementado como opção de pós-processamento.
+
+A cabeça de densidade prevê um mapa não negativo cuja soma estima o número de aves [15][16]. Ela é usada na [adaptação para contagem](raiarnet.mdx#contagem-por-nivel-contagem-de-aves-por-nível-e-resultados-do-modelo).
+
+#### Funções de perda {#modelo-identificacao-do-zero-funções-de-perda}
+
+Implementamos todas as perdas em `src/raiarnet/models/losses.py`:
+
+- **focal loss** modificada sobre o heatmap gaussiano [13][17], com raio da gaussiana calculado a partir do tamanho da ave;
+- **L1** para o tamanho e o deslocamento nas células de centro;
+- **Wise-IoU** [18] entre a caixa decodificada e a caixa de referência, que pondera o erro pela distância normalizada entre os centros;
+- **erro quadrático** entre o mapa de densidade previsto e o alvo (uma gaussiana de massa 1 por ave) e uma perda de **consistência de contagem** entre a soma do mapa e o número de aves do recorte.
+
+#### Treino {#modelo-identificacao-do-zero-treino}
+
+Treinamos em CPU (AMD Ryzen 5 5600G), sem GPU, com recortes aleatórios de 320 × 320 pixels dos quadros de treino, escala aleatória entre 0,7 e 1,4, lote de 8, otimizador AdamW e taxa de aprendizado com ciclo único (pico de 0,002). As augmentations simulam as condições do aviário: grade metálica sintética sobreposta em faixas do recorte (oclusão do Jump Start), motion blur direcional, variação de exposição, matiz e saturação, conversão para tons de cinza (como nos quadros infravermelhos) e espelhamento horizontal. A cada 300 iterações, avaliamos na validação e guardamos o checkpoint com maior soma de mAP@50 e F1.
+
+### Evolução do treino {#modelo-identificacao-do-zero-evolução-do-treino}
+
+Treinamos o modelo final por 3.000 iterações (cerca de 75 minutos em CPU). A Figura 6 mostra as perdas de treino e as métricas de validação ao longo das iterações. O melhor checkpoint, na iteração 2.700, foi salvo em `models/trained/raiarnet-r1.pt`.
+
+**Figura 6 – Perdas de treino e métricas de validação da RaiarNet ao longo das iterações**
+
+![Dois gráficos de linha: à esquerda, a perda total e a perda focal do heatmap caindo ao longo de 3.000 iterações; à direita, mAP@50, mAP@50:95 e F1 na validação subindo até se estabilizarem em torno de 0,61, 0,26 e 0,69.](/img/visao-computacional/curvas-treino-raiarnet.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+| Iteração | mAP@50 | mAP@50:95 | Precisão | Revocação | F1 |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 300 | 0,149 | 0,029 | 0,239 | 0,366 | 0,289 |
+| 600 | 0,359 | 0,098 | 0,525 | 0,418 | 0,465 |
+| 1.200 | 0,576 | 0,192 | 0,710 | 0,608 | 0,655 |
+| 2.700 | 0,612 | 0,265 | 0,712 | 0,680 | 0,696 |
+
+As métricas de validação crescem rapidamente até 1.200 iterações e depois se estabilizam, enquanto a perda de treino continua caindo. Esse comportamento indica que, a partir daí, o limite é a quantidade de dados anotados, e não o tempo de treino. O modelo final tem 1,16 milhão de parâmetros.
+
+### Referências {#modelo-identificacao-do-zero-referencias}
+
+[9] SUNKARA, R.; LUO, T. No more strided convolutions or pooling: a new CNN building block for low-resolution images and small objects. In: EUROPEAN CONFERENCE ON MACHINE LEARNING AND PRINCIPLES AND PRACTICE OF KNOWLEDGE DISCOVERY IN DATABASES, 2022, Grenoble. **Proceedings** [...]. Cham: Springer, 2023. p. 443-459.
+
+[10] HOU, Q.; ZHOU, D.; FENG, J. Coordinate attention for efficient mobile network design. In: IEEE/CVF CONFERENCE ON COMPUTER VISION AND PATTERN RECOGNITION, 2021, Nashville. **Proceedings** [...]. Piscataway: IEEE, 2021. p. 13713-13722.
+
+[11] WOO, S. *et al*. CBAM: convolutional block attention module. In: EUROPEAN CONFERENCE ON COMPUTER VISION, 2018, Munich. **Proceedings** [...]. Cham: Springer, 2018. p. 3-19.
+
+[12] TAN, M.; PANG, R.; LE, Q. V. EfficientDet: scalable and efficient object detection. In: IEEE/CVF CONFERENCE ON COMPUTER VISION AND PATTERN RECOGNITION, 2020, Seattle. **Proceedings** [...]. Piscataway: IEEE, 2020. p. 10781-10790.
+
+[13] ZHOU, X.; WANG, D.; KRÄHENBÜHL, P. **Objects as points**. arXiv:1904.07850, 2019. Disponível em: [https://arxiv.org/abs/1904.07850](https://arxiv.org/abs/1904.07850). Acesso em: 14 out. 2026.
+
+[14] BODLA, N. *et al*. Soft-NMS: improving object detection with one line of code. In: IEEE INTERNATIONAL CONFERENCE ON COMPUTER VISION, 2017, Venice. **Proceedings** [...]. Piscataway: IEEE, 2017. p. 5561-5569.
+
+[15] LEMPITSKY, V.; ZISSERMAN, A. Learning to count objects in images. In: ADVANCES IN NEURAL INFORMATION PROCESSING SYSTEMS, 23., 2010, Vancouver. **Proceedings** [...]. Red Hook: Curran Associates, 2010. p. 1324-1332.
+
+[16] LV, J. *et al*. DFCCNet: a dense flock of chickens counting network based on density map regression. **Animals**, v. 13, n. 23, 3729, 2023.
+
+[17] LAW, H.; DENG, J. CornerNet: detecting objects as paired keypoints. In: EUROPEAN CONFERENCE ON COMPUTER VISION, 2018, Munich. **Proceedings** [...]. Cham: Springer, 2018. p. 734-750.
+
+[18] TONG, Z. *et al*. **Wise-IoU**: bounding box regression loss with dynamic focusing mechanism. arXiv:2301.10051, 2023. Disponível em: [https://arxiv.org/abs/2301.10051](https://arxiv.org/abs/2301.10051). Acesso em: 14 out. 2026.
+
+## Contagem de aves por nível e resultados do modelo {#contagem-por-nivel-contagem-de-aves-por-nível-e-resultados-do-modelo}
+
+Nesta etapa, adaptamos o modelo de identificação construído do zero, a [RaiarNet](raiarnet.mdx#modelo-identificacao-do-zero-modelo-de-identificação-construído-do-zero), para entregar o que o projeto precisa: a contagem direta de aves em N0, N1 e N2 a cada instante, a partir de uma imagem ou de um vídeo `.mp4`. A regra de contagem segue a decisão registrada em [níveis e regra de contagem](../funcionamento.mdx#niveis-e-regra-de-contagem-níveis-do-jump-start-e-regra-de-contagem).
+
+### Do detector à contagem por nível {#contagem-por-nivel-do-detector-à-contagem-por-nível}
+
+Implementamos a adaptação em `src/raiarnet/models/counter.py`. Para cada quadro, a RaiarNet produz duas estimativas por nível:
+
+- **contagem por detecção**: número de aves identificadas (picos do heatmap acima do limiar) cujo centro cai no polígono do nível;
+- **contagem por densidade**: soma do mapa de densidade dentro do polígono do nível.
+
+A detecção é precisa onde as aves estão separadas, mas perde aves aglomeradas ou atrás da grade, que não formam um pico nítido. A densidade capta essas aves, mas acumula ruído em áreas vazias. Por isso, desenvolvemos uma fusão sensível à oclusão: dividimos cada nível em janelas de 32 × 32 pixels e, em cada janela, somamos às detecções apenas o excedente da densidade que ultrapassa uma tolerância de 0,5 ave:
+
+contagem da janela = detecções + máx(0, densidade − detecções − 0,5)
+
+Escolhemos o tamanho da janela e a tolerância na validação, entre 18 combinações (`src/raiarnet/evaluation/count_analysis.py`). A versão sem tolerância superestimava a contagem, porque somava o ruído da densidade em todas as janelas.
+
+Em nenhum momento calculamos N1 como total menos N0 e N2: cada nível é medido no próprio polígono, e as câmeras não são somadas.
+
+### Estabilização temporal no vídeo {#contagem-por-nivel-estabilização-temporal-no-vídeo}
+
+Em vídeo, a contagem de um quadro oscila quando aves se cruzam ou ficam momentaneamente ocultas. Aplicamos um filtro de Kalman unidimensional por nível [19], com modelo de nível constante: a variância do processo (0,5) representa aves entrando e saindo entre quadros, e a da medição (4,0), o ruído do detector. Uma média móvel exponencial também está disponível como alternativa.
+
+O comando abaixo recebe um vídeo e grava o CSV com a contagem por quadro (bruta e filtrada), o resumo em JSON e o vídeo anotado:
+
+```bash
+cd src/raiarnet
+python -m models.predict --source caminho/do/video.mp4 --weights caminho/dos/pesos.pt --out caminho/da/saida --stride-frames 3
+```
+
+A Figura 7 mostra a série de contagem ao longo do vídeo diurno, comparada com a anotação manual. A faixa destacada corresponde aos quadros de teste.
+
+**Figura 7 – Contagem por nível ao longo do vídeo diurno, com e sem filtro de Kalman, comparada à anotação manual**
+
+![Três gráficos de linha, um por nível, com a contagem por quadro em azul claro, a série filtrada pelo Kalman em azul escuro e os pontos vermelhos da anotação manual; a faixa entre 9 e 12 segundos marca o período de teste.](/img/visao-computacional/serie-contagem-video-dia.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+O filtro reduziu a variação média entre quadros processados consecutivos de 2,78 para 0,75 ave em N0 e de 0,94 para 0,26 ave em N1; a maior oscilação de N0 caiu de 10,9 para 2,5 aves. Em N0, a série acompanha a anotação no período de treino, mas fica abaixo dela no período de teste, o que discutimos a seguir.
+
+### Resultados no teste {#contagem-por-nivel-resultados-no-teste}
+
+Avaliamos o modelo final nos 7 quadros de teste (6 diurnos e 1 noturno), que o modelo não viu no treino. O limiar de confiança (0,30) foi escolhido na validação. A Figura 8 mostra as predições em um quadro de teste diurno e no noturno.
+
+**Figura 8 – Aves identificadas pela RaiarNet e contagem por nível em quadros de teste**
+
+![Dois quadros da câmera C1, um diurno e um noturno, com caixas coloridas pelo nível (azul no piso, magenta no meio, laranja na plataforma) e um painel com a contagem de N0, N1 e N2.](/img/visao-computacional/predicoes-raiarnet-teste.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+#### Identificação {#contagem-por-nivel-identificação}
+
+| Métrica | Validação | Teste |
+| --- | ---: | ---: |
+| mAP@50 | 0,612 | 0,412 |
+| mAP@50:95 | 0,265 | 0,143 |
+| Precisão | 0,712 | 0,573 |
+| Revocação | 0,680 | 0,504 |
+| F1 | 0,696 | 0,536 |
+
+#### Contagem por nível {#contagem-por-nivel-contagem-por-nível}
+
+| Nível | MAE | RMSE | MAPE | Viés médio |
+| --- | ---: | ---: | ---: | ---: |
+| N0 · piso | 13,50 | 14,83 | 11,9% | −13,5 |
+| N1 · meio | 0,62 | 0,97 | 2,9% | +0,6 |
+| N2 · plataforma | 1,00 | 1,25 | 50,0% | +1,0 |
+| Total da ROI | 11,88 | 13,15 | 8,7% | −11,9 |
+
+A fusão sensível à oclusão reduziu o erro de N0 em relação às duas estimativas isoladas (MAE de 16,14 só com detecção e de 18,73 só com densidade) e o erro total de 14,57 para 11,88 aves. O modelo tem 1,16 milhão de parâmetros e processa 3,5 quadros por segundo na CPU usada nos testes, incluindo pré-processamento, rede e decodificação. Esse desempenho atende a uma amostragem de um quadro a cada poucos segundos, mas ainda precisa ser medido na Raspberry Pi prevista nos [requisitos](requisitos.mdx#requisitos-requisitos-funcionais-e-não-funcionais).
+
+Também testamos a inferência com espelhamento horizontal (TTA). Ela aumentou o mAP@50 para 0,441, mas piorou a contagem de N0 (MAE de 28,2), porque deslocou a calibração do limiar escolhido na validação. Por isso, o modelo final não usa TTA.
+
+#### Leitura dos resultados {#contagem-por-nivel-leitura-dos-resultados}
+
+- Em N1, no nível parcialmente oculto, que motivou a proibição da conta por diferença, o erro médio ficou abaixo de 1 ave (2,9%). Nesse teste, a medição direta evitou atribuir a N1 os erros de contagem dos outros níveis.
+- **O quadro noturno foi contado sem erro** em N0, N1 e N2.
+- **N0 tem subcontagem de cerca de 12%** no teste diurno. O diagnóstico na validação mostrou que o modelo localiza 112 de 132 aves pelo centro, mas só 84 passam no critério de IoU ≥ 0,5. Logo, parte da perda de mAP vem do tamanho das caixas, e parte da subcontagem vem das aves pequenas e aglomeradas do fundo do corredor.
+- **N2 tem MAPE alto por ter poucas aves**: com 0 a 2 aves no nível durante o dia, 1 ave a mais representa 50%.
+- A queda entre validação e teste mostra que **9 quadros de treino são pouco**. A contagem manual de N0 também cresceu de 101 para 116 aves ao longo do vídeo, e parte desse crescimento pode refletir a anotação mais minuciosa dos últimos quadros.
+
+### Limitações e próximos passos {#contagem-por-nivel-limitações-e-próximos-passos}
+
+Concluímos nesta entrega o modelo de identificação construído do zero e a sua adaptação para contagem por nível. Registramos o que ainda não foi feito, para orientar a próxima etapa:
+
+1. **Comparação com o Chicken-YOLO** [20]: deixamos pronta a reimplementação do baseline em `src/raiarnet/baseline/` (YOLO11n com MSEIExtractor, CGDown e DHMSEAM, com 5,43 milhões de parâmetros e 8,5 GFLOPs, próximos dos 5,5 milhões e 9,0 GFLOPs do artigo) e o protocolo de benchmark em `src/raiarnet/evaluation/benchmark.py`, com mesmos quadros, ROI e escolha de limiar na validação. A comparação será feita em conjunto com o colega responsável pelo Chicken-YOLO. Um ponto de atenção: o baseline precisa receber número de passos de otimização equivalente ao da RaiarNet (cerca de 3.000), pois 250 épocas sobre 9 imagens correspondem a apenas 750 passos.
+2. **Ablação do pré-processamento com o modelo**: o modelo final usa os quadros originais com a máscara de ROI. As medidas sem modelo estão em [tratamento de imagens](raiarnet.mdx#tratamento-de-imagens-tratamento-de-imagens-do-aviário); falta treinar a RaiarNet com cada pipeline de realce.
+3. **Mais dados de treino**: densificar os rótulos por fluxo óptico (já implementado em `src/raiarnet/labeling/densify.py`, com 22 quadros extras) e anotar gravações de outros dias e idades do lote.
+4. **Regressão de tamanho e recall no fundo de N0**: aumentar o peso das perdas de caixa e a resolução efetiva no fundo do corredor.
+5. **Vista complementar C2**: testar se a vista reduz a oclusão de N1 com polígonos próprios e resultados separados. A cobertura de N2 à noite permanece uma lacuna; verificar com a Raiar se é possível resolvê-la com o enquadramento e os dados disponíveis antes de propor outra câmera.
+
+### Referências {#contagem-por-nivel-referencias}
+
+[19] KALMAN, R. E. A new approach to linear filtering and prediction problems. **Journal of Basic Engineering**, v. 82, n. 1, p. 35-45, 1960.
+
+[20] PAN, F. *et al*. Occlusion-aware caged chicken detection based on multi-scale edge information extractor and context fusion. **Animals**, v. 15, n. 18, 2669, 2025. Disponível em: [https://doi.org/10.3390/ani15182669](https://doi.org/10.3390/ani15182669). Acesso em: 14 out. 2026.

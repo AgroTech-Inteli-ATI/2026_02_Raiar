@@ -1,0 +1,355 @@
+---
+title: "Glossário"
+description: "Significado dos termos de criação de aves, imagens e software usados no projeto."
+---
+
+# Glossário
+
+
+## Glossário em linguagem simples {#glossario-glossário-em-linguagem-simples}
+
+Este glossário explica os termos usados na [proposta de solução](../index.mdx#proposta-de-solucao-proposta-de-solução) e no [dicionário de dados](../tecnico/dados.mdx#dicionario-de-dados-dicionário-de-dados-e-coleta-inicial). Quando aparece um nome técnico, a ideia é dizer o que ele significa para este projeto.
+
+### Aviário e criação {#glossario-aviário-e-criação}
+
+**Aviário:** o galpão onde as aves vivem. O termo identifica o edifício e sua localização. O equipamento Jump Start fica dentro do aviário.
+
+**Box:** divisão interna de um aviário. Cada divisão pode receber um nome ou código, como `B1` ou `B2`; esse identificador deve ser interpretado junto ao aviário ao qual pertence.
+
+**Jump Start:** nome de um sistema de recria de aves da Vencomatic. O sistema tem linhas de alimentação e água e plataformas reguláveis. Essas plataformas ajudam as aves jovens a aprender a subir e se movimentar entre os níveis e poleiros. Na documentação, "Jump Start" designa essa estrutura específica. Consulte a [descrição do fabricante](https://www.vencomaticgroup.com/layers/jump-start).
+
+**Recria:** período em que as aves jovens crescem e aprendem a se movimentar na estrutura antes de serem transferidas para o local de produção de ovos. A idade exata a observar no projeto ainda precisa ser combinada com a Raiar.
+
+**Lote:** grupo de aves criado junto e identificado pela Raiar. O sistema registra qual lote aparece na imagem; a proposta não pretende reconhecer cada ave individualmente.
+
+**Nível:** uma plataforma ou parte da estrutura que o parceiro identifica como posição distinta para as aves. Os nomes e limites dos níveis serão confirmados na visita.
+
+**Poleiro:** barra ou apoio onde as aves podem pousar e descansar.
+
+### Imagens e contagens {#glossario-imagens-e-contagens}
+
+**Visão computacional:** uso de programas de computador para extrair informações de imagens. Aqui, a tarefa proposta é contar aves que aparecem em cada nível visível.
+
+**Câmera:** aparelho que grava ou captura imagens. O ângulo e o que aparece na imagem determinam quais aves e níveis podem ser avaliados.
+
+**Campo de visão:** a parte do aviário que aparece na imagem de uma câmera. Uma câmera não mostra necessariamente todos os níveis nem todas as aves.
+
+**Quadro:** uma única imagem retirada de uma gravação de vídeo. Medir quadros separados permite acompanhar vários momentos, mas não significa que sejam sempre as mesmas aves.
+
+**Aves visíveis:** somente as aves que podem ser observadas no quadro. As contagens e porcentagens propostas referem-se a elas, não ao total de aves do lote.
+
+**Zona:** área marcada sobre a imagem para indicar um nível. A equipe desenha e identifica essas áreas a partir de uma imagem de referência; uma zona pode não corresponder perfeitamente a um nível se o ângulo ou a estrutura mudar.
+
+**Oclusão:** quando um objeto, outra ave ou uma parte da estrutura esconde uma ave na imagem. O sistema não consegue contar com segurança o que não aparece.
+
+**Anotação:** registro feito por uma pessoa para indicar quantas aves aparecem e a que nível pertencem. Essas contagens manuais servem para conferir as estimativas automáticas.
+
+**Modelo:** neste projeto, um programa treinado com exemplos de imagens para localizar e contar aves. A contagem do programa precisa ser comparada com contagens humanas antes de ser considerada útil.
+
+**Limiar de confiança:** valor mínimo escolhido pelo projeto para aceitar uma identificação feita pelo modelo. Mudar esse valor pode alterar a quantidade de aves identificadas; por isso ele deve ficar registrado em cada resultado.
+
+### Dados e medidas {#glossario-dados-e-medidas}
+
+**Metadados:** informações que explicam uma imagem, por exemplo a câmera, o horário, o aviário e o lote. Sem elas, pode ser difícil entender de onde veio uma contagem.
+
+**Frequência de captura:** quantas vezes o sistema guarda uma imagem e quanto tempo há entre uma imagem e a seguinte. O intervalo de 20 segundos citado no plano é apenas uma sugestão para a primeira amostra.
+
+**Base de dados:** conjunto organizado de imagens, identificações e contagens do projeto. A base para treinar ou conferir o programa ainda será montada; não recebemos as imagens nesta etapa.
+
+**Contagem por nível:** quantidade de aves visíveis atribuídas a cada zona em um quadro.
+
+**Percentual por nível:** a parte das aves que receberam um nível identificável e aparecem em cada nível. Se há 12 aves no nível A e 8 no B, das 20 atribuídas, os percentuais são 60% e 40%. Aves ocultas, sem nível atribuído ou fora da imagem não fazem parte dessa conta.
+
+**Ponto percentual:** diferença direta entre dois percentuais. Se uma medida vai de 40% para 50%, aumenta 10 pontos percentuais. Isso não significa um aumento de 10%.
+
+**Telemetria:** medidas registradas por aparelhos ao longo do tempo, como leituras de sensores. Temperatura ou pressão, se disponíveis, são exemplos. Uma mudança ao mesmo tempo que outra não prova que uma causou a outra.
+
+**Histórico ou série temporal:** registros organizados por horário. Neste projeto, permitem consultar contagens de diferentes momentos, sem somar aves filmadas em quadros distintos como se fossem animais diferentes.
+
+**Agregação:** resumo de várias medidas de um período, por exemplo a média de percentuais de vários quadros durante uma hora. Os quadros e o horário incluídos no resumo devem ser identificáveis.
+
+### Software, identificação e validação {#glossario-software-identificação-e-validação}
+
+**MVP, ou produto mínimo viável:** a menor versão funcional do projeto que permite verificar se a medição funciona e se tem utilidade para quem vai consultá-la. Não significa que o sistema já esteja pronto para instalação na Raiar.
+
+**Processamento local ou edge:** análise feita perto da câmera, por exemplo num pequeno computador instalado com o equipamento. Pode continuar a funcionar mesmo quando não há comunicação com uma plataforma central.
+
+**Dispositivo:** aparelho que participa da captura, análise ou envio dos dados. A câmera, o computador de processamento e o sensor podem ser equipamentos diferentes.
+
+**Sincronização:** envio posterior dos dados que ficaram guardados no equipamento local quando a conexão à plataforma estava indisponível.
+
+**Retenção:** período pelo qual imagens e outros dados são guardados. O prazo ainda precisa ser combinado com a Raiar.
+
+**ID, ou identificador:** código usado para distinguir um aviário, lote, câmera, quadro ou outro registro. IDs ajudam a relacionar informações sem depender de nomes digitados de formas diferentes.
+
+**Versão:** registro de qual configuração, desenho das zonas ou modelo foi usado numa análise. Guardar versões permite entender como o resultado foi produzido.
+
+**Data e horário com fuso:** registrar também a diferença em relação ao horário universal. Por exemplo, `2026-09-24T14:30:00-03:00` indica 14h30 num local três horas atrás do UTC. Isso evita relacionar uma imagem ao dia ou à leitura errados quando os aparelhos têm horários diferentes.
+
+**UTC:** sigla do horário universal usado como referência comum no armazenamento. Os horários continuam a poder ser mostrados na hora local do aviário.
+
+**Formato ISO 8601:** padrão escrito para datas e horários. A exemplo acima mostra a data, a hora e a diferença do fuso num só texto.
+
+**Fuso horário IANA:** nome padronizado de uma região, como `America/Sao_Paulo`. Ajuda o sistema a aplicar regras locais de horário.
+
+**CSV:** formato simples de planilha em texto, com as informações separadas em colunas. Pode ser aberto em programas de planilha.
+
+**SHA-256:** cálculo que gera uma impressão digital curta do conteúdo de um arquivo. Permite perceber se dois arquivos são iguais ou se um foi alterado. Não revela o conteúdo nem substitui uma cópia de segurança.
+
+**Nulo (`null`):** campo sem valor informado ou sem medida disponível. Diferente de zero: zero significa que a contagem válida foi zero; nulo significa que não há uma contagem válida.
+
+**P0 e P1:** marcadores da prioridade no pedido de dados. P0 significa necessário para iniciar a avaliação. P1 significa complementar, que pode ser obtido depois.
+
+**Métrica:** medida usada para avaliar um resultado. Neste projeto, o erro de contagem compara o número estimado pelo programa com o número contado pelas pessoas.
+
+**MAE, erro absoluto médio:** média do tamanho da diferença entre a contagem automática e a contagem feita por pessoas, expressa em aves. Um MAE de 2 significaria uma diferença média de 2 aves por comparação.
+
+**Erro percentual:** diferença entre as contagens expressa como proporção de uma contagem de referência. Não tem um resultado definido quando a referência contém zero aves.
+
+**Conjunto de teste:** grupo de imagens reservado para conferir o modelo depois que ele foi desenvolvido. Separá-lo das imagens de treino ajuda a verificar seu desempenho em imagens que não foram usadas para ajustá-lo.
+
+**Treino, validação e teste:** três usos diferentes para os exemplos. Treino ensina o programa; validação ajuda a escolher seus ajustes; teste mede o resultado final com exemplos reservados. Imagens quase iguais do mesmo vídeo devem ficar juntas para não facilitar artificialmente o teste.
+
+**Cobertura da coleta:** proporção de imagens esperadas que foram recebidas e puderam ser avaliadas. Uma imagem em falta ou inadequada deve ser marcada como lacuna, não contada como se não houvesse aves.
+
+**Bbox ou caixa delimitadora:** retângulo desenhado ao redor de uma ave na imagem para registrar a posição do animal. As letras `px` significam pixels, os pequenos pontos que compõem a imagem digital.
+
+**RF e RNF:** abreviações de requisito funcional e requisito não funcional. RF descreve uma tarefa que o sistema deve realizar. RNF descreve uma condição de qualidade, por exemplo o tempo de resposta ou o que acontece quando a conexão cai. Os requisitos associados a esta proposta ainda são uma versão inicial.
+
+### Detecção e treinamento de aves {#glossario-detecção-e-treinamento-de-aves}
+
+**OCR:** reconhecimento automático de texto em imagens. Localizar galinhas é uma tarefa de detecção de objetos.
+
+**Detecção de objetos:** localização de objetos na imagem, com uma caixa, uma classe e uma confiança para cada previsão.
+
+**YOLO:** família de modelos para tarefas de visão computacional, incluindo detecção de objetos. O módulo de aves utiliza a implementação da Ultralytics.
+
+**COCO:** conjunto público de imagens e anotações de objetos. Sua classe `bird` reúne aves em geral; não equivale a uma classe especializada em galinhas.
+
+**Pesos ou checkpoint:** arquivo que guarda os parâmetros aprendidos por um modelo. O mesmo código pode carregar versões diferentes desse arquivo.
+
+**Inferência:** aplicação de um modelo já treinado a uma imagem nova para produzir detecções.
+
+**Fine-tuning:** continuação do treinamento de um modelo pré-treinado com os exemplos do projeto. Permite adaptar a detecção às imagens da Raiar.
+
+**Dataset:** conjunto de imagens, anotações e informações sobre sua origem. Neste projeto, possui versões e partições de treino, validação e teste.
+
+**Grupo de origem:** conjunto de quadros da mesma sessão ou de trechos próximos da mesma câmera e dia. O grupo permanece inteiro em uma partição para evitar que imagens quase iguais facilitem artificialmente a avaliação.
+
+**Precisão:** proporção das detecções aceitas que correspondem às aves anotadas, conforme o critério de correspondência utilizado.
+
+**Recall:** proporção das aves anotadas que o detector conseguiu encontrar.
+
+**Falso positivo e falso negativo:** uma detecção que não corresponde a uma ave anotada e uma ave anotada que o detector deixou de encontrar, respectivamente.
+
+**IoU:** proporção de interseção sobre união entre duas caixas. Serve para medir o quanto a caixa prevista coincide com a caixa manual e também participa do filtro de detecções sobrepostas.
+
+**AP e mAP:** medidas que resumem a relação entre precisão e recall. AP50 utiliza IoU de 0,50; mAP50–95 considera limiares de 0,50 a 0,95. Essas métricas não substituem o erro de contagem por nível.
+
+**SQLite:** banco de dados guardado em um arquivo local. Preserva as análises mesmo quando a plataforma central está indisponível.
+
+**JSON e JSONL:** formatos de texto para dados estruturados. JSONL guarda um objeto JSON por linha. Assim, os registros de quadros podem ser acrescentados ao arquivo.
+
+**YAML:** formato de texto usado para configurações de modelo, dataset e câmera.
+
+**Benchmark:** ensaio de desempenho sob condições registradas, por exemplo tempo de processamento, CPU e memória.
+
+**ONNX e NCNN:** formatos e ferramentas de execução para usar modelos exportados. A qualidade e a velocidade precisam ser verificadas novamente após a exportação.
+
+**Backend e endpoint:** serviço que recebe e armazena resultados e endereço de uma operação desse serviço. O backend da Sprint 4 também oferece cadastros e consultas à aplicação.
+
+**ROI, ou região de interesse:** parte definida da imagem que será analisada ou anotada. Contar aves em uma ROI não representa a contagem da imagem inteira.
+
+**SAHI:** biblioteca que divide uma imagem em blocos, aplica o detector em cada um e combina as caixas nas coordenadas originais. Pode ajudar com objetos pequenos, mas sua utilidade precisa ser medida no material real.
+
+**NMS:** filtro que reduz caixas repetidas sobre o mesmo objeto conforme a sobreposição e a confiança. As regras utilizadas devem ficar registradas.
+
+**PNG e JPEG:** formatos de imagem. PNG preserva os pixels ao salvar; JPEG pode acrescentar compressão com perda. Usar PNG na extração não recupera detalhes já perdidos no vídeo.
+
+**Notebook Jupyter:** documento com células de texto e código Python, cujas saídas podem incluir tabelas, imagens e controles. Neste projeto, permite executar o detector e visualizar suas previsões.
+
+**Kernel:** processo Python que executa as células de um notebook. Deve usar o ambiente `.venv` do projeto para ter acesso às mesmas dependências e ao detector.
+
+### Modelo de visão computacional construído do zero {#glossario-modelo-de-visão-computacional-construído-do-zero}
+
+Os termos abaixo aparecem nas páginas do [modelo de visão computacional](../resultados.mdx#index-modelo-de-visão-computacional-construído-do-zero).
+
+**N0, N1 e N2:** níveis observados pela câmera C1 no Jump Start. N0 é o piso de maravalha, N1 é o meio, parcialmente oculto sob a borda das mesas, e N2 é a plataforma superior.
+
+**Divisória verde:** divisória física fixa no fundo da seção, usada como limite fixo da região de interesse.
+
+**Região azul:** área das estruturas e mesas laterais e centrais, que mudam de posição e altura ao longo da recria. Não é uma divisória nem uma área fechada, e as aves circulam por ela.
+
+**Contagem por diferença:** obter um nível subtraindo os outros de um total, como N1 = total − N0 − N2. É proibida no projeto, porque o total não é estável e os erros dos outros níveis seriam transferidos para N1.
+
+**Treino do zero:** treinamento de uma rede neural que parte de pesos aleatórios, sem aproveitar pesos aprendidos em outros conjuntos de dados.
+
+**RaiarNet:** nome do modelo de identificação e contagem de aves que escrevemos do zero em PyTorch para este projeto.
+
+**PyTorch:** biblioteca de código aberto para construir e treinar redes neurais.
+
+**Heatmap de centros:** mapa produzido pela rede em que cada ave aparece como um pico no centro do corpo.
+
+**Mapa de densidade:** mapa produzido pela rede cuja soma, em uma região, estima quantas aves há nela, mesmo quando estão aglomeradas.
+
+**SPD-Conv:** bloco que reduz a resolução reorganizando pixels em canais, sem descartá-los, para preservar objetos pequenos.
+
+**Atenção por coordenadas e CBAM:** blocos que aprendem a dar mais peso às posições e aos canais da imagem que contêm as aves.
+
+**BiFPN:** parte da rede que combina informações de resoluções diferentes, em caminhos de ida e volta, com pesos aprendidos.
+
+**Focal loss e Wise-IoU:** funções de perda usadas no treino. A primeira dá mais peso aos exemplos difíceis do heatmap; a segunda mede quanto a caixa prevista se afasta da caixa de referência.
+
+**Soft-NMS:** variação do NMS que reduz a confiança de caixas sobrepostas em vez de apagá-las, para não eliminar aves aglomeradas.
+
+**Augmentation:** variações artificiais aplicadas às imagens de treino, como grade sintética, borrão e mudança de brilho, para o modelo generalizar melhor.
+
+**CLAHE:** equalização de histograma adaptativa e com limite de contraste, que realça detalhes locais da imagem.
+
+**MSRCR (Retinex):** técnica de realce que separa a iluminação da cor dos objetos para clarear sombras.
+
+**Correção gama adaptativa:** ajuste de brilho que clareia regiões escuras e escurece regiões estouradas conforme a luminância local.
+
+**Filtro bilateral e filtro guiado:** filtros que suavizam ruído e textura sem apagar os contornos.
+
+**Ablação:** experimento que treina o mesmo modelo retirando ou trocando uma parte por vez, para medir a contribuição de cada uma.
+
+**Fluxo óptico:** estimativa do deslocamento de cada pixel entre dois quadros de vídeo, usada para levar as anotações de um quadro ao seguinte.
+
+**SAM (Segment Anything):** modelo de segmentação usado apenas como ferramenta de rotulagem, para ajustar as caixas de referência a partir dos pontos anotados.
+
+**F1:** média harmônica entre precisão e recall (também chamado de revocação). Resume as duas medidas em um único número.
+
+**RMSE e MAPE:** medidas complementares ao MAE. O RMSE dá mais peso aos erros grandes; o MAPE é o erro absoluto médio em percentual da contagem real.
+
+**FPS:** quadros processados por segundo.
+
+**Filtro de Kalman e média móvel exponencial:** técnicas que suavizam a contagem ao longo do vídeo, reduzindo as oscilações entre quadros.
+
+**TTA:** inferência com variações da imagem, como o espelhamento horizontal, cujas saídas são combinadas.
+
+**Chicken-YOLO:** detector de galinhas baseado no YOLO11n, publicado em 2025, que será usado como referência de comparação na próxima etapa.
+
+### Nó de borda e Raspberry Pi {#glossario-nó-de-borda-e-raspberry-pi}
+
+Os termos abaixo aparecem na página do [nó de borda no Raspberry Pi](../tecnico/dispositivo.mdx#provisionamento-raspberry-pi-provisionamento-do-nó-de-borda-com-arch-linux-arm-no-raspberry-pi-4).
+
+**Nó de borda (*Edge Computing*):** computador instalado no próprio aviário que processa as imagens no local, sem enviá-las antes a um servidor remoto.
+
+**Raspberry Pi 4 Model B:** computador de placa única que serve de nó de borda neste projeto, na versão de 4 GB de RAM.
+
+**Arch Linux ARM:** versão do Arch Linux para processadores ARM, usada aqui como sistema operacional do nó.
+
+**`aarch64`:** nome da arquitetura ARM de 64 bits, que o Raspberry Pi 4 executa.
+
+**Headless:** modo de operação sem monitor, teclado ou interface gráfica; o acesso é remoto, por SSH.
+
+**SSH:** protocolo de acesso remoto seguro a um terminal, usado para administrar o nó sem monitor.
+
+**Cartão SD:** meio de armazenamento do nó. Guarda o sistema, o Docker, as imagens dos containers e os resultados. É o boot padrão do Raspberry Pi 4.
+
+**EEPROM e `BOOT_ORDER`:** memória interna do Raspberry Pi 4 que guarda a ordem em que ele tenta iniciar: cartão SD, USB e outras. Com o sistema no cartão SD não é preciso alterá-la; só o caminho alternativo, que parte de um pen drive, exige o USB antes de um cartão que já tenha outro sistema.
+
+**U-Boot:** programa que inicia o Raspberry Pi neste sistema e carrega o kernel a partir da partição de boot.
+
+**`PARTUUID`:** identificador único de uma partição. O boot o usa para achar a raiz do sistema no mesmo dispositivo de onde o kernel foi carregado, que aqui é o cartão SD.
+
+**`gpu_mem`:** parâmetro do `config.txt` que define quanta RAM é reservada à GPU. Em um nó sem monitor, o valor mínimo libera memória para os modelos.
+
+**`journald`:** serviço de logs do sistema. Em modo volátil, guarda os registros na memória e os perde no desligamento.
+
+**`swappiness`:** parâmetro do kernel (`vm.swappiness`) que define o quanto ele prefere mover dados da RAM para o swap. Valores baixos evitam essa troca.
+
+**`wpa_supplicant`:** programa que conecta o Raspberry Pi a uma rede Wi-Fi protegida por senha.
+
+**Docker:** ferramenta que executa programas em **containers**, ambientes isolados com tudo o que cada programa precisa. Mantém a pilha dos modelos separada do sistema.
+
+**V4L2:** interface do kernel Linux para câmeras. Uma câmera USB aparece como um arquivo como `/dev/video0`.
+
+**DVR (servidor de câmeras):** equipamento do aviário que recebe e grava as imagens das câmeras. É a fonte preferida das imagens do nó.
+
+**RTSP:** protocolo que entrega o vídeo de uma câmera ou DVR pela rede, em uma URL como `rtsp://IP:554/canal`. O nó o lê como uma câmera.
+
+**Substream:** segundo fluxo do DVR, de menor resolução, mais leve de decodificar. É o indicado para o nó.
+
+**H.264 e H.265:** formas de comprimir o vídeo. O H.265 comprime mais, mas pesa mais na CPU do Raspberry Pi.
+
+**Backoff:** espera crescente entre novas tentativas depois de uma falha, para não sobrecarregar a conexão.
+
+**Firmware:** programa gravado que um dispositivo de hardware precisa carregar para funcionar. No Linux, o pacote de firmware traz o de centenas de placas, e o nó mantém só o do Raspberry Pi.
+
+**`zram`:** área de swap que fica na própria RAM e guarda os dados comprimidos. Cobre picos de uso de memória sem escrever no cartão SD.
+
+**`NoExtract`:** opção do `pacman.conf` que impede a gravação de certos arquivos, como manuais e traduções, nas instalações de pacotes.
+
+**Imagem de container:** pacote imutável com o programa e tudo o que ele precisa para rodar. O container é uma execução dessa imagem.
+
+**Docker Compose:** ferramenta que descreve, em um único arquivo, vários containers e a forma como eles se conectam, e os sobe com um comando.
+
+**Volume:** pasta do nó ligada a um container, onde os dados sobrevivem quando o container é recriado. Aqui guarda o banco SQLite dos resultados.
+
+**`tmpfs`:** pasta mantida na memória RAM e não no cartão SD. Serve para arquivos temporários, como os quadros capturados, sem desgastar o cartão.
+
+**Build multiplataforma (`buildx`):** construção de uma imagem para outra arquitetura de processador. Permite gerar no notebook uma imagem `arm64` para o Raspberry Pi.
+
+**Modo WAL:** forma de o SQLite gravar alterações em um registro à parte, que permite um processo ler o banco enquanto outro escreve.
+
+**RTC (relógio de tempo real):** módulo com bateria que mantém a hora quando o aparelho está desligado. O Raspberry Pi não tem um, então depende da internet para acertar o relógio.
+
+**RAM:** memória de trabalho do computador, onde ficam os programas em execução. É mais rápida que o armazenamento e se esvazia quando o equipamento desliga.
+
+**CPU:** processador, a parte do computador que executa os cálculos. O Raspberry Pi 4 tem quatro núcleos, e os requisitos limitam o uso médio a 80%.
+
+**Pacote compactado (*tarball*):** arquivo único (`.tar.gz`) que reúne vários arquivos compactados. O sistema Arch Linux ARM é distribuído assim.
+
+**md5:** código curto calculado a partir de um arquivo. Se o código do arquivo baixado coincide com o publicado, o arquivo não veio corrompido.
+
+**Espelho (*mirror*):** servidor que mantém uma cópia dos arquivos de download. Trocar de espelho pode acelerar uma transferência lenta.
+
+**DHCP:** serviço da rede que atribui um endereço ao equipamento automaticamente, sem configuração manual.
+
+**Ethernet:** conexão de rede por cabo. É mais estável que o Wi-Fi e preferível entre o nó e o DVR.
+
+**PSK:** forma embaralhada da senha do Wi-Fi. Guardá-la no lugar da senha em texto evita expor a senha original.
+
+**CUDA:** tecnologia das placas de vídeo NVIDIA para acelerar cálculos. O Raspberry Pi não tem essa placa, então as bibliotecas CUDA só ocupam espaço na imagem.
+
+**Tag (versão da imagem):** etiqueta que identifica uma versão da imagem de container, como `0.1.0`. Voltar a uma versão anterior é escolher a etiqueta antiga.
+
+**Token:** senha de acesso que identifica o nó perante o backend. Fica em um arquivo `.env` protegido e nunca no repositório.
+
+**HTTPS:** forma protegida de transmitir dados pela internet, com criptografia. O envio ao backend só aceita essa forma.
+
+**Somente leitura (*read-only*):** modo em que o container não pode alterar seus próprios arquivos. Protege o sistema e o cartão SD, mas exige pastas separadas, gravadas em memória ou em volume, para o que o programa precisa escrever.
+
+**Healthcheck:** verificação automática que informa se um serviço continua funcionando. Ainda é uma melhoria prevista para o nó.
+
+**Supabase:** serviço que oferece um banco de dados PostgreSQL pela internet, com funções que rodam no servidor. É onde as análises enviadas pelos nós de borda são guardadas.
+
+**Edge Function:** pequeno programa que roda no servidor do Supabase e atende a um endereço da internet. Aqui, recebe os lotes do nó, confere o token e manda gravar no banco.
+
+**Idempotente:** operação que, repetida, produz o mesmo resultado que uma única execução. O envio de análises é assim: reenviar uma análise já gravada não a duplica.
+
+**DVR simulado:** servidor de vídeo de teste que publica um vídeo gravado em repetição, como se fosse uma câmera, para validar a captura sem o DVR real.
+
+### Backend e banco de dados {#glossario-backend-e-banco-de-dados}
+
+Os termos abaixo apoiam a documentação do [backend da Sprint 4](../tecnico/backend.mdx#backend-backend-e-integração-com-o-banco-de-dados).
+
+**API HTTP:** conjunto de operações acessíveis por requisições pela rede. Nesta API, GET consulta dados, POST cadastra ou envia informações e PATCH atualiza campos de um registro.
+
+**Node.js, TypeScript e Fastify:** Node.js executa JavaScript no servidor; TypeScript acrescenta verificação de tipos ao código; Fastify organiza o servidor HTTP e suas rotas.
+
+**PostgreSQL e SQL:** PostgreSQL é o banco relacional usado pelo backend. SQL é a linguagem que define suas tabelas e permite consultar e alterar registros.
+
+**Migração:** script versionado que cria ou altera a estrutura do banco em uma ordem conhecida.
+
+**Pool de conexões:** conjunto de conexões com o banco que o servidor reutiliza para atender às requisições.
+
+**Transação:** conjunto de alterações confirmado por inteiro ou desfeito em caso de falha. Permite encerrar uma ocupação e atualizar o lote atual sem deixar a operação pela metade.
+
+**Paginação:** divisão de uma lista em partes limitadas, para evitar carregar todo o histórico de uma vez.
+
+**TLS:** proteção da comunicação por criptografia. A verificação do certificado permite conferir a identidade do servidor do banco.
+
+**JWT:** token assinado usado para representar uma sessão autenticada. Na integração com Supabase Auth, o backend valida esse token antes de aceitar o perfil do usuário.

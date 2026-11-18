@@ -1,0 +1,239 @@
+---
+title: "Perfis de uso"
+description: "Perfis hipotéticos de operação, produção e gestão, com suas necessidades de consulta."
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+# Perfis de uso
+
+
+## Personas: acompanhamento da recria {#index-personas-acompanhamento-da-recria}
+
+Usamos três perfis hipotéticos para discutir quem registra, consulta e interpreta os dados da recria. Os nomes e retratos são ilustrativos; não representam colaboradores da Raiar.
+
+### Foco atualizado {#index-foco-atualizado}
+
+As personas partem do foco informado para o projeto: acompanhar os lotes durante a recria, registrar e consultar informações ao longo do ciclo e apoiar decisões da equipe. O fluxo descrito é de acompanhamento periódico; não considera alertas de campo em tempo real.
+
+O material disponível ainda não define quais indicadores serão registrados, com que frequência, nem quais faixas ou metas serão usadas. Por isso, as histórias de usuário permanecem centradas em organizar, consultar e comparar registros, sem presumir métricas ou capacidades específicas.
+
+### Perfis {#index-perfis}
+
+| Persona | Relação com o acompanhamento | Principal necessidade |
+| --- | --- | --- |
+| [Joana: operadora da recria](perfis.mdx#operadora-de-campo-joana--operadora-da-recria) | Registra observações da rotina e consulta o histórico dos lotes acompanhados. | Manter informações do lote organizadas e fáceis de consultar. |
+| [Marina: profissional de produção e bem-estar](perfis.mdx#profissional-de-producao-marina--profissional-de-produção-e-bem-estar) | Analisa registros por lote e fase da recria para apoiar a avaliação zootécnica. | Identificar variações ao longo do ciclo com contexto suficiente. |
+| [Rafael: gestor de qualidade e operação](perfis.mdx#gestor-qualidade-rafael--gestor-de-qualidade-e-operação) | Acompanha uma visão consolidada dos lotes e do andamento dos ciclos. | Usar informações consistentes para organizar decisões de rotina. |
+
+### Necessidades comuns {#index-necessidades-comuns}
+
+- Consultar informações associadas ao lote e ao período da recria.
+- Entender quando e em qual contexto um registro foi feito.
+- Acompanhar a evolução ao longo do tempo com base nos critérios definidos pela Raiar.
+- Distinguir registros observados de interpretações ou conclusões técnicas.
+- Usar o sistema em um fluxo de consulta e registro periódico, sem depender de alertas em tempo real.
+
+### Pontos a validar com a Raiar {#index-pontos-a-validar-com-a-raiar}
+
+- Quais dados e observações fazem parte do acompanhamento da recria.
+- Como identificar lotes, instalações e fases ou idades do ciclo.
+- Qual é a frequência de registro e quem pode inserir ou consultar informações.
+- Quais metas, comparações e resumos são úteis para cada perfil.
+
+As rotinas e necessidades desses perfis ainda precisam ser confirmadas com a equipe da Raiar.
+
+
+## Joana: operadora da recria {#operadora-de-campo-joana--operadora-da-recria}
+
+<div className="persona-hero">
+  <figure className="persona-hero__figure">
+    <img className="persona-hero__portrait" src={useBaseUrl('/img/personas/joana-recria.png')} alt="Retrato ilustrativo de Joana acompanhando frangas em uma instalação de recria" />
+    <figcaption>Retrato fictício para representar a persona</figcaption>
+  </figure>
+  <div className="persona-hero__copy">
+    <p className="persona-hero__eyebrow">Perfil hipotético · operação da recria</p>
+    <blockquote>"Quero manter as informações do lote organizadas para acompanhar o ciclo junto com a equipe."</blockquote>
+    <p>Joana representa quem acompanha a rotina dos lotes na recria. Suas tarefas e responsabilidades precisam ser confirmadas com a Raiar.</p>
+  </div>
+</div>
+
+### Contexto {#operadora-de-campo-contexto}
+
+Joana acompanha o dia a dia dos lotes na recria e pode registrar observações ou medições definidas pela equipe técnica. Ela precisa consultar o que já foi anotado para manter a continuidade entre as rotinas e compartilhar informações com outras pessoas da operação.
+
+### Objetivos {#operadora-de-campo-objetivos}
+
+- Registrar informações da rotina ligadas ao lote e ao período correspondente.
+- Consultar registros anteriores sem depender de anotações dispersas.
+- Comunicar à equipe técnica o que observou durante o acompanhamento.
+- Manter um histórico organizado ao longo do ciclo de recria.
+
+### Dificuldades {#operadora-de-campo-dificuldades}
+
+- Registros distribuídos em diferentes meios podem dificultar a consulta posterior.
+- Informações sem data ou identificação do lote perdem contexto.
+- Rotinas diferentes entre equipes podem tornar os registros difíceis de comparar.
+
+### Necessidades para o sistema {#operadora-de-campo-necessidades-para-o-sistema}
+
+- Um fluxo simples para registrar e consultar informações periódicas.
+- Identificação clara do lote e do período a que cada registro se refere.
+- Campos e instruções alinhados ao procedimento definido pela Raiar.
+- Histórico legível que ajude a compartilhar observações com a equipe técnica.
+
+### Jornada de acompanhamento a validar {#operadora-de-campo-jornada-de-acompanhamento-a-validar}
+
+1. Joana seleciona o lote e o período da recria que está acompanhando.
+2. Registra as observações ou medições previstas na rotina acordada.
+3. Consulta o histórico para verificar registros anteriores do mesmo lote.
+4. Compartilha informações relevantes com a equipe técnica durante o acompanhamento periódico.
+
+Esta jornada não depende de notificações ou alertas em tempo real. Os dados e a frequência de registro ainda precisam ser definidos com a Raiar.
+
+### História de usuário {#operadora-de-campo-história-de-usuário}
+
+> **Como** operadora da recria, **eu quero** registrar e consultar observações periódicas por lote e período, **para** acompanhar o ciclo e compartilhar um histórico organizado com a equipe técnica.
+
+### Critérios de experiência {#operadora-de-campo-critérios-de-experiência}
+
+- O registro mantém associação explícita com lote e data ou período.
+- Joana consegue localizar o histórico sem precisar interpretar métricas ainda não definidas.
+- A interface diferencia dado registrado de comentário ou interpretação.
+
+### Perguntas para validação {#operadora-de-campo-perguntas-para-validação}
+
+- Quais observações e medições fazem parte da rotina da operação?
+- Como a equipe identifica cada lote e suas fases durante a recria?
+- Quem registra as informações e em que momento da rotina?
+- Quais informações Joana precisa compartilhar com a equipe técnica?
+
+
+## Marina: profissional de produção e bem-estar {#profissional-de-producao-marina--profissional-de-produção-e-bem-estar}
+
+<div className="persona-hero">
+  <figure className="persona-hero__figure">
+    <img className="persona-hero__portrait" src={useBaseUrl('/img/personas/marina-recria.png')} alt="Retrato ilustrativo de Marina observando frangas em uma instalação de recria" />
+    <figcaption>Retrato fictício para representar a persona</figcaption>
+  </figure>
+  <div className="persona-hero__copy">
+    <p className="persona-hero__eyebrow">Perfil hipotético · análise zootécnica</p>
+    <blockquote>"Quero comparar os registros do ciclo para identificar mudanças que merecem uma avaliação técnica."</blockquote>
+    <p>Marina representa uma profissional de produção ou bem-estar que interpreta informações dos lotes em conjunto com os critérios técnicos definidos pela Raiar. O cargo e os indicadores relevantes ainda devem ser validados.</p>
+  </div>
+</div>
+
+### Contexto {#profissional-de-producao-contexto}
+
+Marina acompanha a evolução dos lotes durante a recria. Para avaliar o andamento do ciclo, precisa consultar informações organizadas por lote e período e interpretá-las com conhecimento técnico, sem tratar um registro isolado como diagnóstico.
+
+### Objetivos {#profissional-de-producao-objetivos}
+
+- Acompanhar mudanças registradas ao longo do ciclo de recria.
+- Comparar informações entre períodos ou lotes quando os critérios forem equivalentes.
+- Identificar pontos que merecem investigação ou discussão com a equipe.
+- Relacionar os dados ao contexto e aos parâmetros definidos pela Raiar.
+
+### Dificuldades {#profissional-de-producao-dificuldades}
+
+- Registros sem contexto temporal ou identificação consistente do lote dificultam a análise.
+- Comparações podem ser enganosas se os períodos ou critérios forem diferentes.
+- Uma variação observada não explica, sozinha, sua causa ou consequência.
+
+### Necessidades para o sistema {#profissional-de-producao-necessidades-para-o-sistema}
+
+- Histórico consultável por lote e período da recria.
+- Comparação clara entre registros compatíveis, com origem e data visíveis.
+- Apresentação dos indicadores e parâmetros somente após definição com a equipe técnica.
+- Separação visual entre informações registradas e interpretações profissionais.
+
+### Jornada de acompanhamento a validar {#profissional-de-producao-jornada-de-acompanhamento-a-validar}
+
+1. Marina seleciona um lote e o período que deseja analisar.
+2. Consulta a evolução dos registros disponíveis ao longo do ciclo.
+3. Compara períodos ou lotes usando critérios acordados com a Raiar.
+4. Discute variações relevantes com a equipe antes de associá-las a uma causa.
+
+O fluxo é de consulta e análise periódica; não pressupõe alertas em tempo real nem conclusões automáticas.
+
+### História de usuário {#profissional-de-producao-história-de-usuário}
+
+> **Como** profissional de produção e bem-estar, **eu quero** consultar e comparar registros da recria por lote e período, **para** identificar variações e orientar uma avaliação técnica contextualizada.
+
+### Critérios de experiência {#profissional-de-producao-critérios-de-experiência}
+
+- Cada dado exibe o lote e o período a que se refere.
+- Comparações não misturam períodos ou critérios diferentes sem deixar isso explícito.
+- O sistema não apresenta associação ou variação como causa comprovada.
+
+### Perguntas para validação {#profissional-de-producao-perguntas-para-validação}
+
+- Quais indicadores e parâmetros a equipe técnica usa durante a recria?
+- Quais fases e recortes temporais fazem sentido para a análise?
+- Que comparações entre lotes são válidas para a Raiar?
+- Quem deve interpretar uma variação antes de transformá-la em decisão de manejo?
+
+
+## Rafael: gestor de qualidade e operação {#gestor-qualidade-rafael--gestor-de-qualidade-e-operação}
+
+<div className="persona-hero">
+  <figure className="persona-hero__figure">
+    <img className="persona-hero__portrait" src={useBaseUrl('/img/personas/rafael-recria.png')} alt="Retrato ilustrativo de Rafael consultando registros de lotes em recria" />
+    <figcaption>Retrato fictício para representar a persona</figcaption>
+  </figure>
+  <div className="persona-hero__copy">
+    <p className="persona-hero__eyebrow">Perfil hipotético · gestão da operação</p>
+    <blockquote>"Preciso ter uma visão consistente dos lotes para organizar as decisões ao longo da recria."</blockquote>
+    <p>Rafael representa quem acompanha a operação e o andamento dos ciclos de recria. Seu acesso aos dados e suas responsabilidades precisam ser confirmados com a Raiar.</p>
+  </div>
+</div>
+
+### Contexto {#gestor-qualidade-contexto}
+
+Rafael precisa acompanhar o andamento dos lotes sem depender apenas de relatos pontuais. Uma visão consolidada pode ajudá-lo a entender o histórico, preparar conversas com a equipe técnica e organizar decisões de rotina.
+
+### Objetivos {#gestor-qualidade-objetivos}
+
+- Ter uma visão geral do andamento dos lotes durante a recria.
+- Consultar o histórico de cada lote quando precisar entender uma situação.
+- Identificar períodos ou lotes que precisam de acompanhamento adicional, de acordo com os critérios da Raiar.
+- Usar informações consistentes para planejar decisões operacionais.
+
+### Dificuldades {#gestor-qualidade-dificuldades}
+
+- Informações dispersas dificultam obter uma visão consolidada dos ciclos.
+- Resumos sem acesso ao histórico podem esconder contexto importante.
+- Indicadores sem definição comum podem levar a interpretações inconsistentes.
+
+### Necessidades para o sistema {#gestor-qualidade-necessidades-para-o-sistema}
+
+- Uma visão resumida por lote e período da recria.
+- Acesso ao histórico e à origem dos dados apresentados.
+- Recortes ou comparações alinhados aos critérios definidos pela equipe técnica.
+- Linguagem clara que diferencie registro, resumo e interpretação.
+
+### Jornada de acompanhamento a validar {#gestor-qualidade-jornada-de-acompanhamento-a-validar}
+
+1. Rafael consulta uma visão periódica dos lotes em recria.
+2. Seleciona um lote para entender o histórico e o período correspondente.
+3. Usa os registros e critérios acordados para preparar uma conversa com a equipe.
+4. Acompanha as decisões de rotina nas consultas seguintes.
+
+Esta jornada se baseia em consultas ao histórico, não em notificações instantâneas. Os resumos e critérios que a gestão precisa ainda devem ser definidos com a Raiar.
+
+### História de usuário {#gestor-qualidade-história-de-usuário}
+
+> **Como** gestor de qualidade e operação, **eu quero** consultar um resumo do andamento dos lotes e acessar seu histórico de recria, **para** organizar decisões de rotina com base em informações consistentes.
+
+### Critérios de experiência {#gestor-qualidade-critérios-de-experiência}
+
+- A visão geral permite identificar o lote e o período sem ambiguidade.
+- Rafael consegue abrir os registros que dão contexto ao resumo.
+- O sistema não sugere uma decisão automática nem envia alertas em tempo real.
+
+### Perguntas para validação {#gestor-qualidade-perguntas-para-validação}
+
+- Quais decisões da gestão devem ser apoiadas pelo acompanhamento da recria?
+- Que resumos ajudam a comparar o andamento dos ciclos?
+- Com que frequência a gestão precisa consultar esses dados?
+- Quais pessoas devem acessar os resumos e os registros detalhados?

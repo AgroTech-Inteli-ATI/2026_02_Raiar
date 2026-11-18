@@ -1,0 +1,169 @@
+---
+title: "Como acompanhar pelo painel"
+description: "Execução do painel, dados disponíveis e integrações ainda pendentes."
+---
+
+# Como acompanhar pelo painel
+
+O painel permite consultar os dados do projeto. Esta página explica como executá-lo e separa os dados disponíveis das demonstrações e propostas.
+
+Para conhecer a interface, comece pela visão geral. Quem fizer a integração deve consultar também os contratos e a autenticação. A proposta de mapa, ao final, lista as decisões pendentes.
+
+A Figura 1 mostra a interface atual com os registros locais de exemplo. O aviso de demonstração faz parte da própria tela.
+
+**Figura 1: Painel executado localmente com alertas demonstrativos**
+
+![Captura do painel com abas, filtros de câmera e data, três avisos fictícios e uma ilustração de exemplo. Os avisos de demonstração e ausência de API estão visíveis.](/img/painel/alertas-demonstrativos.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+A captura foi feita com o frontend executado localmente em 17 de novembro de 2026.  Os dados são fictícios; a imagem não demonstra geração real de alertas.
+
+<div className="figure-links">
+
+[Abrir imagem em tamanho original](/img/painel/alertas-demonstrativos.png).
+
+</div>
+
+## Dashboard e distribuição do aviário {#dashboard-dashboard-e-distribuição-do-aviário}
+
+A integração local carrega cadastros e consulta a saúde da API. Os alertas exibidos ainda são exemplos, e a distribuição espacial depende de definições adicionais.
+
+
+O painel é um site de frontend próprio em `src/frontend/`, separado deste site de documentação. Para executar a partir da raiz do repositório:
+
+```powershell
+cd src/frontend
+if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }
+npm install
+npm run dev
+```
+
+No arquivo `.env.local`, mantenha `VITE_API_BASE_URL=/api`, configure um endereço local em `RAIAR_BACKEND_URL` e defina `RAIAR_DEV_API_TOKEN` com o mesmo valor de `RAIAR_API_TOKEN` do backend. O Vite encaminha `/api` ao backend e adiciona o bearer token no processo Node; o token não é enviado ao código do navegador. Para iniciar o backend, configure `src/backend/.env` com credenciais locais e siga o README do backend.
+
+Com a API configurada, os filtros carregam câmeras e aviários, e o cabeçalho consulta `GET /health`. Os registros de alerta continuam demonstrativos porque não existe uma rota de leitura de alertas. O módulo isolado de distribuição por câmera ainda não está registrado no backend e usa limites provisórios. Em produção, é necessário disponibilizar proxy reverso de mesma origem e autenticação de usuário; o proxy do Vite existe somente durante o desenvolvimento. Consulte [Alertas e dados esperados](painel.mdx#alertas-e-dados-esperados-alertas-e-dados-esperados) e [Proposta para o mapa](painel.mdx#proposta-mapa-de-distribuicao-proposta-para-o-mapa-de-distribuição) para os contratos e limites atuais.
+
+## Alertas e dados esperados {#alertas-e-dados-esperados-alertas-e-dados-esperados}
+
+### Campos disponíveis {#alertas-e-dados-esperados-campos-disponíveis}
+
+A tabela `public.alerts` define os campos `id`, `camera_id`, `aviary_id`, `datetime` e `alarm_type`. As relações permitem identificar a câmera e o aviário. A tela usa esses dados e não atribui severidade, estado de tratamento ou confirmação ao alerta, porque esses conceitos não estão no esquema atual [1].
+
+O schema mantém `public.alerts`, mas o backend integrado não registra uma rota `/alerts` nem popula essa tabela durante a ingestão. A API recebe e consulta análises, e o README do backend identifica a geração de alertas como trabalho pendente [2]. A existência dessa tabela não significa que o painel já receba alertas.
+
+### API disponível e diferença para o painel {#alertas-e-dados-esperados-api-disponível-e-diferença-para-o-painel}
+
+O backend atual oferece `GET /analyses`, que exige `Authorization: Bearer ...`, aceita `camera_id`, `aviary_id`, `lot_id`, `status`, `lot_association_status`, `from`, `to`, `limit` e `offset`, e devolve `{ "data": [...], "pagination": { "limit", "offset", "has_more" } }`. Cada análise contém `id`, `camera_id`, `aviary_id`, `captured_at`, `processed_at`, `status`, contagens e uma lista `levels` com `level_id`, `bird_count` e `percent` [2]. Essa rota consulta análises, não alertas.
+
+O adaptador do dashboard ainda espera `GET {VITE_API_BASE_URL}/alerts` com `{ "alerts": [...] }`. Esse contrato não corresponde a nenhuma rota implementada. Não configure `VITE_API_BASE_URL` para o backend atual esperando que os alertas apareçam: a requisição falhará. O frontend mantém os registros demonstrativos quando a variável está vazia. A integração real depende de o backend definir como uma análise vira alerta, incluir os campos necessários à tela e disponibilizar uma rota autenticada.
+
+Se a decisão for exibir análises em vez de alertas, isso exige uma mudança explícita de produto e um adaptador para `/analyses`; não se deve tratar automaticamente cada análise como um alerta.
+
+### Cadastros que podem alimentar filtros {#alertas-e-dados-esperados-cadastros-que-podem-alimentar-filtros}
+
+`GET /cameras` retorna `{data, pagination}` com `id`, `name`, `raspberry_id`, `model`, `aviary_id` e `active`; permite filtros `raspberry_id`, `aviary_id`, `active`, `limit` e `offset`. `GET /aviaries` fornece os aviários cadastrados. Com a API local configurada, o frontend percorre todas as páginas e usa esses cadastros para os filtros e rótulos. Sem a API ou se a consulta falhar, os filtros de câmera usam valores demonstrativos.
+
+### Contrato futuro sugerido para alertas {#alertas-e-dados-esperados-contrato-futuro-sugerido-para-alertas}
+
+Antes da integração, combinar a regra de geração do alerta, os filtros e a paginação. Uma proposta compatível com o desenho existente da tabela é:
+
+```json
+{
+  "alerts": [
+    {
+      "id": 42,
+      "camera_id": 3,
+      "aviary_id": 1,
+      "datetime": "2026-11-12T09:42:00-03:00",
+      "alarm_type": "valor registrado pelo backend"
+    }
+  ]
+}
+```
+
+Os cinco campos correspondem à tabela atual. O exemplo é uma proposta, não uma rota existente. O backend pode incluir rótulos de câmera e aviário obtidos por consulta às tabelas relacionadas, mas seus formatos precisam ser acordados.
+
+#### Imagem associada {#alertas-e-dados-esperados-imagem-associada}
+
+A tela tem um componente opcional para mostrar uma imagem com uma região destacada. Nem a tabela de alertas atual nem o contrato encontrado no repositório definem imagem ou caixa delimitadora. Para habilitar esse recurso, o backend precisará informar uma URL acessível ao dashboard, o texto alternativo e a caixa da região em coordenadas normalizadas entre `0` e `1` (`x`, `y`, `width`, `height`). A forma de armazenamento, retenção e autorização dessa imagem permanece em aberto.
+
+### Autenticação e origem {#alertas-e-dados-esperados-autenticação-e-origem}
+
+Todas as rotas exceto `GET /health` exigem bearer token. O backend aceita a credencial de serviço `RAIAR_API_TOKEN` ou, quando configurado, JWT de usuário do Supabase Auth cujo `app_metadata.role` seja `gestor` ou `operador`. No desenvolvimento local, o frontend usa o proxy do Vite: `RAIAR_DEV_API_TOKEN` é lido pelo processo Node e enviado no cabeçalho da requisição encaminhada. O cliente do navegador usa somente o caminho relativo `/api`; não recebe o token. Nenhuma credencial deve usar prefixo `VITE_` ou entrar no bundle. O frontend não implementa login. Em produção, o proxy de desenvolvimento não existe; o acesso requer autenticação de usuário e proxy reverso de mesma origem.
+
+O backend não configura CORS. Em desenvolvimento, o proxy local do Vite evita chamadas entre origens diferentes. Em produção, será necessário HTTPS com proxy reverso de mesma origem e autenticação de usuário; CORS irrestrito não deve ser habilitado.
+
+### Comportamento da demonstração {#alertas-e-dados-esperados-comportamento-da-demonstração}
+
+Enquanto a rota não está disponível, a interface lê três registros fictícios por meio do adaptador `src/frontend/src/services/alertsRepository.ts`. Um aviso visível deixa claro que são exemplos, inclusive quando a API fornece câmeras reais. Se a rota de alertas responder 404, a tela informa que os avisos ainda não estão disponíveis neste ambiente e mantém os exemplos. Erros de rede, autenticação ou serviço aparecem com uma mensagem e uma opção para tentar novamente.
+
+### Referências {#alertas-e-dados-esperados-referencias}
+
+[1] AGROTECH INTELI. **Banco de dados: primeira versão**. `src/database/schema.sql` e [documentação do esquema](tecnico/backend.mdx#banco-de-dados-banco-de-dados-primeira-versão). Disponível em: repositório do projeto Raiar. Acesso em: 15 nov. 2026.
+
+[2] AGROTECH INTELI. **Backend e integração com o banco de dados**. [Documentação do backend](tecnico/backend.mdx#backend-backend-e-integração-com-o-banco-de-dados), seções de autenticação, rotas e lacunas conhecidas. Disponível em: repositório do projeto Raiar. Acesso em: 16 nov. 2026.
+
+## Proposta para o mapa de distribuição {#proposta-mapa-de-distribuicao-proposta-para-o-mapa-de-distribuição}
+
+### O que o backend já oferece {#proposta-mapa-de-distribuicao-o-que-o-backend-já-oferece}
+
+O backend persiste análises com `camera_id`, `aviary_id`, horários, totais e estado do processamento. A tabela `analysis_level_count` guarda, por análise, o identificador do nível, a contagem de aves e o percentual. A ingestão associa o aviário cadastrado à câmera e registra o lote correspondente ao instante de captura [3].
+
+`GET /analyses` aceita filtros por `camera_id`, `aviary_id`, `lot_id`, `status`, `lot_association_status`, `from`, `to`, `limit` e `offset`. Retorna `{data, pagination}`; cada linha inclui `visible_birds`, `assigned_total`, `unassigned_birds` e `levels`. `GET /cameras` fornece IDs, nomes e aviário associado. As duas rotas exigem autenticação.
+
+O esquema não guarda coordenadas, setor nem posição de câmera na planta. As contagens permitem comparar o que cada câmera observou, mas não posicionar os dispositivos em um desenho físico. Com esses dados, a primeira visualização só pode ser uma lista ou grade esquemática, identificada como não espacial.
+
+A Figura 2 ilustra a grade de consulta proposta. Os cartões não representam a posição física das câmeras e não têm dados reais.
+
+**Figura 2: Proposta de consulta por câmera, sem planta física**
+
+![Três cartões ilustram os campos média de aves visíveis, quantidade de análises e horário mais recente. Um cartão representa ausência de observação válida. Não há contagens nem classes preenchidas.](/img/documentacao/proposta-grade-cameras.png)
+
+<p className="figure-source">Fonte: produzido pela equipe, 2026</p>
+
+A ilustração apresenta a proposta de distribuição.  A integração e os limites de classificação continuam pendentes de validação.
+
+<div className="figure-links">
+
+[Abrir imagem em tamanho original](/img/documentacao/proposta-grade-cameras.png).
+
+</div>
+
+### Módulo isolado implementado {#proposta-mapa-de-distribuicao-módulo-isolado-implementado}
+
+`src/backend/src/distributionMap.ts` contém um plugin Fastify isolado para uma futura rota `GET /distribution/cameras` e a função de resumo por câmera. O cálculo considera somente análises com `status = 'valido'` e `visible_birds` disponível. Por câmera, retorna a média de aves visíveis por análise, a quantidade de análises válidas, o horário da análise mais recente e a classe de concentração.
+
+A janela de tempo deve ser aplicada pela consulta, com `from` inclusivo e `to` exclusivo sobre `captured_at`. A paginação limita os resumos por câmera. Sem limites configurados, o plugin responde `503 distribution_not_configured`. O plugin ainda não foi registrado em `src/backend/src/app.ts`; a integração exige uma alteração no arquivo de registro de rotas do backend.
+
+O registro do plugin exige importar `distributionMapRoutes` e `readProvisionalThresholds` de `./distributionMap.js` no arquivo de rotas do backend e adicionar dentro de `buildApp`, antes de `return app`, esta chamada:
+
+```ts
+app.register(distributionMapRoutes, {
+  prefix: '/distribution',
+  db,
+  thresholds: readProvisionalThresholds(process.env),
+});
+```
+
+A chamada deve permanecer dentro do app que aplica o hook global de autenticação. Os limites são configurados por `RAIAR_CONCENTRATION_LOW_MAX` e `RAIAR_CONCENTRATION_MEDIUM_MAX`, ambos em média de aves visíveis por análise. Não há valores padrão no código. Os valores `5` e `10` nos testes são fixtures artificiais para testar as faixas, não valores oficiais nem recomendação operacional.
+
+### Limites e decisões pendentes {#proposta-mapa-de-distribuicao-limites-e-decisões-pendentes}
+
+A média de aves visíveis não considera área, distância ou campo de visão de cada câmera. Ela é somente uma regra técnica inicial, não uma medida validada de densidade ou bem-estar. Os níveis baixa, média e alta, a janela de observação e o tratamento de câmeras sem dados válidos precisam ser acordados com a Raiar antes de usar o resultado para tomada de decisão.
+
+Também é necessário confirmar se a primeira versão será uma lista/grade esquemática ou se há uma planta e posições de câmeras que podem ser usadas. Sem coordenadas, não se deve apresentar os resultados como um mapa físico.
+
+Antes de integrar o mapa, precisamos definir:
+
+1. A média de aves visíveis por análise é uma medida aceitável para representar concentração por câmera?
+2. Quais limites provisórios separam baixa, média e alta e como validar esses limites com dados operacionais?
+3. Qual intervalo de tempo deve representar o estado mostrado?
+4. O que mostrar para câmeras sem análise válida no período?
+5. Há uma planta e posições aproximadas das câmeras disponíveis para uso, ou a primeira versão será somente uma grade?
+6. Ponto a definir: registrar o plugin em `app.ts` e confirmar o contrato de resposta da rota.
+
+Os testes do módulo ficam em `src/backend/tests/distribution-map.test.ts`. A regra e os limites devem continuar identificados como provisórios até validação operacional.
+
+### Referências {#proposta-mapa-de-distribuicao-referencias}
+
+[3] AGROTECH INTELI. **Backend e integração com o banco de dados**. [Documentação do backend](tecnico/backend.mdx#backend-backend-e-integração-com-o-banco-de-dados), seções sobre análises, rotas e histórico de ocupação. Disponível em: repositório do projeto Raiar. Acesso em: 16 nov. 2026.

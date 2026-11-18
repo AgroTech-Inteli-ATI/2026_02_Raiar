@@ -35,14 +35,14 @@ Projeto da AgroTech Inteli com a Raiar Orgânicos para monitorar, por visão com
 `chicken-yolo run` (ou `raiar-vision run`) lê câmeras RTSP, USB ou arquivos continuamente e grava
 uma análise por câmera a cada intervalo; o perfil `simulacao` do `compose.yaml` oferece um DVR de
 teste. O passo a passo, o mapa de falhas e a lista do que trocar do teste para a produção estão em
-[`docs/docs/sprint-3/`](docs/docs/sprint-3/dvr-simulado-e-teste-na-pratica.md).
+[`docs/docs/sprint-3/`](docs/docs/tecnico/captura-operacao.mdx#dvr-simulado-e-teste-na-pratica-dvr-simulado-e-teste-na-prática).
 
 ## Banco de dados
 
 O arquivo [`schema.sql`](src/database/schema.sql) cria as tabelas `raspberry`,
 `lot`, `aviary`, `camera` e `alerts` em um banco PostgreSQL sem essas tabelas.
 O aviário guarda a referência ao lote atual em `current_lot_id`. Os campos e os
-limites desta versão estão na [documentação do banco](docs/docs/sprint-3/banco-de-dados.md).
+limites desta versão estão na [documentação do banco](docs/docs/tecnico/backend.mdx#banco-de-dados-banco-de-dados-primeira-versão).
 Os identificadores das divisões internas de cada aviário são armazenados na lista
 `aviary.box_identifiers`.
 
@@ -285,11 +285,11 @@ A contagem por nível exige zonas calibradas para a câmera. Até configurar as 
 o programa informa a quantidade detectada e mantém o nível indeterminado.
 Confiança do detector não equivale à acurácia medida.
 
-O [guia de detecção de aves](docs/docs/sprint-2/deteccao-de-aves.md) explica vídeos,
+O [guia de detecção de aves](docs/docs/tecnico/yolo.mdx#deteccao-de-aves-detecção-de-aves-com-yolo) explica vídeos,
 metadados, preparação de dados para treino, partições por grupo, fine-tuning,
 avaliação, benchmark, exportação e o contrato de sincronização com o backend.
 
-O [piloto com o vídeo da Raiar](docs/docs/sprint-1/piloto-video-raiar.md) registra a
+O [piloto com o vídeo da Raiar](docs/docs/tecnico/yolo.mdx#piloto-video-raiar-piloto-com-o-vídeo-da-raiar) registra a
 extração de 30 quadros PNG e os testes automáticos com SAHI.
 Os resultados detalhados estão em [src/raiarnet/reports/raiar-video-pilot.md](src/raiarnet/reports/raiar-video-pilot.md).
 
@@ -317,4 +317,4 @@ python -m evaluation.benchmark --raiarnet runs/raiarnet/r1/best.pt
 ```
 
 O processo completo e os resultados estão na seção
-[Modelo de visão computacional](docs/docs/sprint-2/visao-computacional/index.mdx).
+[Modelo de visão computacional](docs/docs/resultados.mdx#index-modelo-de-visão-computacional-construído-do-zero).

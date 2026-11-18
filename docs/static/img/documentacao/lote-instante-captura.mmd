@@ -1,0 +1,12 @@
+%%{init: {"theme": "base", "fontFamily": "Arial, sans-serif", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 45, "rankSpacing": 45}, "themeVariables": {"fontSize": "20px", "primaryColor": "#edf3f5", "primaryTextColor": "#212b36", "primaryBorderColor": "#254d69", "lineColor": "#254d69", "secondaryColor": "#fff6d9", "tertiaryColor": "#edf3e9", "background": "#fffdf7"}}}%%
+flowchart TB
+  CAP[/"08:00: captura no lote A"/] --> TROCA["09:00: troca para o lote B"]
+  TROCA --> ENVIO[/"10:00: recebimento no backend"/]
+  ENVIO --> HORA{"Captura e ocupação conhecidas?"}
+  HORA -->|"Sim"| HIST["Consultar o histórico no horário da captura"]
+  HIST --> RESULTADO["Associar ao lote A"]
+  HORA -->|"Não"| VAZIO["Vínculo vazio: registrar o motivo"]
+  classDef result fill:#edf3e9,stroke:#477653,color:#212b36;
+  classDef pending fill:#fff6d9,stroke:#a27812,color:#212b36;
+  class RESULTADO result;
+  class VAZIO pending;
